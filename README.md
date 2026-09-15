@@ -58,6 +58,33 @@ directly inside `skills/`. Restart Claude Code afterwards so it loads.
 
 Upload the ZIP under **Settings → Capabilities → Skills**.
 
+### Option E — base64 text
+
+[`archify-skill-v2.16.0.zip.base64.txt`](archify-skill-v2.16.0.zip.base64.txt)
+is the same ZIP as base64 text (1.7 MB, 23,128 lines wrapped at 76 columns),
+for moving the skill through a channel that only carries text. Decode it back
+to the archive:
+
+```bash
+# macOS / Linux
+base64 -d archify-skill-v2.16.0.zip.base64.txt > archify.zip
+
+# Windows PowerShell
+[IO.File]::WriteAllBytes("archify.zip", [Convert]::FromBase64String(
+  (Get-Content archify-skill-v2.16.0.zip.base64.txt -Raw) -replace '\s',''))
+```
+
+Then verify and install as in Option A:
+
+```bash
+sha256sum archify.zip
+# 4c59fa6557a2385beaaef8c7219cc414573acc9f0c30a932d5053b0b20689a46
+unzip archify.zip -d ~/.claude/skills
+```
+
+GitHub will not preview a file this large in the browser — use the **Raw**
+button or `curl` the raw URL.
+
 ## Requirements
 
 Node.js 18 or newer — that is all. The renderer has no runtime npm dependencies,
