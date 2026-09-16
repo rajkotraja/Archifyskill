@@ -135,10 +135,36 @@ dependencies, and trust boundaries.
 - `.gitattributes` pins `* text=auto eol=lf`. Without it, Git on Windows
   (`core.autocrlf=true`) rewrites the checked-out `.mjs` and `.html` files to
   CRLF, which breaks Archify's byte-exact template and validator checks
-  (upstream issue #144).
+  (upstream issue #144). `*.png binary` keeps that rule away from image bytes.
 - To update later, replace the `archify` folder with a newer release.
+
+## Attached diagram
+
+`transaction-alert-flow.png` (1536x1024, 1.2 MB) is a transaction alert-triage
+flow: `TRXN's → RULEZ → ATL / BTL / NOISE → ML → alerts`, with the occurrence
+and recurrence breakdown below it. It is unrelated to the Archify skill itself
+and is kept here only for reference.
+
+`transaction-alert-flow.png.base64.txt` is the same image as base64 text
+(1.6 MB, 21,295 lines wrapped at 76 columns). Decode it back to the PNG:
+
+```bash
+# macOS / Linux
+base64 -d transaction-alert-flow.png.base64.txt > diagram.png
+
+# Windows PowerShell
+[IO.File]::WriteAllBytes("diagram.png", [Convert]::FromBase64String(
+  (Get-Content transaction-alert-flow.png.base64.txt -Raw) -replace '\s',''))
+```
+
+Verify:
+
+```bash
+sha256sum diagram.png
+# a657c0524b9a11f418c43606034b5a598f04cb878c052a4e56f423f789b235a5
+```
 
 ## Provenance
 
-Extracted verbatim from `archify.zip` at tag `v2.16.0` of
+The skill is extracted verbatim from `archify.zip` at tag `v2.16.0` of
 <https://github.com/tt-a1i/archify>. Upstream license: MIT (`archify/LICENSE`).

@@ -8,3 +8,6 @@
 /archify/renderers/shared/generated-brand-marks.mjs linguist-generated=true
 /archify/renderers/shared/generated-validators.mjs linguist-generated=true
 /archify/examples/*.html linguist-generated=true
+
+# Be explicit for images: never let text=auto heuristics touch these bytes.
+*.png binary
