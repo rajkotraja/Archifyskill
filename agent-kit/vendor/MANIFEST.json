@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "generated_at": "2026-09-24T14:22:36Z",
+  "generated_at": "2026-09-24T14:38:51Z",
   "sources": {
     "SDLC_agents": {
       "commit": "bcab6a1b8503100e8618c3b4e32cc78de43de769",
@@ -17,7 +17,7 @@
         "rewrote code-reviewer -> sdlc-code-reviewer, /plan -> /sdlc-plan and example @-handles in 7 files",
         "hooks: only the three wireable scripts are shipped (session-start.sh is deliberately not wired for Claude Code by its author; *-test.sh are upstream tests)",
         "hook wiring is opt-in (install.py --sdlc-hooks), matching upstream's per-project guidance",
-        "using-agent-skills: appended a generated 'Full kit' routing section (by language, overlaps, generic areas, agents, commands) plus catalog.md, per target; the stock SKILL.md is kept in vendor/SDLC_agents/standalone for installs without all_in_one_generic_agents"
+        "using-agent-skills: appended a generated 'Full kit' routing section plus catalog.md, per target. The full variant (all bundles) is in the tree; variants for partial installs are in vendor/SDLC_agents/meta/"
       ],
       "rewritten_files": [
         "agents/sdlc-code-reviewer.md",
@@ -44,16 +44,60 @@
       },
       "meta_skill": {
         "rel": "skills/using-agent-skills",
+        "variants": {
+          "full": [
+            "SDLC_agents",
+            "all_in_one_generic_agents",
+            "archify"
+          ],
+          "generic": [
+            "SDLC_agents",
+            "all_in_one_generic_agents"
+          ],
+          "archify": [
+            "SDLC_agents",
+            "archify"
+          ],
+          "stock": [
+            "SDLC_agents"
+          ]
+        },
         "catalog": {
-          "claude": {
-            "skills": 220,
-            "agents": 55,
-            "commands": 94
+          "full": {
+            "claude": {
+              "skills": 221,
+              "agents": 55,
+              "commands": 94
+            },
+            "opencode": {
+              "skills": 221,
+              "agents": 26,
+              "commands": 100
+            }
           },
-          "opencode": {
-            "skills": 220,
-            "agents": 26,
-            "commands": 100
+          "generic": {
+            "claude": {
+              "skills": 220,
+              "agents": 55,
+              "commands": 94
+            },
+            "opencode": {
+              "skills": 220,
+              "agents": 26,
+              "commands": 100
+            }
+          },
+          "archify": {
+            "claude": {
+              "skills": 26,
+              "agents": 3,
+              "commands": 8
+            },
+            "opencode": {
+              "skills": 26,
+              "agents": 3,
+              "commands": 8
+            }
           }
         }
       }
@@ -687,57 +731,61 @@
         ]
       },
       "excluded_names_still_mentioned_in": {
-        "skills/exa-search/SKILL.md": [
-          "market-research"
-        ],
-        "skills/team-builder/SKILL.md": [
-          "seo",
-          "seo-specialist"
-        ],
-        "skills/inherit-legacy-style/SKILL.md": [
-          "php",
-          "swift"
-        ],
-        "skills/product-lens/SKILL.md": [
-          "product-capability"
+        "skills/plan-orchestrate/SKILL.md": [
+          "chief-of-staff",
+          "flutter-reviewer",
+          "kotlin",
+          "kotlin-build-resolver",
+          "kotlin-reviewer"
         ],
         "skills/research-ops/SKILL.md": [
           "lead-intelligence",
           "market-research"
         ],
-        "skills/finance-billing-ops/SKILL.md": [
+        "skills/benchmark-methodology/SKILL.md": [
+          "competitive-platform-analysis",
+          "competitive-report-structure"
+        ],
+        "skills/exa-search/SKILL.md": [
           "market-research"
         ],
         "skills/email-ops/SKILL.md": [
           "brand-voice",
           "investor-outreach"
         ],
-        "skills/skill-scout/SKILL.md": [
-          "article-writing",
-          "content-engine"
+        "skills/react-patterns/SKILL.md": [
+          "react-native-patterns"
         ],
         "rules/ecc/react/patterns.md": [
           "react-native"
         ],
-        "skills/frontend-slides/SKILL.md": [
-          "liquid-glass-design"
+        "skills/inherit-legacy-style/SKILL.md": [
+          "php",
+          "swift"
         ],
-        "skills/mle-workflow/SKILL.md": [
-          "product-capability"
-        ],
-        "skills/messages-ops/SKILL.md": [
-          "lead-intelligence"
+        "skills/agent-sort/SKILL.md": [
+          "swift"
         ],
         "AGENTS.md": [
           "kotlin-build-resolver",
           "kotlin-reviewer"
         ],
-        "skills/agent-sort/SKILL.md": [
-          "swift"
+        "skills/team-builder/SKILL.md": [
+          "seo",
+          "seo-specialist"
         ],
-        "skills/benchmark-methodology/SKILL.md": [
-          "competitive-platform-analysis",
-          "competitive-report-structure"
+        "mcp-configs/mcp-servers.json": [
+          "ito-compute",
+          "laravel-plugin-discovery"
+        ],
+        "skills/product-lens/SKILL.md": [
+          "product-capability"
+        ],
+        "skills/frontend-slides/SKILL.md": [
+          "liquid-glass-design"
+        ],
+        "skills/finance-billing-ops/SKILL.md": [
+          "market-research"
         ],
         "rules/ecc/README.md": [
           "arkts",
@@ -746,8 +794,17 @@
           "ruby",
           "swift"
         ],
-        "skills/react-patterns/SKILL.md": [
-          "react-native-patterns"
+        "skills/accessibility/SKILL.md": [
+          "kotlin",
+          "liquid-glass-design",
+          "swift",
+          "swiftui-patterns"
+        ],
+        "skills/messages-ops/SKILL.md": [
+          "lead-intelligence"
+        ],
+        "rules/ecc/common/agents.md": [
+          "harmonyos-app-resolver"
         ],
         "skills/connections-optimizer/SKILL.md": [
           "brand-voice",
@@ -756,12 +813,12 @@
           "social-graph-ranker",
           "x-api"
         ],
-        "mcp-configs/mcp-servers.json": [
-          "ito-compute",
-          "laravel-plugin-discovery"
+        "skills/skill-scout/SKILL.md": [
+          "article-writing",
+          "content-engine"
         ],
-        "rules/ecc/common/agents.md": [
-          "harmonyos-app-resolver"
+        "skills/mle-workflow/SKILL.md": [
+          "product-capability"
         ],
         "skills/prompt-optimizer/SKILL.md": [
           "android-clean-architecture",
@@ -775,19 +832,6 @@
           "swift-actor-persistence",
           "swift-concurrency-6-2",
           "swift-protocol-di-testing",
-          "swiftui-patterns"
-        ],
-        "skills/plan-orchestrate/SKILL.md": [
-          "chief-of-staff",
-          "flutter-reviewer",
-          "kotlin",
-          "kotlin-build-resolver",
-          "kotlin-reviewer"
-        ],
-        "skills/accessibility/SKILL.md": [
-          "kotlin",
-          "liquid-glass-design",
-          "swift",
           "swiftui-patterns"
         ]
       },
@@ -864,12 +908,22 @@
         "opencode_inline_agents": 23,
         "opencode_inline_commands": 26
       }
+    },
+    "archify": {
+      "version": "2.16.0",
+      "source_zip": "archify-skill-v2.16.0.zip",
+      "source_zip_sha256": "4c59fa6557a2385beaaef8c7219cc414573acc9f0c30a932d5053b0b20689a46",
+      "files": 76,
+      "transforms": [
+        "unpacked unchanged from archify-skill-v2.16.0.zip in this repository; one shared copy (vendor/archify/common) is installed into both tools"
+      ]
     }
   },
   "tree_sha256": {
-    "SDLC_agents/claude": "2720d2c72cd5115aea814f0553c4d34346f8d57902d27491b661fb0ce8dca948",
-    "SDLC_agents/opencode": "6932b103c872102f12e2132d9ec5ccbcf6cdfdec2b752b6f9090f5c27cc74dbf",
+    "SDLC_agents/claude": "d5f956dc7d9224c928fb51e749838d5848d98c5a209135b28a503bc2ed8b2366",
+    "SDLC_agents/opencode": "2ee704f5fe68ac747f4f22b780fde81a5cdcbdfa15d176002f929b8a2ffb46fe",
     "all_in_one_generic_agents/claude": "be35a6602bd1099212e04aaa3ffb5da0fc069cf58afc4199b79ff6ff5e5f6a21",
-    "all_in_one_generic_agents/opencode": "d3648a7992f466ca69f7a8012aee38e62262867f4c89771b19e13b0a766a33c0"
+    "all_in_one_generic_agents/opencode": "d3648a7992f466ca69f7a8012aee38e62262867f4c89771b19e13b0a766a33c0",
+    "archify/common": "6d4c00581d4e9a0637747fca04ca71a86ad6aa5ba0e45544917dcf127c221581"
   }
 }

@@ -24,7 +24,7 @@ from pathlib import Path
 KIT = Path(__file__).resolve().parent.parent
 INSTALL = KIT / "install.py"
 MANIFEST = json.loads((KIT / "vendor" / "MANIFEST.json").read_text())
-SDLC, GENERIC = "SDLC_agents", "all_in_one_generic_agents"
+SDLC, GENERIC, ARCHIFY = "SDLC_agents", "all_in_one_generic_agents", "archify"
 GEN = MANIFEST["sources"][GENERIC]
 GEN_MARKER, SDLC_MARKER = GEN["hook_marker"], MANIFEST["sources"][SDLC]["hook_marker"]
 
@@ -74,7 +74,7 @@ class InstallTest(unittest.TestCase):
             n = GEN["counts"]["claude"][d] + c[SDLC]["counts"]["claude"][d]
             self.assertEqual(len(list((self.claude / d).glob("*.md"))), n, d)
         self.assertEqual(len([p for p in (self.claude / "skills").iterdir() if p.is_dir()]),
-                         GEN["counts"]["claude"]["skills"] + c[SDLC]["counts"]["claude"]["skills"])
+                         GEN["counts"]["claude"]["skills"] + c[SDLC]["counts"]["claude"]["skills"] + 1)  # + archify
         # renamed collisions: both personas exist, the generic bundle keeps the plain names
         self.assertTrue((self.claude / "agents" / "code-reviewer.md").exists())
         self.assertIn("name: sdlc-code-reviewer", (self.claude / "agents" / "sdlc-code-reviewer.md").read_text())
@@ -127,21 +127,52 @@ class InstallTest(unittest.TestCase):
             for gone in ("web-performance-auditor", "kotlin-reviewer", "flutter-reviewer", "gradle-build", "webperf"):
                 self.assertNotIn(gone, generated + catalog)
 
-    def test_meta_skill_follows_generic_presence(self):
+    def test_meta_skill_follows_installed_bundles(self):
         meta = self.claude / "skills" / "using-agent-skills"
-        stock = (KIT / "vendor" / SDLC / "standalone" / "claude" / "skills" / "using-agent-skills" / "SKILL.md").read_text()
+        variants = KIT / "vendor" / SDLC / "meta"
+        stock = (variants / "stock" / "claude" / "SKILL.md").read_text()
+        router = lambda: (meta / "SKILL.md").read_text()
         self.run_install("--source", SDLC)
-        self.assertEqual((meta / "SKILL.md").read_text(), stock, f"without {GENERIC} the stock meta-skill is installed")
+        self.assertEqual(router(), stock, "SDLC_agents alone gets the stock router")
         self.assertFalse((meta / "catalog.md").exists())
         self.run_install("--source", GENERIC)
-        self.assertIn(f"Full kit: {SDLC} + {GENERIC}", (meta / "SKILL.md").read_text())
-        self.assertTrue((meta / "catalog.md").exists())
+        self.assertIn(f"Full kit: {SDLC} + {GENERIC}\n", router())
+        self.assertNotIn("archify", router())
+        self.run_install("--source", ARCHIFY)
+        self.assertIn(f"Full kit: {SDLC} + {GENERIC} + {ARCHIFY}", router())
+        self.assertIn("`archify`", (meta / "catalog.md").read_text())
         self.run_install("--uninstall", "--source", GENERIC)
-        self.assertEqual((meta / "SKILL.md").read_text(), stock)
+        self.assertIn(f"Full kit: {SDLC} + {ARCHIFY}", router())
+        self.assertNotIn(GENERIC, router())
+        self.run_install("--uninstall", "--source", ARCHIFY)
+        self.assertEqual(router(), stock)
         self.assertFalse((meta / "catalog.md").exists())
         self.assertTrue((self.claude / "skills" / "spec-driven-development").exists(), f"{SDLC} stays installed")
         self.run_install("--uninstall")
         self.assertEqual(snapshot(self.home), {})
+
+    def test_archify_installed_unchanged_in_both_tools(self):
+        self.run_install("--source", ARCHIFY)
+        common = KIT / "vendor" / ARCHIFY / "common"
+        shipped = {p.relative_to(common).as_posix(): p.read_bytes() for p in common.rglob("*") if p.is_file()}
+        self.assertEqual(len(shipped), MANIFEST["sources"][ARCHIFY]["files"])
+        for root in (self.claude, self.oc):
+            for rel, data in shipped.items():
+                self.assertEqual((root / rel).read_bytes(), data, f"{root.name}: {rel}")
+        self.assertFalse((self.claude / "settings.json").exists(), "archify has no config to merge")
+
+    @unittest.skipUnless(shutil.which("node"), "node not installed")
+    def test_archify_skill_renders_a_diagram(self):
+        self.run_install("--source", ARCHIFY, "--target", "claude")
+        skill = self.claude / "skills" / "archify"
+        out = self.home / "diagram.html"
+        r = subprocess.run(["node", "bin/archify.mjs", "deliver", "architecture",
+                            "examples/production-deployment.architecture.json", str(out), "--quality", "showcase"],
+                           cwd=skill, capture_output=True, text=True, timeout=180,
+                           env={**os.environ, "HOME": str(self.home), "ARCHIFY_UPDATE_CHECK_DISABLED": "1"})
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertIn("9/9 artifact checks", r.stdout + r.stderr)
+        self.assertGreater(out.stat().st_size, 100_000)
 
     def test_zip_is_current(self):
         sys.path.insert(0, str(KIT / "tools"))
@@ -153,11 +184,17 @@ class InstallTest(unittest.TestCase):
         digest = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
         self.assertEqual(digest(committed), digest(fresh),
                          "agent-kit.zip is stale; run tools/build_zip.py and commit it")
+        text = build_zip.base64_path(committed)
+        self.assertTrue(text.exists(), "agent-kit.zip.base64.txt missing; run tools/build_zip.py")
+        self.assertEqual(base64.b64decode(text.read_bytes()), committed.read_bytes(),
+                         "agent-kit.zip.base64.txt does not decode to agent-kit.zip; run tools/build_zip.py")
+        self.assertTrue(all(len(line) <= 76 for line in text.read_text().splitlines()))
 
     def test_kit_layer_carries_no_upstream_names(self):
         vendor = KIT / "vendor"
-        self.assertEqual([p for p in vendor.rglob("*") if "licen" in p.name.lower()], [])
-        self.assertEqual(sorted(p.name for p in vendor.iterdir()), sorted(["MANIFEST.json", GENERIC, SDLC]))
+        for bundle in (SDLC, GENERIC):
+            self.assertEqual([p for p in (vendor / bundle).rglob("*") if "licen" in p.name.lower()], [], bundle)
+        self.assertEqual(sorted(p.name for p in vendor.iterdir()), sorted(["MANIFEST.json", GENERIC, SDLC, ARCHIFY]))
         manifest_text = (vendor / "MANIFEST.json").read_text()
         for word in ("addy", "agent-skills (", "Affaan", "Osmani", "github.com", "MIT"):
             self.assertNotIn(word, manifest_text)
@@ -175,7 +212,7 @@ class InstallTest(unittest.TestCase):
             for word in ("ECC", "addy", "agent-skills +", "agent-skills personas"):
                 self.assertNotIn(word, generated, f"{target} router")
             labels = set(re.findall(r"^- `[^`]+` \[([^\]]+)\]", (meta / "catalog.md").read_text(), re.M))
-            self.assertEqual(labels, {SDLC, GENERIC}, f"{target} catalog labels")
+            self.assertEqual(labels, {SDLC, GENERIC, ARCHIFY}, f"{target} catalog labels")
         self.assertTrue((self.claude / "rules" / "generic-agents").is_dir())
         self.assertIn("name: generic-agents-guide",
                       (self.claude / "skills" / "generic-agents-guide" / "SKILL.md").read_text())
@@ -190,13 +227,14 @@ class InstallTest(unittest.TestCase):
         stale.write_text("stale\n")
         state["sources"][SDLC]["files"]["agents/old-name-reviewer.md"] = {
             "sha256": hashlib.sha256(b"stale\n").hexdigest(), "backup": None}
-        state["sources"] = {("addy" if k == SDLC else "ecc"): v for k, v in state["sources"].items()}
+        legacy = {SDLC: "addy", GENERIC: "ecc"}
+        state["sources"] = {legacy.get(k, k): v for k, v in state["sources"].items()}
         state["options"]["addy_hooks"] = state["options"].pop("sdlc_hooks")
         state_path.write_text(json.dumps(state))
 
         self.run_install()
         migrated = json.loads(state_path.read_text())
-        self.assertEqual(sorted(migrated["sources"]), sorted([SDLC, GENERIC]))
+        self.assertEqual(sorted(migrated["sources"]), sorted([SDLC, GENERIC, ARCHIFY]))
         self.assertIs(migrated["options"]["sdlc_hooks"], True, "remembered hook choice survives")
         self.assertFalse(stale.exists(), "file from the old layout is cleaned up")
         self.assertEqual(hook_groups(self.settings(), SDLC_MARKER), 5)

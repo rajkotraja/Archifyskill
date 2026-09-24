@@ -38,15 +38,17 @@ VENDOR = KIT / "vendor"
 STATE_FILE = ".agent-kit-state.json"
 BACKUP_DIR = ".agent-kit-backups"
 SDLC, GENERIC = "SDLC_agents", "all_in_one_generic_agents"
-SOURCES = (SDLC, GENERIC)
+ARCHIFY = "archify"
+SOURCES = (SDLC, GENERIC, ARCHIFY)
 TARGETS = ("claude", "opencode")
-SOURCE_LABEL = {SDLC: SDLC, GENERIC: GENERIC}
+SOURCE_LABEL = {s: s for s in SOURCES}
 TARGET_LABEL = {"claude": "Claude Code", "opencode": "opencode"}
 # opencode manages <config>/package.json itself; the generic bundle's copy is only installed
 # when the user does not already have one.
 OPENCODE_PKG_FILES = ("package.json", "package-lock.json")
-# The SDLC_agents meta-skill has two variants: the full-kit one (also routes to
-# all_in_one_generic_agents) and the stock one, used when that bundle is not installed.
+# The SDLC_agents meta-skill (the router) is generated per combination of bundles
+# present in a target, so it only ever describes what is installed. The "full"
+# variant sits in the bundle tree itself; the rest under vendor/SDLC_agents/meta/.
 META_FILES = ("skills/using-agent-skills/SKILL.md", "skills/using-agent-skills/catalog.md")
 # State written by earlier versions of this script used other bundle keys; they
 # are migrated on load so a re-run cleans up files from renamed items.
@@ -87,6 +89,17 @@ def dump_json(data) -> str:
 def vendor_files(tree: Path):
     """Relative POSIX paths of every file in a vendored tree."""
     return sorted(p.relative_to(tree).as_posix() for p in tree.rglob("*") if p.is_file())
+
+
+def source_tree(source: str, target: str) -> Path:
+    """A bundle's files for one tool; bundles identical for both tools ship one "common" tree."""
+    tree = VENDOR / source / target
+    return tree if tree.is_dir() else VENDOR / source / "common"
+
+
+def meta_variant(present) -> str:
+    generic, archify = GENERIC in present, ARCHIFY in present
+    return "full" if generic and archify else "generic" if generic else "archify" if archify else "stock"
 
 
 def default_claude_dir() -> Path:
@@ -380,7 +393,7 @@ class Target:
 
     # -- planning ------------------------------------------------------------
     def planned_files(self, source: str, opts: dict) -> dict:
-        tree = VENDOR / source / self.name
+        tree = source_tree(source, self.name)
         files = {rel: tree / rel for rel in vendor_files(tree)}
         if source == GENERIC and not opts["hooks"]:
             for rel in self.manifest["sources"][GENERIC]["hook_runtime_paths"][self.name]:
@@ -390,7 +403,7 @@ class Target:
         if source == SDLC:
             for rel in META_FILES:
                 files.pop(rel, None)
-            files.update(self.sdlc_meta_plan(opts["generic_present"]))
+            files.update(self.sdlc_meta_plan(opts["present"]))
         if source == GENERIC and self.name == "opencode":
             owned = self.state["sources"].get(GENERIC, {}).get("files", {})
             pkg = self.dest("package.json")
@@ -401,20 +414,21 @@ class Target:
                                   "dependency the hooks plugin needs by itself)")
         return files
 
-    def sdlc_meta_plan(self, generic_present: bool) -> dict:
-        if generic_present:
+    def sdlc_meta_plan(self, present) -> dict:
+        variant = meta_variant(present)
+        if variant == "full":
             tree = VENDOR / SDLC / self.name
             return {rel: tree / rel for rel in META_FILES}
-        stock = VENDOR / SDLC / "standalone" / self.name / META_FILES[0]
-        return {META_FILES[0]: stock}
+        folder = VENDOR / SDLC / "meta" / variant / self.name
+        return {rel: folder / Path(rel).name for rel in META_FILES if (folder / Path(rel).name).is_file()}
 
-    def resync_sdlc_meta(self, generic_present: bool):
-        """Keep the meta-skill in step when only the generic bundle was (un)installed this run."""
+    def resync_sdlc_meta(self, present):
+        """Keep the router in step when other bundles were (un)installed without SDLC_agents."""
         entry = self.state["sources"].get(SDLC)
         if not entry:
             return
         files = entry.setdefault("files", {})
-        want = self.sdlc_meta_plan(generic_present)
+        want = self.sdlc_meta_plan(present)
         for rel, src in want.items():
             rec = self.install_file(src, rel, files.get(rel))
             if rec:
@@ -500,7 +514,8 @@ class Target:
             settings = read_json(path, TARGET_LABEL["claude"])
             changes = []
             for s in sources:
-                n = strip_hooks(settings, self.manifest["sources"][s]["hook_marker"])
+                marker = self.manifest["sources"][s].get("hook_marker")   # bundles without hooks have none
+                n = strip_hooks(settings, marker) if marker else 0
                 if n:
                     changes.append(("note", None, f"removed {n} {SOURCE_LABEL[s]} hook groups", MISSING))
                 owned = self.state["sources"].get(s, {}).get("settings_owned", {})
@@ -524,12 +539,12 @@ class Target:
                 for k, default in (("hooks", True), ("sdlc_hooks", False))}
         if self.name == "opencode":
             opts["sdlc_hooks"] = False                    # Claude Code hook format only
-        generic_present = GENERIC in sources or GENERIC in self.state["sources"]
+        present = set(sources) | set(self.state["sources"])
 
         # Validate config files before touching anything.
         read_json(self.root / ("settings.json" if self.name == "claude" else "opencode.json"), TARGET_LABEL[self.name])
 
-        plans = {s: self.planned_files(s, {**opts, "generic_present": generic_present}) for s in sources}
+        plans = {s: self.planned_files(s, {**opts, "present": present}) for s in sources}
         claimed = {}
         for s, files in [*plans.items(), *[(s, v.get("files", {})) for s, v in self.state["sources"].items()
                                            if s not in sources]]:
@@ -550,11 +565,11 @@ class Target:
             for rel in sorted(set(prev_files) - set(plans[s])):
                 if not self.remove_file(rel, prev_files[rel]):
                     new_files[rel] = prev_files[rel]
-            entry.update(files=new_files, commit=self.manifest["sources"][s]["commit"],
+            entry.update(files=new_files, commit=self.manifest["sources"][s].get("commit"),
                          version=self.manifest["sources"][s].get("version"))
 
         if SDLC not in sources:
-            self.resync_sdlc_meta(generic_present)
+            self.resync_sdlc_meta(present)
         if self.name == "claude":
             self.configure_claude(sources, opts)
         else:
@@ -581,7 +596,7 @@ class Target:
             else:
                 del self.state["sources"][s]
         if SDLC not in sources:
-            self.resync_sdlc_meta(GENERIC in self.state["sources"] and GENERIC not in sources)
+            self.resync_sdlc_meta(set(self.state["sources"]) - set(sources))
         if self.dry:
             return
         if self.state["sources"]:
@@ -611,6 +626,8 @@ def check_prereqs(targets, sources, opts_by_target):
         if not shutil.which("node"):
             warn.append(f"{GENERIC} Claude Code hooks run with `node`, which is not on PATH. "
                         "Install Node.js 18+ or re-run with --no-hooks.")
+    if ARCHIFY in sources and not shutil.which("node"):
+        warn.append("the archify skill renders diagrams with `node`, which is not on PATH. Install Node.js 18+.")
     if any(o.get("sdlc_hooks") for o in opts_by_target.values()):
         missing = [t for t in ("bash", "jq", "curl", "perl") if not shutil.which(t)]
         if not (shutil.which("shasum") or shutil.which("sha1sum")):
@@ -666,7 +683,8 @@ def main():
     print(f"{verb} {', '.join(SOURCE_LABEL[s] for s in sources)}" + ("  [dry run: nothing will be written]" if args.dry_run else ""))
     for s in sources:
         m = manifest["sources"][s]
-        print(f"  {SOURCE_LABEL[s]}: v{m.get('version')} @ {m['commit'][:12]} ({m['commit_date']})")
+        pin = f"{m['commit'][:12]} ({m['commit_date']})" if "commit" in m else m.get("source_zip", "")
+        print(f"  {SOURCE_LABEL[s]}: v{m.get('version')} {pin}")
 
     opts_by_target = {}
     for t in targets:

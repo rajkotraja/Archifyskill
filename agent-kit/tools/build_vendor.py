@@ -40,6 +40,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -61,6 +62,14 @@ SDLC_HOOK_MARKER = "/hooks/SDLC_agents/"
 
 SDLC = "SDLC_agents"
 GENERIC = "all_in_one_generic_agents"
+ARCHIFY = "archify"
+# archify is taken unchanged from this repository's own release zip (not downloaded).
+ARCHIFY_ZIP = Path(__file__).resolve().parents[2] / "archify-skill-v2.16.0.zip"
+# Router variants: which bundles each generated using-agent-skills copy describes.
+# "full" (all three) lives in the SDLC_agents tree itself; the others under
+# vendor/SDLC_agents/meta/<variant>/<target>/ for partial installs.
+META_VARIANTS = {"full": (SDLC, GENERIC, ARCHIFY), "generic": (SDLC, GENERIC),
+                 "archify": (SDLC, ARCHIFY), "stock": (SDLC,)}
 
 GENERIC_STATE_FILES = {"ecc/install-state.json", "ecc/state.db", "ecc-install-state.json"}
 
@@ -621,6 +630,34 @@ def build_sdlc(src: Path, out: Path, meta: dict) -> None:
     )
 
 
+# ------------------------------------------------------------------ archify
+
+def build_archify(out: Path, meta: dict) -> None:
+    """Unpack the repository's own archify release zip, unchanged, as a shared tree."""
+    if not ARCHIFY_ZIP.is_file():
+        sys.exit(f"{ARCHIFY_ZIP} not found")
+    dest = out / "common" / "skills"
+    dest.mkdir(parents=True)
+    with zipfile.ZipFile(ARCHIFY_ZIP) as zf:
+        names = zf.namelist()
+        bad = [n for n in names if not n.startswith("archify/") or ".." in Path(n).parts or n.startswith("/")]
+        if bad:
+            sys.exit(f"unexpected paths in {ARCHIFY_ZIP.name}: {bad[:5]}")
+        zf.extractall(dest)
+    skill_md = dest / "archify" / "SKILL.md"
+    if not re.search(r"^name:\s*archify\s*$", skill_md.read_text(encoding="utf-8"), re.M):
+        sys.exit("archify SKILL.md frontmatter name is not 'archify'")
+    release = json.loads((dest / "archify" / "skill-release.json").read_text())
+    meta.update(
+        version=release["version"],
+        source_zip=ARCHIFY_ZIP.name,
+        source_zip_sha256=hashlib.sha256(ARCHIFY_ZIP.read_bytes()).hexdigest(),
+        files=len(files_under(dest)),
+        transforms=[f"unpacked unchanged from {ARCHIFY_ZIP.name} in this repository; one shared copy "
+                    "(vendor/archify/common) is installed into both tools"],
+    )
+
+
 # ------------------------------------------------ using-agent-skills catalog
 
 META_REL = "skills/using-agent-skills"
@@ -648,18 +685,20 @@ def short(desc: str, limit: int = 150) -> str:
     return first if len(first) <= limit else first[:limit - 1].rstrip() + "…"
 
 
-def inventory(staged: Path, target: str) -> dict:
-    """Every skill/agent/command installed into `target`, by source, with descriptions."""
+def inventory(staged: Path, target: str, bundles=(SDLC, GENERIC, ARCHIFY)) -> dict:
+    """Every skill/agent/command installed into `target` by `bundles`, with descriptions."""
     inv = {"skills": {}, "agents": {}, "commands": {}}
-    for source in (SDLC, GENERIC):
+    for source in bundles:
         root = staged / source / target
+        if not root.is_dir():
+            root = staged / source / "common"             # bundle shared by every target
         for skill in sorted((root / "skills").iterdir()) if (root / "skills").is_dir() else []:
             if (skill / "SKILL.md").is_file():
                 inv["skills"][skill.name] = (source, short(frontmatter_description(skill / "SKILL.md")))
         for kind in ("agents", "commands"):
             for f in sorted((root / kind).glob("*.md")) if (root / kind).is_dir() else []:
                 inv[kind][f.stem] = (source, short(frontmatter_description(f)))
-    if target == "opencode":                          # the generic bundle defines these inline in opencode.json
+    if target == "opencode" and GENERIC in bundles:   # the generic bundle defines these inline in opencode.json
         oc = json.loads((staged / GENERIC / "config" / "opencode.json").read_text())
         for name, spec in oc.get("agent", {}).items():
             mode = " (primary agent)" if spec.get("mode") == "primary" else ""
@@ -673,63 +712,82 @@ def code(names, prefix=""):
     return ", ".join(f"`{prefix}{n}`" for n in names) or "—"
 
 
-def render_full_kit(inv: dict, target: str, skill_area: dict) -> str:
+def render_full_kit(inv: dict, target: str, skill_area: dict, bundles=(SDLC, GENERIC, ARCHIFY)) -> str:
     has = lambda kind, n: n in inv[kind]
+    generic, archify = GENERIC in bundles, ARCHIFY in bundles and has("skills", "archify")
     delegate = ("use the Agent tool with `subagent_type` set to the agent's name"
                 if target == "claude" else "mention it as `@agent-name`, or let the primary agent call it via the task tool")
-    out = [GEN_BEGIN, "", "## Full kit: SDLC_agents + all_in_one_generic_agents", "",
-           "This environment has **SDLC_agents** (the phase workflow above) and **all_in_one_generic_agents** installed. "
-           "Combine them like this:", "",
-           "1. **Pick the phase with the flowchart above.** The SDLC_agents phase skills are the default process.",
-           "2. **Layer in the stack-specific skills** for the language you are touching (table below). They add "
-           "idioms, testing and verification detail to the phase skill; they do not replace it.",
-           f"3. **Delegate to a specialist agent** for a focused review or build fix: {delegate}.",
-           "4. **Suggest slash commands** to the user when one fits. Commands are typed by the user; never claim one ran.",
-           "5. **Everything installed is in `catalog.md`** next to this file, with one-line descriptions. "
-           "Read it when nothing below fits.", ""]
+    others = [b for b in bundles if b != SDLC]
+    out = [GEN_BEGIN, "", "## Full kit: " + " + ".join(bundles), "",
+           f"This environment has **{SDLC}** (the phase workflow above) installed together with "
+           + " and ".join(f"**{b}**" for b in others) + ". Combine them like this:", ""]
+    steps = ["**Pick the phase with the flowchart above.** The SDLC_agents phase skills are the default process."]
+    if generic:
+        steps += ["**Layer in the stack-specific skills** for the language you are touching (table below). They add "
+                  "idioms, testing and verification detail to the phase skill; they do not replace it.",
+                  f"**Delegate to a specialist agent** for a focused review or build fix: {delegate}."]
+    if archify:
+        steps += ["**Draw diagrams with the `archify` skill** when the user asks to visualise architecture, "
+                  "infrastructure, workflows, API sequences, data flows or state machines, or to convert Mermaid. "
+                  "It produces a validated, self-contained HTML diagram and needs Node.js 18 or newer."]
+    if generic:
+        steps += ["**Suggest slash commands** to the user when one fits. Commands are typed by the user; never claim one ran."]
+    steps += ["**Everything installed is in `catalog.md`** next to this file, with one-line descriptions. "
+              "Read it when nothing below fits."]
+    out += [f"{i}. {step}" for i, step in enumerate(steps, 1)] + [""]
 
-    out += ["### By language", "", "| Stack | Skills | Agents | Commands |", "|---|---|---|---|"]
-    routed = set()
-    for stack, items in LANGUAGE_MAP.items():
-        s = [n for n in items["skills"] if has("skills", n)]
-        a = [n for n in items["agents"] if has("agents", n)]
-        c = [n for n in items["commands"] if has("commands", n)]
-        routed |= set(s) | set(a) | set(c)
-        if s or a or c:
-            out.append(f"| {stack} | {code(s)} | {code(a)} | {code(c, '/')} |")
+    if generic:
+        out += ["### By language", "", "| Stack | Skills | Agents | Commands |", "|---|---|---|---|"]
+        routed = set()
+        for stack, items in LANGUAGE_MAP.items():
+            s = [n for n in items["skills"] if has("skills", n)]
+            a = [n for n in items["agents"] if has("agents", n)]
+            c = [n for n in items["commands"] if has("commands", n)]
+            routed |= set(s) | set(a) | set(c)
+            if s or a or c:
+                out.append(f"| {stack} | {code(s)} | {code(a)} | {code(c, '/')} |")
 
-    out += ["", "### When both kits cover the same step", "",
-            "Follow the SDLC_agents skill as the process and pull in the all_in_one_generic_agents item for depth:", ""]
-    for sdlc_skill, generic_items in OVERLAPS:
-        present = [f"`{n}` skill" if has("skills", n) else f"`{n}` agent"
-                   for n in generic_items if has("skills", n) or has("agents", n)]
-        if has("skills", sdlc_skill) and present:
-            out.append(f"- `{sdlc_skill}` → also {', '.join(present)}")
+        out += ["", "### When both kits cover the same step", "",
+                "Follow the SDLC_agents skill as the process and pull in the all_in_one_generic_agents item for depth:", ""]
+        for sdlc_skill, generic_items in OVERLAPS:
+            present = [f"`{n}` skill" if has("skills", n) else f"`{n}` agent"
+                       for n in generic_items if has("skills", n) or has("agents", n)]
+            if has("skills", sdlc_skill) and present:
+                out.append(f"- `{sdlc_skill}` → also {', '.join(present)}")
 
-    out += ["", "### Other all_in_one_generic_agents skills by area", ""]
-    for module, label in GENERIC_AREAS:
-        names = [n for n in skill_area.get(module, []) if has("skills", n) and n not in routed]
-        if names:
-            out.append(f"- **{label}:** {code(names)}")
+        out += ["", "### Other all_in_one_generic_agents skills by area", ""]
+        for module, label in GENERIC_AREAS:
+            names = [n for n in skill_area.get(module, []) if has("skills", n) and n not in routed]
+            if names:
+                out.append(f"- **{label}:** {code(names)}")
+        out.append("")
 
-    sdlc_agents = sorted(n for n, (src, _) in inv["agents"].items() if src == SDLC)
-    generic_agents = sorted(n for n, (src, _) in inv["agents"].items() if src == GENERIC and n not in routed)
-    out += ["", "### Agents", "",
-            f"- **SDLC_agents personas** (fanned out by `/ship`): {code(sdlc_agents)}",
-            f"- **all_in_one_generic_agents, general-purpose:** {code(generic_agents)}",
-            "- Language reviewers and build resolvers are in the table above."]
+    if archify:
+        out += ["### Diagrams", "",
+                "- `archify` — architecture, workflow, sequence, data-flow and lifecycle/state diagrams as explorable "
+                "standalone HTML (PNG/SVG/WebM export). Follow its SKILL.md: write the JSON spec, validate, then deliver.",
+                ""]
 
-    sdlc_cmds = sorted(n for n, (src, _) in inv["commands"].items() if src == SDLC)
-    generic_cmds = sorted(n for n, (src, _) in inv["commands"].items() if src == GENERIC and n not in routed)
-    out += ["", "### Commands", "",
-            f"- **SDLC_agents lifecycle:** {code(sdlc_cmds, '/')}",
-            f"- **all_in_one_generic_agents:** {code(generic_cmds, '/')}",
-            "- Language-specific commands are in the table above.", "", GEN_END, ""]
+    if generic:
+        sdlc_agents = sorted(n for n, (src, _) in inv["agents"].items() if src == SDLC)
+        generic_agents = sorted(n for n, (src, _) in inv["agents"].items() if src == GENERIC and n not in routed)
+        out += ["### Agents", "",
+                f"- **SDLC_agents personas** (fanned out by `/ship`): {code(sdlc_agents)}",
+                f"- **all_in_one_generic_agents, general-purpose:** {code(generic_agents)}",
+                "- Language reviewers and build resolvers are in the table above.", ""]
+
+        sdlc_cmds = sorted(n for n, (src, _) in inv["commands"].items() if src == SDLC)
+        generic_cmds = sorted(n for n, (src, _) in inv["commands"].items() if src == GENERIC and n not in routed)
+        out += ["### Commands", "",
+                f"- **SDLC_agents lifecycle:** {code(sdlc_cmds, '/')}",
+                f"- **all_in_one_generic_agents:** {code(generic_cmds, '/')}",
+                "- Language-specific commands are in the table above.", ""]
+    out += [GEN_END, ""]
     return "\n".join(out)
 
 
 def render_catalog(inv: dict, target: str) -> str:
-    label = {SDLC: SDLC, GENERIC: GENERIC}
+    label = {b: b for b in (SDLC, GENERIC, ARCHIFY)}
     out = [f"# Installed catalog ({'Claude Code' if target == 'claude' else 'opencode'})", "",
            "Every skill, agent and command this kit installed, with the first sentence of its description. "
            "Generated by agent-kit/tools/build_vendor.py; do not edit by hand.", ""]
@@ -767,29 +825,33 @@ def build_meta_skill(staged: Path, generic_src: Path, manifest: dict) -> None:
         sys.exit(f"language skills missing from LANGUAGE_MAP (add them so the router knows them): {unrouted}")
 
     stats = {}
-    for target, inv in invs.items():
-        meta_dir = staged / SDLC / target / META_REL
-        stock = (meta_dir / "SKILL.md").read_text(encoding="utf-8")
-        standalone = staged / SDLC / "standalone" / target / META_REL / "SKILL.md"
-        standalone.parent.mkdir(parents=True, exist_ok=True)
-        standalone.write_text(stock, encoding="utf-8")
-
-        combined = stock.replace(
-            "This is the meta-skill that governs how all other skills are discovered and invoked.",
-            "This is the meta-skill that governs how all other skills are discovered and invoked, including "
-            "the installed all_in_one_generic_agents language skills, specialist agents and slash commands.", 1)
-        if combined == stock:
-            sys.exit("using-agent-skills description changed upstream; update build_meta_skill")
-        combined = combined.rstrip("\n") + "\n\n" + render_full_kit(inv, target, skill_area)
-        (meta_dir / "SKILL.md").write_text(combined, encoding="utf-8")
-        (meta_dir / "catalog.md").write_text(render_catalog(inv, target), encoding="utf-8")
-        stats[target] = {k: len(v) for k, v in inv.items()}
+    for target in ("claude", "opencode"):
+        tree_dir = staged / SDLC / target / META_REL
+        stock = (tree_dir / "SKILL.md").read_text(encoding="utf-8")
+        for variant, bundles in META_VARIANTS.items():
+            dest = tree_dir if variant == "full" else staged / SDLC / "meta" / variant / target
+            dest.mkdir(parents=True, exist_ok=True)
+            if variant == "stock":
+                (dest / "SKILL.md").write_text(stock, encoding="utf-8")
+                continue
+            inv = inventory(staged, target, bundles)
+            extras = [b for b in bundles if b != SDLC]
+            combined = stock.replace(
+                "This is the meta-skill that governs how all other skills are discovered and invoked.",
+                "This is the meta-skill that governs how all other skills are discovered and invoked, including "
+                "the installed " + " and ".join(extras) + " skills, agents and commands.", 1)
+            if combined == stock:
+                sys.exit("using-agent-skills description changed upstream; update build_meta_skill")
+            combined = combined.rstrip("\n") + "\n\n" + render_full_kit(inv, target, skill_area, bundles)
+            (dest / "SKILL.md").write_text(combined, encoding="utf-8")
+            (dest / "catalog.md").write_text(render_catalog(inv, target), encoding="utf-8")
+            stats.setdefault(variant, {})[target] = {k: len(v) for k, v in inv.items()}
 
     manifest["sources"][SDLC]["transforms"].append(
-        "using-agent-skills: appended a generated 'Full kit' routing section (by language, overlaps, generic areas, "
-        "agents, commands) plus catalog.md, per target; the stock SKILL.md is kept in vendor/SDLC_agents/standalone "
-        "for installs without all_in_one_generic_agents")
-    manifest["sources"][SDLC]["meta_skill"] = {"rel": META_REL, "catalog": stats}
+        "using-agent-skills: appended a generated 'Full kit' routing section plus catalog.md, per target. The full "
+        "variant (all bundles) is in the tree; variants for partial installs are in vendor/SDLC_agents/meta/")
+    manifest["sources"][SDLC]["meta_skill"] = {"rel": META_REL, "variants": {k: list(v) for k, v in META_VARIANTS.items()},
+                                               "catalog": stats}
 
 
 # ------------------------------------------------------------------ main
@@ -829,11 +891,17 @@ def main() -> None:
         build_generic(work / "src-generic", work, staged / GENERIC, generic)
         manifest["sources"][GENERIC] = generic
 
+        log(f"unpacking {ARCHIFY} from {ARCHIFY_ZIP.name}")
+        archify = {}
+        build_archify(staged / ARCHIFY, archify)
+        manifest["sources"][ARCHIFY] = archify
+
         log("generating the combined using-agent-skills catalog")
         build_meta_skill(staged, work / "src-generic", manifest)
 
         manifest["tree_sha256"] = {
-            f"{s}/{t}": tree_digest(staged / s / t) for s in (SDLC, GENERIC) for t in ("claude", "opencode")
+            f"{s}/{t}": tree_digest(staged / s / t) for s in (SDLC, GENERIC, ARCHIFY) for t in ("claude", "opencode", "common")
+            if (staged / s / t).is_dir()
         }
         (staged / "MANIFEST.json").write_text(json.dumps(manifest, indent=2) + "\n")
 
@@ -842,7 +910,8 @@ def main() -> None:
         shutil.copytree(staged, args.out)
         log(f"wrote {args.out}")
         for key, src in manifest["sources"].items():
-            log(f"  {key}: {src['commit'][:12]} ({src['commit_date']}) v{src.get('version')}")
+            pin = f"{src['commit'][:12]} ({src['commit_date']})" if "commit" in src else src.get("source_zip", "")
+            log(f"  {key}: v{src.get('version')} {pin}")
     finally:
         if args.keep_work:
             log(f"work dir kept at {work}")

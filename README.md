@@ -171,15 +171,17 @@ The skill is extracted verbatim from `archify.zip` at tag `v2.16.0` of
 
 ## Also in this repo: agent-kit
 
-[`agent-kit/`](agent-kit/) installs two agent bundles, **SDLC_agents** and
-**all_in_one_generic_agents**, into Claude Code and opencode from local copies:
+[`agent-kit/`](agent-kit/) installs three bundles, **SDLC_agents**, **all_in_one_generic_agents** and
+the **archify** skill, into Claude Code and opencode from local copies:
 
 ```bash
 cd agent-kit && python3 install.py
 ```
 
-Or download [`agent-kit.zip`](agent-kit.zip) (4.4 MB). It holds the same script and its `vendor/`
-content folder: `unzip agent-kit.zip && cd agent-kit && python3 install.py`.
+Or download [`agent-kit.zip`](agent-kit.zip). It holds the same script and its `vendor/` content
+folder: `unzip agent-kit.zip && cd agent-kit && python3 install.py`. The same zip is also available as
+base64 text in [`agent-kit.zip.base64.txt`](agent-kit.zip.base64.txt); decode it with
+`base64 -d agent-kit.zip.base64.txt > agent-kit.zip`.
 
 See [`agent-kit/README.md`](agent-kit/README.md) for what it installs, the options, and how it
 merges with an existing setup.

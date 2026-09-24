@@ -1,17 +1,22 @@
 #!/usr/bin/env python3
 """Package the kit into agent-kit.zip at the repository root.
 
-    python tools/build_zip.py            # writes ../agent-kit.zip
-    python tools/build_zip.py out.zip    # or somewhere else
+    python tools/build_zip.py            # writes ../agent-kit.zip and ../agent-kit.zip.base64.txt
+    python tools/build_zip.py out.zip    # or somewhere else (plus out.zip.base64.txt)
 
 The archive holds install.py, README.md and the vendor/ folder, wrapped in a
 single agent-kit/ directory. It is deterministic (fixed timestamps, sorted
 entries, normalised permissions), so rebuilding an unchanged kit produces a
 byte-identical file. Re-run it after rebuilding vendor/.
+
+The .base64.txt copy is the same archive as base64 text wrapped at 76 columns
+(the output of `base64 -w 76`), for channels that only carry text. Decode it
+with `base64 -d agent-kit.zip.base64.txt > agent-kit.zip`.
 """
 
 from __future__ import annotations
 
+import base64
 import stat
 import sys
 import zipfile
@@ -45,10 +50,22 @@ def build(out: Path) -> int:
     return len(files)
 
 
+def base64_path(zip_path: Path) -> Path:
+    return zip_path.with_name(zip_path.name + ".base64.txt")
+
+
+def write_base64(zip_path: Path) -> Path:
+    out = base64_path(zip_path)
+    out.write_bytes(base64.encodebytes(zip_path.read_bytes()))    # 76-column lines, like `base64 -w 76`
+    return out
+
+
 def main() -> None:
     out = Path(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_OUT
     count = build(out)
+    text = write_base64(out)
     print(f"wrote {out} ({count} files, {out.stat().st_size / 1e6:.1f} MB)")
+    print(f"wrote {text} ({text.stat().st_size / 1e6:.1f} MB)")
 
 
 if __name__ == "__main__":

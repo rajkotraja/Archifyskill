@@ -1,6 +1,6 @@
 ---
 name: using-agent-skills
-description: Discovers and invokes agent skills. Use when starting a session, or when you need to decide which skill or workflow applies to the piece of work at hand. This is the meta-skill that governs how all other skills are discovered and invoked, including the installed all_in_one_generic_agents language skills, specialist agents and slash commands.
+description: Discovers and invokes agent skills. Use when starting a session, or when you need to decide which skill or workflow applies to the piece of work at hand. This is the meta-skill that governs how all other skills are discovered and invoked, including the installed all_in_one_generic_agents and archify skills, agents and commands.
 ---
 
 # Using Agent Skills
@@ -193,15 +193,16 @@ Not every task needs every skill. A bug fix might only need: `debugging-and-erro
 
 <!-- BEGIN agent-kit generated section: regenerate with agent-kit/tools/build_vendor.py -->
 
-## Full kit: SDLC_agents + all_in_one_generic_agents
+## Full kit: SDLC_agents + all_in_one_generic_agents + archify
 
-This environment has **SDLC_agents** (the phase workflow above) and **all_in_one_generic_agents** installed. Combine them like this:
+This environment has **SDLC_agents** (the phase workflow above) installed together with **all_in_one_generic_agents** and **archify**. Combine them like this:
 
 1. **Pick the phase with the flowchart above.** The SDLC_agents phase skills are the default process.
 2. **Layer in the stack-specific skills** for the language you are touching (table below). They add idioms, testing and verification detail to the phase skill; they do not replace it.
 3. **Delegate to a specialist agent** for a focused review or build fix: mention it as `@agent-name`, or let the primary agent call it via the task tool.
-4. **Suggest slash commands** to the user when one fits. Commands are typed by the user; never claim one ran.
-5. **Everything installed is in `catalog.md`** next to this file, with one-line descriptions. Read it when nothing below fits.
+4. **Draw diagrams with the `archify` skill** when the user asks to visualise architecture, infrastructure, workflows, API sequences, data flows or state machines, or to convert Mermaid. It produces a validated, self-contained HTML diagram and needs Node.js 18 or newer.
+5. **Suggest slash commands** to the user when one fits. Commands are typed by the user; never claim one ran.
+6. **Everything installed is in `catalog.md`** next to this file, with one-line descriptions. Read it when nothing below fits.
 
 ### By language
 
@@ -242,6 +243,10 @@ Follow the SDLC_agents skill as the process and pull in the all_in_one_generic_a
 - **Operator workflows (GitHub, Jira, project ops):** `automation-audit-ops`, `api-connector-builder`, `connections-optimizer`, `cost-tracking`, `customer-billing-ops`, `dashboard-builder`, `generic-agents-tools-cost-audit`, `email-ops`, `finance-billing-ops`, `github-ops`, `google-workspace-ops`, `jira-integration`, `knowledge-ops`, `messages-ops`, `project-flow-ops`, `terminal-ops`, `unified-notifications-ops`, `workspace-surface-audit`, `mailtrap-email-integration`
 - **Benchmarking and performance:** `benchmark-optimization-loop`, `data-throughput-accelerator`, `latency-critical-systems`, `parallel-execution-optimizer`, `recursive-decision-ledger`, `agent-eval`, `benchmark`, `benchmark-methodology`
 - **Memory:** `unified-memory`
+
+### Diagrams
+
+- `archify` — architecture, workflow, sequence, data-flow and lifecycle/state diagrams as explorable standalone HTML (PNG/SVG/WebM export). Follow its SKILL.md: write the JSON spec, validate, then deliver.
 
 ### Agents
 

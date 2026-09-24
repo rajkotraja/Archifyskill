@@ -1,6 +1,6 @@
-# agent-kit: SDLC_agents + all_in_one_generic_agents for Claude Code and opencode
+# agent-kit: SDLC_agents + all_in_one_generic_agents + archify for Claude Code and opencode
 
-One Python script that installs two agent bundles into **Claude Code** (`~/.claude`) and
+One Python script that installs three bundles into **Claude Code** (`~/.claude`) and
 **opencode** (`~/.config/opencode`) from local copies kept in this folder. Nothing is downloaded at
 install time.
 
@@ -8,6 +8,7 @@ install time.
 |---|---|
 | **SDLC_agents** | Engineering-lifecycle skills, personas and commands: spec, plan, build, test, review, ship |
 | **all_in_one_generic_agents** | Language-specific skills, specialist agents, commands, rules and hooks |
+| **archify** | A diagram skill: architecture, workflow, sequence, data-flow and lifecycle diagrams as validated, self-contained HTML (v2.16.0, the same copy as `archify-skill-v2.16.0.zip` in this repository, unchanged) |
 
 ## Install
 
@@ -18,6 +19,19 @@ script and the `vendor/` content folder inside a single `agent-kit/` folder.
 unzip agent-kit.zip
 cd agent-kit
 python3 install.py
+```
+
+**From text only:** [`agent-kit.zip.base64.txt`](../agent-kit.zip.base64.txt) is the same zip as base64
+text, for channels that only carry text. Decode it first:
+
+```bash
+base64 -d agent-kit.zip.base64.txt > agent-kit.zip       # macOS / Linux
+```
+
+```powershell
+# Windows PowerShell
+[IO.File]::WriteAllBytes("agent-kit.zip", [Convert]::FromBase64String(
+  (Get-Content agent-kit.zip.base64.txt -Raw) -replace '\s',''))
 ```
 
 **From a clone of this repository:**
@@ -33,8 +47,8 @@ Restart Claude Code / opencode afterwards.
 **Requirements**
 
 - Python 3.8+ (standard library only; tested on 3.8 and 3.13)
-- Node.js 18+ for the all_in_one_generic_agents hooks in Claude Code, which run with `node`. Without
-  it, use `--no-hooks`.
+- Node.js 18+ for the all_in_one_generic_agents hooks in Claude Code, which run with `node` (without
+  it, use `--no-hooks`), and for archify, which renders diagrams with `node`.
 - opencode installs its own `@opencode-ai/plugin` dependency in the config folder the first time it
   starts (this needs network access).
 
@@ -42,7 +56,7 @@ Restart Claude Code / opencode afterwards.
 
 | | Claude Code | opencode |
 |---|---|---|
-| Skills | 220 (25 SDLC_agents + 195 all_in_one_generic_agents) | 220 |
+| Skills | 221 (25 SDLC_agents + 195 all_in_one_generic_agents + archify) | 221 |
 | Agents | 55 (3 + 52) | 26 (3 + 23 defined in `opencode.json`) |
 | Slash commands | 94 (8 + 86) | 100 |
 | Hooks | 24 hooks in `settings.json` | a hooks plugin |
@@ -50,10 +64,11 @@ Restart Claude Code / opencode afterwards.
 
 `skills/using-agent-skills` (the SDLC_agents router) is extended with a generated **Full kit**
 section. That section routes by language to the generic bundle's skills, reviewer/build agents and
-commands, and says which bundle to follow where they overlap. A `catalog.md` beside it lists every
+commands, says which bundle to follow where they overlap, and points diagram requests at archify. A `catalog.md` beside it lists every
 installed skill, agent and command with a one-line description. Both are generated from the files
 actually installed, and the tests check that they name nothing that is missing and leave nothing
-out.
+out. The router only ever describes what is installed. It is generated for each combination of
+bundles, so installing or removing a bundle later with `--source` switches it to the matching version.
 
 ## What was left out (curated)
 
@@ -90,6 +105,8 @@ harness), research, operator workflows (GitHub, Jira), benchmarking and memory.
   - `rules/generic-agents/` (rules folder)
 - Where the two bundles clash on a name, the SDLC_agents copy is renamed: `sdlc-code-reviewer` and
   `/sdlc-plan`.
+- **archify** keeps its own name and ships exactly as released, including its LICENSE file. The
+  LICENSE removal applied only to the other two bundles.
 - **Unchanged:** names inside the generic bundle's scripts, such as the `ECC_*` environment variables
   and the hook script filenames. The hooks load and read those exact names, so renaming them would
   break the hooks. Text inside the bundled skills also still mentions the original project names in
@@ -100,7 +117,7 @@ harness), research, operator workflows (GitHub, Jira), benchmarking and memory.
 | Option | Effect |
 |---|---|
 | `--target claude\|opencode\|all` | Which tool to install into (default: all) |
-| `--source SDLC_agents\|all_in_one_generic_agents\|all` | Which bundle to install (default: all) |
+| `--source SDLC_agents\|all_in_one_generic_agents\|archify\|all` | Which bundle to install (default: all) |
 | `--no-hooks` / `--hooks` | Leave out, or put back, the all_in_one_generic_agents hooks |
 | `--sdlc-hooks` / `--no-sdlc-hooks` | Wire the opt-in SDLC_agents Claude Code hooks: the WebFetch cache and simplify-ignore (default: off; they act per project). They need bash, jq, curl, perl and shasum. |
 | `--claude-dir PATH` | Default: `$CLAUDE_CONFIG_DIR` or `~/.claude` |
@@ -180,12 +197,13 @@ The maintainer tools live in the repository only; they are not in the zip.
 ```bash
 python3 tools/test_install.py     # end-to-end tests in throwaway home directories
 python3 tools/build_vendor.py     # rebuild vendor/ from the pinned upstream commits
-python3 tools/build_zip.py        # regenerate ../agent-kit.zip (deterministic)
+python3 tools/build_zip.py        # regenerate ../agent-kit.zip and its .base64.txt (deterministic)
 ```
 
 `tools/build_vendor.py` pins the two upstream Git repositories it builds from (`SDLC_REPO`,
-`GENERIC_REPO`, with `SDLC_REF` / `GENERIC_REF` commits). To update, bump the refs, run it (needs git,
-node and npm), then run `build_zip.py` and the tests, and commit `vendor/` together with the zip. A
-test fails if the zip is out of date. The build refuses to finish if upstream changes break one of
+`GENERIC_REPO`, with `SDLC_REF` / `GENERIC_REF` commits). archify is taken from
+`../archify-skill-v2.16.0.zip`; to update it, replace that zip and `ARCHIFY_ZIP`. To update, bump the refs, run it (needs git,
+node and npm), then run `build_zip.py` and the tests, and commit `vendor/` together with the zip and its
+`.base64.txt`. A test fails if either is out of date. The build refuses to finish if upstream changes break one of
 its assumptions, for example an excluded or renamed name that no longer exists, or a language skill
 that is not in the router's table.
