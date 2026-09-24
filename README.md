@@ -168,3 +168,16 @@ sha256sum diagram.png
 
 The skill is extracted verbatim from `archify.zip` at tag `v2.16.0` of
 <https://github.com/tt-a1i/archify>. Upstream license: MIT (`archify/LICENSE`).
+
+## Also in this repo: agent-kit
+
+[`agent-kit/`](agent-kit/) installs Addy Osmani's
+[agent-skills](https://github.com/addyosmani/agent-skills) and a slimmed
+[ECC](https://github.com/affaan-m/ECC) into Claude Code and opencode from local copies:
+
+```bash
+cd agent-kit && python3 install.py
+```
+
+See [`agent-kit/README.md`](agent-kit/README.md) for what it installs, the options, and how it
+merges with an existing setup.
