@@ -1,10 +1,10 @@
 ---
-description: Navigate ECC's current agents, skills, commands, hooks, install profiles, and docs from the live repository surface.
+description: Navigate all_in_one_generic_agents's current agents, skills, commands, hooks, install profiles, and docs from the live repository surface.
 ---
 
 # /generic-agents-guide
 
-Use this command as a conversational map of Everything Claude Code. It should help the user discover the right ECC surface for their task without dumping the entire README or stale catalog counts.
+Use this command as a conversational map of all_in_one_generic_agents. It should help the user discover the right all_in_one_generic_agents surface for their task without dumping the entire README or stale catalog counts.
 
 ## Usage
 
@@ -39,7 +39,7 @@ Use these files as the canonical map:
 - `agents/*.md` for delegated agent roles
 - `hooks/README.md` and `hooks/hooks.json` for hook behavior
 - `manifests/install-*.json` for selective install modules, components, and profiles
-- `scripts/ci/catalog.js --json` for live catalog counts when running inside ECC
+- `scripts/ci/catalog.js --json` for live catalog counts when running inside all_in_one_generic_agents
 
 ## Response Patterns
 
@@ -86,7 +86,7 @@ For a specific feature name:
 
 ## Related Commands
 
-- `/project-init` for stack-aware ECC onboarding of a target project
+- `/project-init` for stack-aware all_in_one_generic_agents onboarding of a target project
 - `/harness-audit` for deterministic repo readiness scoring
 - `/skill-health` for skill quality checks
 - `/skill-create` for extracting a new skill from local git history

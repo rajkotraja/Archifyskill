@@ -3,7 +3,7 @@
  * Cursor sessionStart hook — inject ECC_AGENT_DATA_HOME for the composer session.
  *
  * Cursor passes session-scoped env from sessionStart output to all later hooks.
- * @see https://cursor.com/docs/hooks
+ * @see <url>
  */
 
 const {

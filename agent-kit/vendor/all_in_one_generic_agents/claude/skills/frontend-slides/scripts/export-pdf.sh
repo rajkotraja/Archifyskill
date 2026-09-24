@@ -102,7 +102,7 @@ if ! command -v npx &>/dev/null; then
     err ""
     err "Install Node.js:"
     err "  macOS:   brew install node"
-    err "  or visit https://nodejs.org and download the installer"
+    err "  or visit <url> and download the installer"
     exit 1
 fi
 

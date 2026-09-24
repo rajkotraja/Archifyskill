@@ -26,7 +26,7 @@ Import instincts from local file paths or HTTP(S) URLs.
 
 ```
 /instinct-import team-instincts.yaml
-/instinct-import https://github.com/org/repo/instincts.yaml
+/instinct-import <url>
 /instinct-import team-instincts.yaml --dry-run
 /instinct-import team-instincts.yaml --scope global --force
 ```

@@ -2,7 +2,7 @@
 name: skill-stocktake
 description: "Use when auditing Claude skills and commands for quality. Supports Quick Scan (changed skills only) and Full Stocktake modes with sequential subagent batch evaluation."
 metadata:
-  origin: ECC
+  origin: all_in_one_generic_agents
 ---
 
 # skill-stocktake
@@ -190,6 +190,6 @@ Obtain via Bash: `date -u +%Y-%m-%dT%H:%M:%SZ`. Never use a date-only approximat
 
 ## Notes
 
-- Evaluation is blind: the same checklist applies to all skills regardless of origin (ECC, self-authored, auto-extracted)
+- Evaluation is blind: the same checklist applies to all skills regardless of origin (all_in_one_generic_agents, self-authored, auto-extracted)
 - Archive / delete operations always require explicit user confirmation
 - No verdict branching by skill origin

@@ -2,7 +2,7 @@
 name: angular-developer
 description: Generates Angular code and provides architectural guidance. Trigger when creating projects, components, or services, or for best practices on reactivity (signals, linkedSignal, resource), forms, dependency injection, routing, SSR, accessibility (ARIA), animations, styling (component styles, Tailwind CSS), testing, or CLI tooling.
 metadata:
-  origin: ECC
+  origin: all_in_one_generic_agents
 ---
 
 # Angular Developer Guidelines
@@ -60,7 +60,7 @@ When working with Angular components, consult the following references based on 
 - **Outputs**: Signal-based outputs and custom event best practices. Read [outputs.md](references/outputs.md)
 - **Host Elements**: Host bindings and attribute injection. Read [host-elements.md](references/host-elements.md)
 
-If you require deeper documentation not found in the references above, read the documentation at `https://angular.dev/guide/components`.
+If you require deeper documentation not found in the references above, read the documentation at `<url>`.
 
 ## Reactivity and Data Management
 
@@ -112,7 +112,7 @@ When implementing navigation in Angular, consult the following references:
 - **Rendering Strategies**: CSR, SSG (Prerendering), and SSR with hydration. Read [rendering-strategies.md](references/rendering-strategies.md)
 - **Route Transition Animations**: Enabling and customizing the View Transitions API. Read [route-animations.md](references/route-animations.md)
 
-If you require deeper documentation or more context, visit the [official Angular Routing guide](https://angular.dev/guide/routing).
+If you require deeper documentation or more context, visit the official Angular Routing guide.
 
 ## Styling and Animations
 

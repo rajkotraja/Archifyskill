@@ -161,7 +161,7 @@ _clv2_detect_project() {
 
   local raw_remote_url="$remote_url"
 
-  # Strip embedded credentials from remote URL (e.g., https://ghp_xxxx@github.com/...)
+  # Strip embedded credentials from remote URL (e.g., <url>...)
   if [ -n "$remote_url" ]; then
     remote_url=$(printf '%s' "$remote_url" | sed -E 's|://[^@]+@|://|')
   fi

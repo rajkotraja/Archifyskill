@@ -203,9 +203,12 @@ class InstallTest(unittest.TestCase):
             paths = [p.relative_to(root).as_posix() for p in root.rglob("*")]
             self.assertEqual([p for p in paths if "addy" in p.lower()], [], target)
             for old in ("skills/ecc-guide", "skills/ecc-recipes", "skills/configure-ecc",
-                        "skills/ecc-tools-cost-audit", "commands/ecc-guide.md", "rules/ecc"):
+                        "skills/ecc-tools-cost-audit", "commands/ecc-guide.md", "rules/ecc",
+                        "skills/github-ops/references/ecc-release-checklist.md"):
                 self.assertFalse((root / old).exists(), f"{target}: {old}")
-            for new in ("skills/generic-agents-guide", "skills/configure-generic-agents", "commands/generic-agents-guide.md"):
+            # configure-generic-agents was renamed, then removed on request (it reinstalls the original project)
+            for new in ("skills/generic-agents-guide", "skills/generic-agents-recipes", "commands/generic-agents-guide.md",
+                        "skills/github-ops/references/generic-agents-release-checklist.md"):
                 self.assertTrue((root / new).exists(), f"{target}: {new}")
             meta = root / "skills" / "using-agent-skills"
             generated = (meta / "SKILL.md").read_text().split("BEGIN agent-kit generated section", 1)[1]
@@ -240,6 +243,65 @@ class InstallTest(unittest.TestCase):
         self.assertEqual(hook_groups(self.settings(), SDLC_MARKER), 5)
         self.run_install("--uninstall")
         self.assertEqual(snapshot(self.home), {})
+
+    def installed_text_files(self):
+        for root in (self.claude, self.oc):
+            for path in root.rglob("*"):
+                if path.is_file() and ".agent-kit-" not in path.as_posix():
+                    yield root, path
+
+    def test_no_open_internet_addresses(self):
+        sys.path.insert(0, str(KIT / "tools"))
+        import build_vendor
+        self.run_install("--sdlc-hooks")
+        offenders = []
+        for root, path in self.installed_text_files():
+            if path.name.endswith(build_vendor.URL_SUFFIXES):
+                rel = path.relative_to(root).as_posix()
+                for url in build_vendor.open_urls(rel, path.read_text(encoding="utf-8", errors="ignore")):
+                    offenders.append(f"{root.name}/{rel}: {url}")
+        for own in (KIT / "README.md", KIT / "install.py", KIT / "vendor" / "MANIFEST.json"):
+            offenders += [f"{own.name}: {u}" for u in build_vendor.open_urls(own.name, own.read_text())]
+        self.assertEqual(offenders[:20], [])
+        self.assertFalse((self.claude / "mcp-configs" / "mcp-servers.json").exists())
+        self.assertNotIn("## Update awareness", (self.claude / "skills" / "archify" / "SKILL.md").read_text())
+
+    def test_no_project_or_author_names_in_text(self):
+        sys.path.insert(0, str(KIT / "tools"))
+        import build_vendor
+        self.run_install()
+        problems = []
+        for root, path in self.installed_text_files():
+            if path.suffix not in (".md", ".txt"):
+                continue
+            text = path.read_text(encoding="utf-8", errors="ignore")
+            for word in ("Everything Claude Code", "affaanmustafa", "Affaan Mustafa", "Addy", "Osmani", "agent-skills:"):
+                if word in text:
+                    problems.append(f"{path.relative_to(root)}: {word}")
+            if build_vendor.GENERIC_PROSE_WORD.search(text):
+                problems.append(f"{path.relative_to(root)}: ECC as a word")
+        self.assertEqual(problems[:20], [])
+
+    def test_reinstallers_are_gone(self):
+        self.run_install()
+        for root in (self.claude, self.oc):
+            self.assertFalse((root / "skills" / "configure-generic-agents").exists())
+            self.assertFalse((root / "commands" / "auto-update.md").exists())
+            meta = root / "skills" / "using-agent-skills"
+            for f in ("SKILL.md", "catalog.md"):
+                text = (meta / f).read_text()
+                self.assertNotIn("configure-generic-agents", text)
+                self.assertNotIn("auto-update", text)
+        self.assertNotIn("auto-update", self.opencode().get("command", {}))
+
+    def test_sdlc_commands_invoke_installed_skills(self):
+        self.run_install("--source", SDLC)
+        skills = {p.parent.name for p in (self.claude / "skills").glob("*/SKILL.md")}
+        invoked = set()
+        for cmd in (self.claude / "commands").glob("*.md"):
+            invoked |= set(re.findall(r"[Ii]nvoke (?:the )?`?([a-z][a-z0-9-]+)`? skill", cmd.read_text()))
+        self.assertTrue(invoked, "expected commands to invoke skills")
+        self.assertEqual(sorted(invoked - skills), [])
 
     def test_second_run_changes_nothing(self):
         self.run_install()

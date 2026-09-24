@@ -320,7 +320,7 @@ Focus must move logically when UI state changes — especially for modals and ro
 
 ### Modal Focus Restoration
 
-> This example covers initial focus and restoration. For a full focus trap (Tab/Shift+Tab cycling within the modal), use a library like [`focus-trap-react`](https://github.com/focus-trap/focus-trap-react) which handles edge cases like dynamic content and nested portals.
+> This example covers initial focus and restoration. For a full focus trap (Tab/Shift+Tab cycling within the modal), use a library like `focus-trap-react` which handles edge cases like dynamic content and nested portals.
 
 ```tsx
 export function Modal({ isOpen, onClose, title, children }: { isOpen: boolean; onClose: () => void; title: string; children: React.ReactNode }) {

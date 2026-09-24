@@ -108,7 +108,7 @@ import os
 import time
 import requests
 
-BASE = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils"
+BASE = "<url>"
 
 
 def esearch(query: str, retmax: int = 20) -> list[str]:
@@ -170,7 +170,7 @@ Example:
 
 ## References
 
-- [PubMed help](https://pubmed.ncbi.nlm.nih.gov/help/)
-- [NCBI E-utilities documentation](https://www.ncbi.nlm.nih.gov/books/NBK25501/)
-- [NCBI API key guidance](https://support.nlm.nih.gov/kbArticle/?pn=KA-05317)
+- PubMed help
+- NCBI E-utilities documentation
+- NCBI API key guidance
 - NCBI support: <eutilities@ncbi.nlm.nih.gov>

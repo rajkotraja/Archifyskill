@@ -50,7 +50,7 @@ agents/
 
 Agents are discovered via two methods, merged and deduplicated by agent name:
 
-1. **`claude agents` command** (primary) — run `claude agents` to get all agents known to the CLI, including user agents, plugin agents (e.g. `ecc:architect`), and built-in agents. This automatically covers ECC marketplace installs without any path configuration.
+1. **`claude agents` command** (primary) — run `claude agents` to get all agents known to the CLI, including user agents, plugin agents (e.g. `ecc:architect`), and built-in agents. This automatically covers all_in_one_generic_agents marketplace installs without any path configuration.
 2. **File glob** (fallback, for reading agent content) — agent markdown files are read from:
    - `./agents/**/*.md` + `./agents/*.md` — project-local agents
    - `~/.claude/agents/**/*.md` + `~/.claude/agents/*.md` — global user agents

@@ -9,7 +9,7 @@
 
 Types: feat, fix, refactor, docs, test, chore, perf, ci
 
-Note: ECC-managed installs set `"includeCoAuthoredBy": false` in `~/.claude/settings.json`, so commits carry no `Co-Authored-By` trailer by default. To keep Claude attribution, set `"includeCoAuthoredBy": true` or configure `attribution`; ECC never overwrites an explicit choice.
+Note: all_in_one_generic_agents-managed installs set `"includeCoAuthoredBy": false` in `~/.claude/settings.json`, so commits carry no `Co-Authored-By` trailer by default. To keep Claude attribution, set `"includeCoAuthoredBy": true` or configure `attribution`; all_in_one_generic_agents never overwrites an explicit choice.
 
 ## Pull Request Workflow
 

@@ -21,7 +21,7 @@ const {
 
 const OFFICIAL_MARKETPLACE_NAME = 'ecc';
 const OFFICIAL_MARKETPLACE_REPO = 'affaan-m/ecc';
-const OFFICIAL_MARKETPLACE_URL = 'https://github.com/affaan-m/ECC';
+const OFFICIAL_MARKETPLACE_URL = '<url>';
 const PROVIDER_COMMAND_TIMEOUT_MS = 120 * 1000;
 const VALID_SCOPES = new Set(['user', 'project', 'local']);
 const VALID_HOOK_MODES = new Set(['off', 'minimal', 'standard', 'strict']);
@@ -190,7 +190,7 @@ function assertGitAvailable(options = {}, dependencies = {}) {
       {
         phase: 'preflight',
         recovery: [
-          'Install Git from https://git-scm.com/downloads and ensure `git` is on PATH.',
+          'Install Git from <url> and ensure `git` is on PATH.',
           'Rerun ECC setup.',
         ],
       }

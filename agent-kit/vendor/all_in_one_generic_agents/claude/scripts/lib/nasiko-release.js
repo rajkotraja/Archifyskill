@@ -7,9 +7,9 @@ const os = require('os');
 const path = require('path');
 const zlib = require('zlib');
 
-const REGISTRY_ORIGIN = 'https://registry.nasiko.dev';
+const REGISTRY_ORIGIN = '<url>';
 const REPOSITORY = 'nasiko/nasiko';
-const SOURCE_URL = 'https://github.com/Nasiko-Labs/nasiko';
+const SOURCE_URL = '<url>';
 const LICENSE = 'Apache-2.0';
 const METADATA_FILENAME = '.ecc-nasiko-install.json';
 const MAX_MANIFEST_BYTES = 1024 * 1024;

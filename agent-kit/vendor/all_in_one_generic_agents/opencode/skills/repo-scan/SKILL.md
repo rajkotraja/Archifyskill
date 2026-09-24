@@ -1,6 +1,6 @@
 ---
 name: repo-scan
-description: Bootstrap pointer that installs the external repo-scan skill from a pinned, reviewable commit. Use when repo-scan must be installed before running its cross-stack source-code asset audit; this ECC pointer does not perform the audit itself.
+description: Bootstrap pointer that installs the external repo-scan skill from a pinned, reviewable commit. Use when repo-scan must be installed before running its cross-stack source-code asset audit; this all_in_one_generic_agents pointer does not perform the audit itself.
 metadata:
   origin: community
 ---
@@ -78,7 +78,7 @@ move_repo_scan_dir() {
 }
 
 git clone --filter=blob:none --no-checkout \
-  https://github.com/haibindev/repo-scan.git "$REPO_SCAN_TMP/source"
+  <url> "$REPO_SCAN_TMP/source"
 git -C "$REPO_SCAN_TMP/source" checkout --detach "$REPO_SCAN_COMMIT"
 mkdir -p "$REPO_SCAN_STAGE"
 git -C "$REPO_SCAN_TMP/source" archive "$REPO_SCAN_COMMIT" | \
@@ -120,7 +120,7 @@ fi
 
 > Review the source before installing any agent skill.
 
-Installation completes only the bootstrap. Reload your agent harness, then invoke `repo-scan` again. This ECC pointer installs the external skill but does not run a scan itself.
+Installation completes only the bootstrap. Reload your agent harness, then invoke `repo-scan` again. This all_in_one_generic_agents pointer installs the external skill but does not run a scan itself.
 
 ## Core Capabilities
 
@@ -167,4 +167,4 @@ On a 50,000-file C++ monorepo:
 
 ## Links
 
-- [GitHub Repository](https://github.com/haibindev/repo-scan)
+- GitHub Repository

@@ -7811,7 +7811,7 @@
           evidence.hidden = true;
           return;
         }
-        var slug = repository.url.replace(/^https:\/\/github\.com\//, '').replace(/\/$/, '');
+        var slug = repository.url.replace(/^<url>\//, '').replace(/\/$/, '');
         repositoryLink.href = repository.url + '/tree/' + repository.revision;
         repositoryLink.textContent = slug + ' @ ' + repository.shortRevision;
         repositoryLink.setAttribute('aria-label', viewerText('viewer.passport.repository.open', { revision: repository.revision }));

@@ -2,7 +2,7 @@
 name: kubernetes-patterns
 description: Kubernetes workload patterns, resource management, RBAC, probes, autoscaling, ConfigMap/Secret handling, and kubectl debugging for production-grade deployments. Use when writing or reviewing Kubernetes manifests, or debugging probes, RBAC, autoscaling, or resource limits.
 metadata:
-  origin: ECC
+  origin: all_in_one_generic_agents
 ---
 
 # Kubernetes Patterns
@@ -328,7 +328,7 @@ data:
   db-password: czNjcjN0  # base64 of 's3cr3t'
 ```
 
-> **Important:** Raw Kubernetes Secrets are only base64-encoded, not encrypted at rest unless your cluster has encryption configured. Use [Sealed Secrets](https://github.com/bitnami-labs/sealed-secrets) or [External Secrets Operator](https://external-secrets.io) for production.
+> **Important:** Raw Kubernetes Secrets are only base64-encoded, not encrypted at rest unless your cluster has encryption configured. Use Sealed Secrets or External Secrets Operator for production.
 
 ---
 

@@ -35,7 +35,7 @@ npx bundle-analyzer
 npx source-map-explorer build/static/js/*.js
 
 # Lighthouse performance audit
-npx lighthouse https://your-app.com --view
+npx lighthouse <url> --view
 
 # Node.js profiling
 node --prof your-app.js
@@ -336,13 +336,13 @@ node --inspect app.js
 
 ```bash
 # Run full lighthouse audit
-npx lighthouse https://your-app.com --view --preset=desktop
+npx lighthouse <url> --view --preset=desktop
 
 # CI mode for automated checks
-npx lighthouse https://your-app.com --output=json --output-path=./lighthouse.json
+npx lighthouse <url> --output=json --output-path=./lighthouse.json
 
 # Check specific metrics
-npx lighthouse https://your-app.com --only-categories=performance
+npx lighthouse <url> --only-categories=performance
 ```
 
 ### Performance Budgets

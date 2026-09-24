@@ -5,7 +5,7 @@ argument-hint: "[path/to/artifact.plan.md | path/to/artifact.html]"
 
 # Plan Canvas Command
 
-Opens a local artifact in the Plan Canvas — ECC's browser review surface —
+Opens a local artifact in the Plan Canvas — all_in_one_generic_agents's browser review surface —
 where the user annotates elements, chats with you, and approves the plan or
 requests changes without leaving the page.
 

@@ -9,7 +9,7 @@ const { resolveInvocationEnvironment } = require('../../invocation-environment')
 // OpenCode stores MCP servers under "mcp" in its resolved configuration root.
 // Shape differs from Claude/Codex:
 //   { type: "local"|"remote", command: ["npx","-y","pkg"], environment: {},
-//     enabled: bool, url: "https://..." }
+//     enabled: bool, url: "<url>..." }
 // command is an ARRAY (binary + args combined); environment (not env) holds
 // secrets; type "local" => stdio, "remote" => http/sse.
 function mapOpencodeServer(name, raw, configPath) {

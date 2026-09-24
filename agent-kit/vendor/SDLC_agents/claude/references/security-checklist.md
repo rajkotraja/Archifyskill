@@ -121,7 +121,7 @@ Permissions-Policy: camera=(), microphone=(), geolocation=()
 ```typescript
 // Restrictive (recommended)
 cors({
-  origin: ['https://yourdomain.com', 'https://app.yourdomain.com'],
+  origin: ['<url>', '<url>'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -179,7 +179,7 @@ Never discover dependency lifecycle scripts by first executing an ordinary insta
 | Yarn 2–4.13 | Set `enableScripts: false` in `.yarnrc.yml`, then grant only required exceptions with top-level `dependenciesMeta.<package>.built: true`; do not enable scripts globally. |
 | Yarn 1 | Bootstrap with `yarn install --ignore-scripts`; keep scripts disabled unless each required exception is reviewed under the pinned client's documented workflow. |
 
-Authoritative checks: [npm install-scripts](https://docs.npmjs.com/cli/v11/commands/npm-install-scripts/), [install policy](https://docs.npmjs.com/cli/v11/commands/npm-install/), and [CLI releases](https://github.com/npm/cli/releases); [pnpm approve-builds](https://pnpm.io/cli/approve-builds) and [build settings](https://pnpm.io/settings#allowbuilds); [Yarn security](https://yarnpkg.com/features/security) and [manifest](https://yarnpkg.com/configuration/manifest#dependenciesMeta).
+Authoritative checks: npm install-scripts, install policy, and CLI releases; pnpm approve-builds and build settings; Yarn security and manifest.
 
 **Supply-chain hygiene** (advisory audits do not catch newly malicious packages):
 - [ ] Exactly one authoritative lockfile per project/workspace root is committed and CI never rewrites it
@@ -232,7 +232,7 @@ res.status(500).json({
 
 ## OWASP Top 10 for LLMs Quick Reference
 
-For apps with LLM features. See the [OWASP GenAI Security Project](https://genai.owasp.org/llm-top-10/).
+For apps with LLM features. See the OWASP GenAI Security Project.
 
 | ID | Risk | Prevention |
 |---|---|---|

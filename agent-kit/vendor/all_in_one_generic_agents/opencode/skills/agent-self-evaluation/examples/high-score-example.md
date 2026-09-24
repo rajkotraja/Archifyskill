@@ -32,7 +32,7 @@ $ python -c "from src.api_client import ApiClient; c = ApiClient(); print(type(c
 - Client errors except 429 (no retry — 4xx means the request is bad)
 - Idempotency: GET, PUT, DELETE retry; POST does not (configurable)
 
-### Merge: [PR #423](https://github.com/example/pr/423)
+### Merge: PR #423
 
 ---
 

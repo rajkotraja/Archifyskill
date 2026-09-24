@@ -2,7 +2,7 @@
 name: vite-patterns
 description: Vite build tool patterns including config, plugins, HMR, env variables, proxy setup, SSR, library mode, dependency pre-bundling, and build optimization. Activate when working with vite.config.ts, Vite plugins, or Vite-based projects.
 metadata:
-  origin: ECC
+  origin: all_in_one_generic_agents
 ---
 
 # Vite Patterns
@@ -121,7 +121,7 @@ function myPlugin(): Plugin {
 
 **Virtual modules** use the `\0` prefix convention — `resolveId` returns `'\0virtual:my-id'` so other plugins skip it. User code imports `'virtual:my-id'`.
 
-For full plugin API, see [vite.dev/guide/api-plugin](https://vite.dev/guide/api-plugin). Use `vite-plugin-inspect` during development to debug the transform pipeline.
+For full plugin API, see <url>. Use `vite-plugin-inspect` during development to debug the transform pipeline.
 
 ### HMR API
 
@@ -300,7 +300,7 @@ server: {
 
 #### Profiling Slow Dev Servers
 
-When `vite dev` feels slow, start with `vite --profile`, interact with the app, then press `p+enter` to save a `.cpuprofile`. Load it in [Speedscope](https://www.speedscope.app) to find which plugins are eating time — usually `buildStart`, `config`, or `configResolved` hooks in community plugins.
+When `vite dev` feels slow, start with `vite --profile`, interact with the app, then press `p+enter` to save a `.cpuprofile`. Load it in Speedscope to find which plugins are eating time — usually `buildStart`, `config`, or `configResolved` hooks in community plugins.
 
 ### Library Mode
 

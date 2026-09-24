@@ -183,7 +183,7 @@ Analysis:
 
 When instincts are imported from Skill Creator (repo analysis), they have:
 - `source: "repo-analysis"`
-- `source_repo: "https://github.com/..."`
+- `source_repo: "<url>..."`
 - `scope: "project"` (since they come from a specific repo)
 
 These should be treated as team/project conventions with higher initial confidence (0.7+).

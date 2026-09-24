@@ -82,12 +82,13 @@ GENERIC_STATE_FILES = {"ecc/install-state.json", "ecc/state.db", "ecc-install-st
 GENERIC_RENAMES = {
     "skills/ecc-guide": "skills/generic-agents-guide",
     "skills/ecc-recipes": "skills/generic-agents-recipes",
-    "skills/configure-ecc": "skills/configure-generic-agents",
     "skills/ecc-tools-cost-audit": "skills/generic-agents-tools-cost-audit",
     "commands/ecc-guide.md": "commands/generic-agents-guide.md",
     "rules/ecc": "rules/generic-agents",
+    "skills/github-ops/references/ecc-release-checklist.md": "skills/github-ops/references/generic-agents-release-checklist.md",
 }
 GENERIC_TOKEN_REWRITES = [  # text references, longest first
+    ("ecc-release-checklist", "generic-agents-release-checklist"),
     ("ecc-tools-cost-audit", "generic-agents-tools-cost-audit"),
     ("configure-ecc", "configure-generic-agents"),
     ("ecc-recipes", "generic-agents-recipes"),
@@ -95,6 +96,21 @@ GENERIC_TOKEN_REWRITES = [  # text references, longest first
     ("rules/ecc", "rules/generic-agents"),
 ]
 TEXT_SUFFIXES = (".md", ".json", ".txt", ".yaml", ".yml", ".toml")
+
+# Text scrub (on request): the generic bundle's prose names its project and its
+# author. Those words are rewritten or removed in .md/.txt files and in the
+# descriptions inside opencode.json. Functional references are left alone:
+# URLs and repo names (affaan-m/ECC, the separate ECC-Tools repo), issue ids
+# (ECC-031), env vars (ECC_*), CLI/plugin identifiers, and anything in backticks.
+GENERIC_PROSE_WORD = re.compile(r"(?<![/\w`\[.@-])ECC(?=[\s'.,;:)!?*\"]|-[a-z]|$)", re.M)
+GENERIC_PROSE_REPLACEMENTS = [("non-ECC", "non-" + "all_in_one_generic_agents"),
+                              ("Everything Claude Code", "all_in_one_generic_agents"),
+                              ("Addy's *Loop Engineering*", "*Loop Engineering*")]
+CREDIT_LINE = re.compile(r"^.*x\.com/affaanmustafa.*\n", re.M)     # links to the author's guides
+PROMO_BLOCK_START = "If you haven't read the previous guides, start here:"
+PROMO_BLOCK_LINES = re.compile(r"^(>.*|\s*|go do that.*|- \[github\.com/affaan-m/[\w-]+\]\(https://github\.com/affaan-m/[\w-]+\))$")
+# after removal, list/table lines pointing at the removed reinstallers are dropped
+REMOVED_ITEM_REFERENCE = re.compile(r"`/?(configure-generic-agents|auto-update)`|/auto-update\b")
 
 # all_in_one_generic_agents slimmed to SDLC + Python, Java/JVM, JS/TS web, Go, Rust, C++ and .NET.
 # The upstream installer's components cannot express this (every lang:*/framework:* component
@@ -171,6 +187,9 @@ GENERIC_EXCLUDE = {
     },
     "social posting": {"skills": ["crosspost", "social-publisher", "x-api"]},
     "document processing": {"skills": ["nutrient-document-processing", "visa-doc-translate"]},
+    "reinstallers of the original project (running them would undo this kit)": {
+        "skills": ["configure-ecc"], "commands": ["auto-update"],
+    },
 }
 
 # name collisions with all_in_one_generic_agents -> the SDLC_agents copy is renamed
@@ -411,6 +430,58 @@ def apply_generic_renames(out: Path, config: Path) -> tuple[list, int]:
     return moved, rewritten
 
 
+def scrub_generic_text(out: Path, config: Path) -> dict:
+    """Rewrite/remove project and author names in prose (see GENERIC_PROSE_WORD)."""
+    stats = {"files": 0, "words": 0, "credit_lines": 0, "promo_blocks": 0, "removed_item_lines": 0}
+    for tree in (out / "claude", out / "opencode"):
+        for path in sorted(tree.rglob("*")):
+            if not (path.is_file() and path.suffix in (".md", ".txt")):
+                continue
+            text = path.read_text(encoding="utf-8", errors="surrogateescape")
+            new = text
+            if PROMO_BLOCK_START in new:
+                head, tail = new.split(PROMO_BLOCK_START, 1)
+                if not all(PROMO_BLOCK_LINES.match(line) for line in tail.splitlines()[1:]):
+                    sys.exit(f"{path}: promotional block is no longer at the end of the file; re-check the scrub")
+                new = re.sub(r"\n---\s*\n\s*$", "\n", head.rstrip() + "\n")
+                stats["promo_blocks"] += 1
+            new, n = CREDIT_LINE.subn("", new)
+            stats["credit_lines"] += n
+            kept = []
+            for line in new.splitlines(keepends=True):
+                if REMOVED_ITEM_REFERENCE.search(line):
+                    if not re.match(r"\s*([-*] |\|)", line):
+                        sys.exit(f"{path}: prose (not a list/table line) references a removed item: {line.strip()[:120]}")
+                    stats["removed_item_lines"] += 1
+                    continue
+                kept.append(line)
+            new = "".join(kept)
+            for old, repl in GENERIC_PROSE_REPLACEMENTS:
+                new = new.replace(old, repl)
+            new, n = GENERIC_PROSE_WORD.subn("all_in_one_generic_agents", new)
+            stats["words"] += n
+            if new != text:
+                path.write_text(new, encoding="utf-8", errors="surrogateescape")
+                stats["files"] += 1
+            for leftover in ("Everything Claude Code", "affaanmustafa", "Addy"):
+                if leftover in new:
+                    sys.exit(f"{path}: still mentions {leftover!r} after the scrub")
+            if GENERIC_PROSE_WORD.search(new) or REMOVED_ITEM_REFERENCE.search(new):
+                sys.exit(f"{path}: scrub left a prose mention behind")
+
+    oc_path = config / "opencode.json"
+    oc = json.loads(oc_path.read_text())
+    for section in ("agent", "command"):
+        for spec in oc.get(section, {}).values():
+            if isinstance(spec.get("description"), str):
+                d = spec["description"]
+                for old, repl in GENERIC_PROSE_REPLACEMENTS:
+                    d = d.replace(old, repl)
+                spec["description"] = GENERIC_PROSE_WORD.sub("all_in_one_generic_agents", d)
+    oc_path.write_text(json.dumps(oc, indent=2) + "\n")
+    return stats
+
+
 def build_generic(src: Path, work: Path, out: Path, meta: dict) -> None:
     log("all_in_one_generic_agents: installing npm dependencies (--ignore-scripts)")
     run(["npm", "install", "--ignore-scripts", "--no-audit", "--no-fund", "--loglevel=error"], cwd=src)
@@ -482,6 +553,7 @@ def build_generic(src: Path, work: Path, out: Path, meta: dict) -> None:
     (config / "opencode.json").write_text(json.dumps(oc, indent=2) + "\n")
     added = [s for s in added if (oc_skills / s).exists()]
     renamed, rewritten = apply_generic_renames(out, config)
+    scrub = scrub_generic_text(out, config)
 
     # Any path left holding a build-machine absolute path is a bug.
     for tree in (out / "claude", out / "opencode", config):
@@ -521,6 +593,9 @@ def build_generic(src: Path, work: Path, out: Path, meta: dict) -> None:
             f"({excluded['files']} files) across {len(excluded['names'])} categories",
             "renamed self-named items: " + ", ".join(f"{o} -> {n}" for o, n in GENERIC_RENAMES.items())
             + f"; references rewritten in {rewritten} text files",
+            f"text scrub: project name rewritten {scrub['words']} times in {scrub['files']} files; "
+            f"{scrub['credit_lines']} author-credit lines and {scrub['promo_blocks']} promotional block removed; "
+            f"{scrub['removed_item_lines']} list/table lines pointing at removed reinstallers dropped",
         ],
         excluded=excluded["names"],
         excluded_names_still_mentioned_in=dangling,
@@ -543,6 +618,10 @@ def rewrite_names(text: str) -> str:
     text = re.sub(r"(?<![\w/-])/plan(?![\w-])", "/sdlc-plan", text)
     # upstream uses "@addy" as an example owner handle in templates
     text = re.sub(r"@addy\b", "@owner", text)
+    # commands name skills plugin-style ("agent-skills:test-driven-development"); installed
+    # as plain skills they are just "test-driven-development"
+    text = re.sub(r"(?<![\w-])agent-skills:(?=[a-z])", "", text)
+    text = re.sub(r"(?<![\w-])agent-skills(?![\w:-])", SDLC, text)
     return text
 
 
@@ -656,6 +735,174 @@ def build_archify(out: Path, meta: dict) -> None:
         transforms=[f"unpacked unchanged from {ARCHIFY_ZIP.name} in this repository; one shared copy "
                     "(vendor/archify/common) is installed into both tools"],
     )
+
+
+# ---------------------------------------------------------------- URL policy
+#
+# On request, nothing in the kit mentions or reaches the open internet: every
+# such address becomes "<url>" (Markdown links keep only their text). Kept, by
+# decision: localhost/example addresses; XML namespace and JSON-schema
+# identifiers (never fetched; required for SVG and validation); Go module
+# paths, Kubernetes API groups and container image names (identifiers, not
+# links); and two runtime fetches the user chose to keep: Google Fonts in
+# archify's diagram HTML and the Mermaid CDN in plan-canvas's browser view.
+
+URL_PLACEHOLDER = "<url>"
+SCHEME_URL = re.compile(r"(?:https?|ssh|git)://[^\s<>\"'`)\]\\|]+")
+ESCAPED_URL = re.compile(r"(?:https?|ssh):\\/\\/(?:git@)?(?:[A-Za-z0-9-]|\\\.)+")
+SCHEMELESS_URL = re.compile(r"(?<![\w@./:-])(?:www\.)?[a-z0-9][a-z0-9-]*(?:\.[a-z0-9-]+)*"
+                            r"\.(?:com|org|io|dev|net|ai|app|sh|co|gg|so|me|tools|design|page)/[A-Za-z0-9_./#?=&%+~-]*", re.I)
+SSH_REMOTE = re.compile(r"git@[a-z0-9.-]+\.[a-z]+:[\w./-]+", re.I)
+# local, reserved-for-docs, or templated hosts (e.g. http://${host}:${port} for the kit's own local servers)
+LOCAL_URL = re.compile(r"^(?:[a-z]+://)?(?:[^/@]*@)?(?:localhost|127\.|0\.0\.0\.0|\[::1\]|[\w.-]*\.(?:test|local|localhost|invalid)\b"
+                       r"|(?:[\w-]+\.)*example\.(?:com|org|net)\b|\$\{|\{\{?|<)", re.I)
+IDENTIFIER_URL = re.compile(r"www\.w3\.org/(?:2000/svg|1999/xlink|1999/xhtml|2001/XMLSchema)|json-schema\.org"
+                            r"|schemastore\.org|opencode\.ai/config\.json|\.schema\.json\b", re.I)
+IDENTIFIER_NAMESPACE = re.compile(r"^(?:www\.)?(?:[\w.-]*\.k8s\.io|[\w.-]*\.kubernetes\.io|cert-manager\.io|golang\.org/x/"
+                                  r"|ghcr\.io|docker\.io|gcr\.io|quay\.io|[\w-]+\.app/Contents)", re.I)
+GO_MODULE_LINE = re.compile(r"Module:|Import:|\bgo (?:get|install)\b|import \(|import \"|packageKeys|require \(")
+KEPT_FETCHES = {  # (path suffix, host) pairs the user chose to keep
+    ("archify/assets/template.html", "fonts.googleapis.com"), ("archify/assets/template.html", "fonts.gstatic.com"),
+    (".html", "fonts.googleapis.com"), (".html", "fonts.gstatic.com"),
+    ("plan-canvas/ui.js", "cdn.jsdelivr.net"),
+}
+URL_EXACT = [  # (path suffix, old, new): parsers whose alternations must stay valid regex syntax
+    (".mjs", "^https://github\\\\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+(?:\\\\.git)?/?$", "^<url>$"),
+    (".json", "^https://github\\\\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+(?:\\\\.git)?/?$", "^<url>$"),
+    ("repository-evidence.mjs", r"(?:https:\/\/github\.com\/|git@github\.com:|ssh:\/\/git@github\.com\/)", r"(?:<url>\/)"),
+    ("github-origin.js", r"(?:https:\/\/github\.com\/|ssh:\/\/git@github\.com\/|git@github\.com:)", r"(?:<url>\/)"),
+]
+MANIFEST_FILES = {"package.json", "plugin.json", "marketplace.json", "skill-release.json"}
+MANIFEST_URL_KEYS = {"homepage", "repository", "bugs", "updateManifestUrl", "source", "url"}
+URL_DELETE = ["mcp-configs/mcp-servers.json", "skills/continuous-learning-v2/scripts/test_parse_instinct.py"]
+CODE_SUFFIXES = (".js", ".mjs", ".cjs", ".ts", ".map", ".py", ".sh")
+URL_SUFFIXES = CODE_SUFFIXES + (".md", ".txt", ".json", ".html", ".yaml", ".yml", ".toml", ".css")
+
+
+def _host(url: str) -> str:
+    return re.sub(r"^[a-z]+://(?:[^/@]*@)?", "", url, flags=re.I).split("/")[0].lower()
+
+
+def _kept(rel: str, url: str) -> bool:
+    if LOCAL_URL.match(url) or IDENTIFIER_URL.search(url):
+        return True
+    return any(rel.endswith(suffix) and _host(url) == host for suffix, host in KEPT_FETCHES)
+
+
+def open_urls(rel: str, text: str) -> list:
+    """Open-internet addresses in `text` that the URL policy does not keep."""
+    found = [m.group(0) for m in SCHEME_URL.finditer(text) if not _kept(rel, m.group(0))]
+    found += [m.group(0) for m in ESCAPED_URL.finditer(text)]
+    if not rel.endswith(CODE_SUFFIXES):
+        found += [m.group(0) for m in SSH_REMOTE.finditer(text)]
+        for line in text.splitlines():
+            if GO_MODULE_LINE.search(line):
+                continue
+            found += [m.group(0) for m in SCHEMELESS_URL.finditer(re.sub(r"[a-z]+://\S+", " ", line))
+                      if not IDENTIFIER_NAMESPACE.match(m.group(0)) and not LOCAL_URL.match(m.group(0))]
+    return found
+
+
+def _sub_url(rel: str):
+    def repl(m):
+        url = m.group(0)
+        tail = re.search(r"[.,;:!?*]+$", url)
+        core, trail = (url[:tail.start()], tail.group(0)) if tail else (url, "")
+        return m.group(0) if _kept(rel, core) else URL_PLACEHOLDER + trail
+    return repl
+
+
+def scrub_url_text(rel: str, text: str) -> str:
+    for suffix, old, new in URL_EXACT:
+        if rel.endswith(suffix):
+            text = text.replace(old, new)
+    if rel.endswith((".md", ".txt")):
+        looks_like_address = lambda t: bool(SCHEME_URL.match(t) or SCHEMELESS_URL.match(t) or re.match(r"^[\w.-]+\.(com|org|io|dev|net)\b", t))
+        def link(m):
+            label, url = m.group(2), m.group(3)
+            if _kept(rel, url):
+                return m.group(0)
+            return URL_PLACEHOLDER if looks_like_address(label.strip()) or not label.strip() else label
+        text = re.sub(r"(!?)\[([^\]\n]*)\]\(\s*((?:https?|ssh|git)://[^)\s]+)(?:\s+\"[^\"]*\")?\s*\)", link, text)
+        text = re.sub(r"^[ \t]*\[[^\]\n]+\]:[ \t]*((?:https?|ssh|git)://\S+).*\n",
+                      lambda m: m.group(0) if _kept(rel, m.group(1)) else "", text, flags=re.M)
+        text = re.sub(r"<((?:https?|ssh|git)://[^>\s]+)>", lambda m: m.group(0) if _kept(rel, m.group(1)) else URL_PLACEHOLDER, text)
+    text = SCHEME_URL.sub(_sub_url(rel), text)
+    text = ESCAPED_URL.sub(URL_PLACEHOLDER, text)
+    if not rel.endswith(CODE_SUFFIXES):
+        text = SSH_REMOTE.sub(URL_PLACEHOLDER, text)
+        out = []
+        for line in text.splitlines(keepends=True):
+            if not GO_MODULE_LINE.search(line):
+                line = SCHEMELESS_URL.sub(lambda m: m.group(0) if IDENTIFIER_NAMESPACE.match(m.group(0))
+                                          or LOCAL_URL.match(m.group(0)) else URL_PLACEHOLDER, line)
+            out.append(line)
+        text = "".join(out)
+    return text
+
+
+def _drop_manifest_urls(node):
+    if isinstance(node, dict):
+        return {k: _drop_manifest_urls(v) for k, v in node.items() if k not in MANIFEST_URL_KEYS}
+    if isinstance(node, list):
+        return [_drop_manifest_urls(v) for v in node]
+    return node
+
+
+def apply_url_policy(staged: Path) -> dict:
+    stats = {"files": 0, "deleted": 0, "manifests": 0}
+    roots = [d for b in (SDLC, GENERIC, ARCHIFY) for d in sorted((staged / b).iterdir()) if d.is_dir()]
+    for root in roots:
+        for rel in URL_DELETE:
+            if (root / rel).is_file():
+                (root / rel).unlink()
+                stats["deleted"] += 1
+    # archify: drop the instruction that runs the online update checker
+    skill_md = staged / ARCHIFY / "common" / "skills" / "archify" / "SKILL.md"
+    text = skill_md.read_text(encoding="utf-8")
+    new = re.sub(r"\n## Update awareness\n.*?(?=\n## )", "\n", text, count=1, flags=re.S)
+    if new == text:
+        sys.exit("archify SKILL.md no longer has an 'Update awareness' section; re-check the URL policy")
+    skill_md.write_text(new, encoding="utf-8")
+
+    exact_hits = {i: 0 for i in range(len(URL_EXACT))}
+    for root in roots:
+        for path in sorted(root.rglob("*")):
+            if not path.is_file() or not path.name.endswith(URL_SUFFIXES):
+                continue
+            rel = path.relative_to(staged).as_posix()
+            text = path.read_text(encoding="utf-8", errors="surrogateescape")
+            for i, (suffix, old, _) in enumerate(URL_EXACT):
+                if rel.endswith(suffix):
+                    exact_hits[i] += text.count(old)
+            new = text
+            if path.name in MANIFEST_FILES:
+                data = json.loads(text)
+                cleaned = _drop_manifest_urls(data)
+                if cleaned != data:
+                    new = json.dumps(cleaned, indent=2) + "\n"
+                    stats["manifests"] += 1
+            new = scrub_url_text(rel, new)
+            if new != text:
+                path.write_text(new, encoding="utf-8", errors="surrogateescape")
+                stats["files"] += 1
+    missing = [URL_EXACT[i][1] for i, n in exact_hits.items() if n == 0]
+    if missing:
+        sys.exit(f"URL_EXACT patterns not found (upstream changed?): {missing}")
+    if stats["deleted"] < 2 * len(URL_DELETE):
+        sys.exit(f"expected to delete {URL_DELETE} from both tools, deleted {stats['deleted']}")
+    return stats
+
+
+def assert_no_open_urls(staged: Path) -> None:
+    offenders = []
+    for path in sorted(staged.rglob("*")):
+        if path.is_file() and path.name.endswith(URL_SUFFIXES):
+            rel = path.relative_to(staged).as_posix()
+            for url in open_urls(rel, path.read_text(encoding="utf-8", errors="ignore")):
+                offenders.append(f"{rel}: {url}")
+    if offenders:
+        sys.exit("open-internet addresses left in the kit:\n  " + "\n  ".join(offenders[:40]))
 
 
 # ------------------------------------------------ using-agent-skills catalog
@@ -896,9 +1143,21 @@ def main() -> None:
         build_archify(staged / ARCHIFY, archify)
         manifest["sources"][ARCHIFY] = archify
 
+        log("applying the URL policy (no open-internet addresses)")
+        url_stats = apply_url_policy(staged)
+        manifest["url_policy"] = {
+            "placeholder": URL_PLACEHOLDER, **url_stats,
+            "kept": ["localhost/example addresses", "XML namespace and JSON-schema identifiers",
+                     "Go module paths, Kubernetes API groups, container image names",
+                     "Google Fonts in archify diagram HTML", "Mermaid CDN in plan-canvas browser view"],
+            "removed": ["archify online update-check instruction", "package/plugin metadata URLs",
+                        "mcp-configs/mcp-servers.json", "an upstream test file with sample remotes"],
+        }
+
         log("generating the combined using-agent-skills catalog")
         build_meta_skill(staged, work / "src-generic", manifest)
 
+        assert_no_open_urls(staged)
         manifest["tree_sha256"] = {
             f"{s}/{t}": tree_digest(staged / s / t) for s in (SDLC, GENERIC, ARCHIFY) for t in ("claude", "opencode", "common")
             if (staged / s / t).is_dir()

@@ -3,7 +3,7 @@ name: continuous-learning-v2
 description: Instinct-based learning system that observes sessions via hooks, creates atomic instincts with confidence scoring, and evolves them into skills/commands/agents. v2.1 adds project-scoped instincts to prevent cross-project contamination. Use when capturing lessons from a session, managing instincts, or promoting them into skills, commands, or agents.
 metadata:
   version: 2.1.0
-  origin: ECC
+  origin: all_in_one_generic_agents
 ---
 
 # Continuous Learning v2.1 - Instinct
@@ -368,9 +368,8 @@ v2.1 is fully compatible with v2.0 and v1:
 
 ## Related
 
-- [ECC-Tools GitHub App](https://github.com/apps/ecc-tools) - Generate instincts from repo history
+- ECC-Tools GitHub App - Generate instincts from repo history
 - Homunculus - Community project that inspired the v2 instinct-based architecture (atomic observations, confidence scoring, instinct evolution pipeline)
-- [The Longform Guide](https://x.com/affaanmustafa/status/2014040193557471352) - Continuous learning section
 
 ---
 

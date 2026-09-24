@@ -1,7 +1,7 @@
 ---
 name: mailtrap-email-integration
 description: Guides agents through integrating transactional email sending via Mailtrap's Email API, including sandbox testing, domain verification, and API authentication. Use when implementing email-sending features, debugging delivery issues, or setting up safe dev/staging email testing.
-origin: ECC
+origin: all_in_one_generic_agents
 ---
 
 # Mailtrap Email Integration
@@ -28,7 +28,7 @@ Patterns for adding transactional email sending to an application using Mailtrap
 ```typescript
 // Sending via Mailtrap's Email API (production)
 async function sendEmail(to: string, subject: string, html: string) {
-  const response = await fetch("https://send.api.mailtrap.io/api/send", {
+  const response = await fetch("<url>", {
     method: "POST",
     headers: {
       "Authorization": `Bearer ${process.env.MAILTRAP_API_TOKEN}`,
@@ -52,8 +52,8 @@ async function sendEmail(to: string, subject: string, html: string) {
 ```typescript
 // Same call, routed to Sandbox in non-production environments
 const MAILTRAP_ENDPOINT = process.env.NODE_ENV === "production"
-  ? "https://send.api.mailtrap.io/api/send"
-  : `https://sandbox.api.mailtrap.io/api/send/${process.env.MAILTRAP_INBOX_ID}`;
+  ? "<url>"
+  : `<url>`;
 ```
 
 ## Anti-Patterns

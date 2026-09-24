@@ -25,11 +25,11 @@ Use a per-request nonce for scripts instead of `'unsafe-inline'`.
 ```text
 Content-Security-Policy:
   default-src 'self';
-  script-src 'self' 'nonce-{RANDOM}' https://cdn.jsdelivr.net;
-  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+  script-src 'self' 'nonce-{RANDOM}' <url>;
+  style-src 'self' 'unsafe-inline' <url>;
   img-src 'self' data: https:;
-  font-src 'self' https://fonts.gstatic.com;
-  connect-src 'self' https://*.example.com;
+  font-src 'self' <url>;
+  connect-src 'self' <url>;
   frame-src 'none';
   object-src 'none';
   base-uri 'self';

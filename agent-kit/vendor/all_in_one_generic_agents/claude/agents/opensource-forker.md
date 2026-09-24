@@ -81,7 +81,7 @@ GOCSPX-[A-Za-z0-9_-]+
 [0-9]+-[a-z0-9]+\.apps\.googleusercontent\.com
 
 # Slack webhooks
-https://hooks\.slack\.com/services/T[A-Z0-9]+/B[A-Z0-9]+/[A-Za-z0-9]+
+<url>\.slack\.com/services/T[A-Z0-9]+/B[A-Z0-9]+/[A-Za-z0-9]+
 
 # SendGrid / Mailgun
 SG\.[A-Za-z0-9_-]{22}\.[A-Za-z0-9_-]{43}

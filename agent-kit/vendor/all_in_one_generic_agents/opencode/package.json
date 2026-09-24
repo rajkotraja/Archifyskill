@@ -45,14 +45,6 @@
   ],
   "author": "affaan-m",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/affaan-m/ECC.git"
-  },
-  "bugs": {
-    "url": "https://github.com/affaan-m/ECC/issues"
-  },
-  "homepage": "https://github.com/affaan-m/ECC#readme",
   "publishConfig": {
     "access": "public"
   },

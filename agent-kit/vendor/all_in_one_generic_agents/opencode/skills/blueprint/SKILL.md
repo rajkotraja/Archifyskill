@@ -73,17 +73,17 @@ Produces a plan with parallel steps where possible (e.g., "implement Anthropic p
 
 ## Installation
 
-This skill ships with Everything Claude Code. No separate installation is needed when ECC is installed.
+This skill ships with all_in_one_generic_agents. No separate installation is needed when all_in_one_generic_agents is installed.
 
-### Full ECC install
+### Full all_in_one_generic_agents install
 
-If you are working from the ECC repository checkout, verify the skill is present with:
+If you are working from the all_in_one_generic_agents repository checkout, verify the skill is present with:
 
 ```bash
 test -f skills/blueprint/SKILL.md
 ```
 
-To update later, review the ECC diff before updating:
+To update later, review the all_in_one_generic_agents diff before updating:
 
 ```bash
 cd /path/to/everything-claude-code
@@ -94,7 +94,7 @@ git checkout <reviewed-full-sha>          # pin to a specific reviewed commit
 
 ### Vendored standalone install
 
-If you are vendoring only this skill outside the full ECC install, copy the reviewed file from the ECC repository into `~/.claude/skills/blueprint/SKILL.md`. Vendored copies do not have a git remote, so update them by re-copying the file from a reviewed ECC commit rather than running `git pull`.
+If you are vendoring only this skill outside the full all_in_one_generic_agents install, copy the reviewed file from the all_in_one_generic_agents repository into `~/.claude/skills/blueprint/SKILL.md`. Vendored copies do not have a git remote, so update them by re-copying the file from a reviewed all_in_one_generic_agents commit rather than running `git pull`.
 
 ## Requirements
 

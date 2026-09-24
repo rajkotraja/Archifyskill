@@ -86,7 +86,7 @@ The skill itself is unchanged. It continues to follow `DETECT → FETCH → IMPL
 # Simulate a PostToolUse payload: cache a page
 echo '{
   "tool_input": {
-    "url": "https://react.dev/reference/react/useActionState",
+    "url": "<url>",
     "prompt": "extract the signature"
   },
   "tool_response": "useActionState(action, initialState) returns [state, formAction, isPending]"
@@ -99,7 +99,7 @@ cat .claude/sdd-cache/*.json | jq .
 # Simulate the next PreToolUse on the same URL + prompt
 echo '{
   "tool_input": {
-    "url": "https://react.dev/reference/react/useActionState",
+    "url": "<url>",
     "prompt": "extract the signature"
   }
 }' | bash hooks/sdd-cache-pre.sh
@@ -115,7 +115,7 @@ Expected:
 
 1. Register the hooks in `.claude/settings.local.json` as shown above.
 2. Start a Claude Code session in this repo.
-3. Ask the agent to fetch a documentation page (e.g. "fetch `https://react.dev/reference/react/useActionState` and summarize").
+3. Ask the agent to fetch a documentation page (e.g. "fetch `<url>` and summarize").
 4. Verify a file appears under `.claude/sdd-cache/`.
 5. Ask the agent to fetch the same page with the same prompt again.
 6. Verify the second `WebFetch` is blocked and the cached content is returned (visible in the session transcript as a tool error with `[sdd-cache]` prefix).

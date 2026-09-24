@@ -153,7 +153,7 @@ Classification table: [Data classification](references/hardening-patterns.md#dat
 
 ### AI / LLM features
 
-Calling an LLM — chatbots, summarizers, agents, RAG — adds a new attack surface; map it to the [OWASP Top 10 for LLM Applications (2025)](https://genai.owasp.org/llm-top-10/):
+Calling an LLM — chatbots, summarizers, agents, RAG — adds a new attack surface; map it to the OWASP Top 10 for LLM Applications (2025):
 
 - **Model output is untrusted input** (LLM05). Never into `eval`, SQL, a shell, `innerHTML`, or a file path; parse defensively, validate against a schema, then encode.
 - **Prompts can be hijacked** (LLM01). Untrusted text in the context — a user message, a fetched page, a PDF — can carry instructions. The system prompt is not a security boundary; enforce permissions in code.

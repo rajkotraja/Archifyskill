@@ -171,7 +171,7 @@ After writing, make it executable: `chmod +x setup.sh`
 ## Quick Start
 
 \`\`\`bash
-git clone https://github.com/{org}/{repo}.git
+git clone <url>
 cd {repo}
 ./setup.sh
 \`\`\`

@@ -1,24 +1,24 @@
 # .pi — Pi Coding Agent Integration
 
-This directory contains the **Pi adapter** for ECC — a thin extension that connects the
-[@earendil-works/pi-coding-agent](https://github.com/earendil-works/pi-coding-agent)
-terminal coding agent to ECC's canonical skills, prompts, and lifecycle hooks.
+This directory contains the **Pi adapter** for all_in_one_generic_agents — a thin extension that connects the
+@earendil-works/pi-coding-agent
+terminal coding agent to all_in_one_generic_agents's canonical skills, prompts, and lifecycle hooks.
 
 ## Design Principle
 
-ECC's canonical assets—skills, agents, commands, and hooks—**remain the single source of truth**.
+all_in_one_generic_agents's canonical assets—skills, agents, commands, and hooks—**remain the single source of truth**.
 This adapter contains **only the integration logic**. No copies, no duplication.
 
 ## What This Provides
 
-- **ECC's skills** from `./skills/` — available in Pi as `/skill:<name>`
-- **ECC's commands** from `./commands/` — available in Pi as `/<name>`
-- **ECC's engineering rules** from `./rules/common/` — injected into Pi's system
+- **all_in_one_generic_agents's skills** from `./skills/` — available in Pi as `/skill:<name>`
+- **all_in_one_generic_agents's commands** from `./commands/` — available in Pi as `/<name>`
+- **all_in_one_generic_agents's engineering rules** from `./rules/common/` — injected into Pi's system
   prompt on every turn, so coding style, testing, security, git workflow, and
   code-review standards apply in Pi as they do in other harnesses
-- **Session lifecycle hooks** — ECC's SessionStart and SessionEnd hooks, run through ECC's own
+- **Session lifecycle hooks** — all_in_one_generic_agents's SessionStart and SessionEnd hooks, run through all_in_one_generic_agents's own
   `run-with-flags.js`, so `ECC_HOOK_PROFILE` and `ECC_DISABLED_HOOKS` keep working under Pi
-- **Session context injection** — whatever ECC's SessionStart hook returns as
+- **Session context injection** — whatever all_in_one_generic_agents's SessionStart hook returns as
   `additionalContext` is folded into Pi's system prompt for the next turn
 - **`/ecc-doctor`** — diagnostic command to verify the integration
 
@@ -30,7 +30,7 @@ directly from `skills/` and `commands/`, with no generated copies.
 ### Option 1: Global Installation (Recommended)
 
 ```bash
-# Install ECC as a Pi package
+# Install all_in_one_generic_agents as a Pi package
 pi install git:github.com/affaan-m/ECC
 
 # Or from a local checkout
@@ -53,7 +53,7 @@ pi remove git:github.com/affaan-m/ECC
 
 ### Option 2: Zero-Install (Existing Claude Code Users)
 
-If you already have ECC installed for Claude Code, point Pi at the same canonical directories
+If you already have all_in_one_generic_agents installed for Claude Code, point Pi at the same canonical directories
 from `~/.pi/agent/settings.json`:
 
 ```json
@@ -71,14 +71,14 @@ or `/ecc-doctor` — use Option 1 for the full integration.
 The `extensions/index.ts` file handles:
 
 1. **Skill and command mounting** — Pi reads `./skills` and `./commands` directly via the
-   `pi` key in `package.json`. No transformation is needed: ECC's `SKILL.md` files already
-   follow the Agent Skills standard Pi implements, and ECC's command frontmatter
+   `pi` key in `package.json`. No transformation is needed: all_in_one_generic_agents's `SKILL.md` files already
+   follow the Agent Skills standard Pi implements, and all_in_one_generic_agents's command frontmatter
    (`description`, `argument-hint`) is already Pi's prompt-template format
-2. **Lifecycle hooks** — Maps Pi's `session_start` to ECC's `session:start` hook
-   (`scripts/hooks/session-start.js`) and Pi's `session_shutdown` to ECC's `session:end:marker`
+2. **Lifecycle hooks** — Maps Pi's `session_start` to all_in_one_generic_agents's `session:start` hook
+   (`scripts/hooks/session-start.js`) and Pi's `session_shutdown` to all_in_one_generic_agents's `session:end:marker`
    hook (`scripts/hooks/session-end-marker.js`), both invoked through
-   `scripts/hooks/run-with-flags.js` so ECC's profile and disable flags are honored
-3. **Rule injection** — Reads ECC's portable engineering rules from the canonical
+   `scripts/hooks/run-with-flags.js` so all_in_one_generic_agents's profile and disable flags are honored
+3. **Rule injection** — Reads all_in_one_generic_agents's portable engineering rules from the canonical
    `rules/common/` directory at runtime and appends them to the system prompt inside an
    `<ecc-engineering-rules>` block on every turn. Nothing is copied into `.pi/`.
    `agents.md`, `hooks.md`, and `performance.md` are excluded on purpose: they describe
@@ -117,12 +117,12 @@ Intentionally **out of scope** for this first adapter (to be added independently
 - Profile-based resource filtering
 - MCP translation — see below; no translation turned out to be necessary
 
-ECC works in Pi without any of these. Skills and commands are fully available today.
+all_in_one_generic_agents works in Pi without any of these. Skills and commands are fully available today.
 
 These capabilities are provided by existing community Pi packages rather than by
-anything ECC would need to write. This adapter deliberately does not bundle or
+anything all_in_one_generic_agents would need to write. This adapter deliberately does not bundle or
 auto-install them: bundling would ship third-party code that executes with full
-user permissions in every ECC install, and would make optional capabilities
+user permissions in every all_in_one_generic_agents install, and would make optional capabilities
 mandatory. Install whichever you want yourself — `/ecc-doctor` reports which are
 present and prints the exact `pi install` command for the ones that are not.
 
@@ -130,20 +130,20 @@ present and prints the exact `pi install` command for the ones that are not.
 
 Pi core has no MCP surface by design. The community `pi-mcp-adapter` package
 adds one, and it reads the standard `mcpServers` format from `.mcp.json` and
-`~/.config/mcp/mcp.json` — which is exactly the format ECC already uses in
+`~/.config/mcp/mcp.json` — which is exactly the format all_in_one_generic_agents already uses in
 `.mcp.json` and `mcp-configs/mcp-servers.json`.
 
-Verified against `pi-mcp-adapter` 2.21.2: copying ECC's `mcp-configs/mcp-servers.json`
+Verified against `pi-mcp-adapter` 2.21.2: copying all_in_one_generic_agents's `mcp-configs/mcp-servers.json`
 to a project's `.mcp.json` registers Pi's `mcp` tool and `/mcp` command with all
-35 ECC servers discovered, alongside this adapter's own `/ecc-doctor`. No
-translation layer is needed and no ECC change is required.
+35 all_in_one_generic_agents servers discovered, alongside this adapter's own `/ecc-doctor`. No
+translation layer is needed and no all_in_one_generic_agents change is required.
 
 ```bash
 pi install npm:pi-mcp-adapter
 cp mcp-configs/mcp-servers.json /path/to/project/.mcp.json
 ```
 
-ECC neither installs nor depends on that package. Two caveats: the adapter's
+all_in_one_generic_agents neither installs nor depends on that package. Two caveats: the adapter's
 first run against a new config performs initialization that blocks in
 non-interactive (`-p`) mode, so run it once interactively before using it
 headless; and only server discovery was verified, not live tool invocation,
@@ -163,7 +163,7 @@ which needs real credentials for each server.
 **Cause:** the package's resources are disabled, or a project-local install has not been
 trusted. Pi asks before trusting a project folder that carries its own `.pi/` resources.
 
-**Fix:** run `pi config` and confirm the ECC package's skills and prompts are enabled
+**Fix:** run `pi config` and confirm the all_in_one_generic_agents package's skills and prompts are enabled
 (<kbd>Tab</kbd> switches between user and project scope). Then confirm the package itself is
 registered with `pi list`.
 
@@ -172,7 +172,7 @@ registered with `pi list`.
 **Cause:** Extension not loaded or package installed incorrectly.
 
 **Fix:**
-1. Run `pi list` to confirm ECC is registered
+1. Run `pi list` to confirm all_in_one_generic_agents is registered
 2. Restart Pi: exit and reopen the session
 3. Run `/ecc-doctor` again
 
@@ -182,10 +182,10 @@ A `NOT FOUND` line points at the specific path that failed to resolve.
 
 ### Hooks not firing
 
-**Cause:** the extension is not loaded, or the hooks are gated off by an ECC hook profile.
+**Cause:** the extension is not loaded, or the hooks are gated off by an all_in_one_generic_agents hook profile.
 
 **Fix:**
-1. Confirm `pi list` shows ECC and that `/ecc-doctor` reports the hook runner as found
+1. Confirm `pi list` shows all_in_one_generic_agents and that `/ecc-doctor` reports the hook runner as found
 2. Check `ECC_HOOK_PROFILE` and `ECC_DISABLED_HOOKS` — `/ecc-doctor` prints both. A hook
    listed in `ECC_DISABLED_HOOKS` is skipped by design
 3. Restart Pi so the extension reloads
@@ -194,5 +194,5 @@ A `NOT FOUND` line points at the specific path that failed to resolve.
 
 - The `.pi/extensions/` directory is the only place for adapter code
 - Skills and commands are defined in the repo root (`skills/`, `commands/`) and referenced by Pi
-- MCP is not bundled, but ECC's MCP configs load in Pi through the community `pi-mcp-adapter` — see [MCP](#mcp) above
+- MCP is not bundled, but all_in_one_generic_agents's MCP configs load in Pi through the community `pi-mcp-adapter` — see [MCP](#mcp) above
 - This adapter was tested against Pi v0.84.1

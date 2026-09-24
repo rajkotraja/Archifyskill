@@ -1,4 +1,4 @@
-const REPOSITORY_ISSUES_URL = 'https://github.com/affaan-m/ECC/issues/new';
+const REPOSITORY_ISSUES_URL = '<url>';
 
 const FEEDBACK_ROUTES = Object.freeze({
   problem: `${REPOSITORY_ISSUES_URL}?template=install-problem.yml`,

@@ -1,8 +1,8 @@
 ---
 name: plan-orchestrate
-description: Read a plan document, decompose it into steps, design a per-step agent chain from the ECC catalogue, and emit ready-to-paste /orchestrate custom prompts. Generative only — never invokes /orchestrate itself. Use when the user has a multi-step plan and wants to drive it through orchestrate without composing chains by hand.
+description: Read a plan document, decompose it into steps, design a per-step agent chain from the all_in_one_generic_agents catalogue, and emit ready-to-paste /orchestrate custom prompts. Generative only — never invokes /orchestrate itself. Use when the user has a multi-step plan and wants to drive it through orchestrate without composing chains by hand.
 metadata:
-  origin: ECC
+  origin: all_in_one_generic_agents
 ---
 
 # Plan Orchestrate
@@ -43,7 +43,7 @@ Where `{ORCH_CMD}` is determined in Phase 0 (see below). The command string in t
 - No `--mode` / `--gate` / `--agents=...` flags exist — never invent them.
 - Agent names come from the catalogue in this skill. Embedded double quotes in the task description are escaped as `\"`.
 
-## ECC install form and namespacing
+## all_in_one_generic_agents install form and namespacing
 
 Two install forms determine the prefix on **both** the slash command and every agent name. The two MUST stay in sync — one form per output, never mixed:
 
@@ -83,13 +83,13 @@ A misspelled agent name fails `/orchestrate`. Cross-check against this list befo
 
 ## How It Works
 
-### Phase 0 — Detect ECC mode + language
+### Phase 0 — Detect all_in_one_generic_agents mode + language
 
 1. Read `<plan-doc-path>`. If missing or empty, report and stop.
-2. Detect ECC install form once and freeze it into `ECC_MODE`. Algorithm (run in order, stop at the first match):
+2. Detect all_in_one_generic_agents install form once and freeze it into `ECC_MODE`. Algorithm (run in order, stop at the first match):
    1. If `<claude-home>/plugins/marketplaces/ecc/` exists → `ECC_MODE=plugin`.
-   2. Else if `<claude-home>/agents/` exists and contains at least one ECC agent file (e.g. `tdd-guide.md`, `code-reviewer.md`) → `ECC_MODE=legacy`.
-   3. Else → default to `ECC_MODE=legacy` and emit a one-line warning at the top of the output: `> Warning: could not detect ECC install; defaulting to legacy form. If you use the plugin install, edit the prefixes manually.`
+   2. Else if `<claude-home>/agents/` exists and contains at least one all_in_one_generic_agents agent file (e.g. `tdd-guide.md`, `code-reviewer.md`) → `ECC_MODE=legacy`.
+   3. Else → default to `ECC_MODE=legacy` and emit a one-line warning at the top of the output: `> Warning: could not detect all_in_one_generic_agents install; defaulting to legacy form. If you use the plugin install, edit the prefixes manually.`
    4. If both markers exist (mixed install), `plugin` wins — the plugin namespace is the only one that resolves agent names without fuzzy matching.
 
    From this point on, every emitted line uses the matching prefix on **both** the slash command and every agent name. **Never emit both forms in the same output.**
@@ -173,7 +173,7 @@ Output structure:
 
 **Plan**: `<path>`
 **Lang**: `<detected-or-given>`
-**ECC mode**: `<plugin | legacy>`
+**all_in_one_generic_agents mode**: `<plugin | legacy>`
 **Steps**: <N>
 **Scope**: <all | step:n | range:a-b>
 

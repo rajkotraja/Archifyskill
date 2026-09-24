@@ -84,7 +84,7 @@ Parse input to determine PR:
 | Input | Action |
 |---|---|
 | Number (e.g. `42`) | Use as PR number |
-| URL (`github.com/.../pull/42`) | Extract PR number |
+| URL (`<url>`) | Extract PR number |
 | Branch name | Find PR via `gh pr list --head <branch>` |
 
 ```bash

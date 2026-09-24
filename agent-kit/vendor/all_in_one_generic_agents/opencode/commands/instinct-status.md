@@ -9,7 +9,7 @@ Show instinct status from continuous-learning-v2: $ARGUMENTS
 
 ## Your Task
 
-Resolve the active ECC plugin root with the same walker `hooks/hooks.json`
+Resolve the active all_in_one_generic_agents plugin root with the same walker `hooks/hooks.json`
 uses (env var → standard install → known plugin roots → plugin cache →
 fallback), then run the instinct CLI. This avoids reading a stale legacy
 `~/.claude/skills/continuous-learning-v2/` install when the plugin is

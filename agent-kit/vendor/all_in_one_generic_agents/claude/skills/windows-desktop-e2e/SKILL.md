@@ -2,7 +2,7 @@
 name: windows-desktop-e2e
 description: E2E testing for Windows native desktop apps (WPF, WinForms, Win32/MFC, Qt) using pywinauto and Windows UI Automation. Use when writing E2E tests for a Windows native desktop app with pywinauto or UI Automation.
 metadata:
-  origin: ECC
+  origin: all_in_one_generic_agents
 ---
 
 # Windows Desktop E2E Testing
@@ -54,7 +54,7 @@ Your test (Python)
 # Python 3.8+, Windows only
 pip install pywinauto pytest pytest-html Pillow pytest-timeout
 # Optional: screen recording
-# Install ffmpeg and add to PATH: https://ffmpeg.org/download.html
+# Install ffmpeg and add to PATH: <url>
 ```
 
 Verify UIA is reachable:
@@ -575,7 +575,7 @@ def restrict_process(pid: int):
 
 When you need a clean Windows image per run (no leftover registry keys, no
 shared GPU state, true isolation), run the **entire test suite** inside
-[Windows Sandbox](https://learn.microsoft.com/windows/security/application-security/application-isolation/windows-sandbox/windows-sandbox-overview).
+Windows Sandbox.
 
 **Requirement:** Windows 10/11 Pro or Enterprise, Virtualization enabled.
 

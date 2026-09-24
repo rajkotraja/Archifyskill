@@ -2,12 +2,12 @@
 name: cpp-coding-standards
 description: C++ coding standards based on the C++ Core Guidelines (isocpp.github.io). Use when writing, reviewing, or refactoring C++ code to enforce modern, safe, and idiomatic practices.
 metadata:
-  origin: ECC
+  origin: all_in_one_generic_agents
 ---
 
 # C++ Coding Standards (C++ Core Guidelines)
 
-Comprehensive coding standards for modern C++ (C++17/20/23) derived from the [C++ Core Guidelines](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines). Enforces type safety, resource safety, immutability, and clarity.
+Comprehensive coding standards for modern C++ (C++17/20/23) derived from the C++ Core Guidelines. Enforces type safety, resource safety, immutability, and clarity.
 
 ## When to Use
 

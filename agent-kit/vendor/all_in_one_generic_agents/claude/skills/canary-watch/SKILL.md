@@ -2,7 +2,7 @@
 name: canary-watch
 description: Use this skill to monitor and verify a deployed URL after releases — checks HTTP endpoints, SSE streams, static assets, console errors, and performance regressions after deploys, merges, or dependency upgrades. Smoke / canary / post-deploy verification.
 metadata:
-  origin: ECC
+  origin: all_in_one_generic_agents
 ---
 
 # Canary Watch — Post-Deploy Monitoring
@@ -36,17 +36,17 @@ Monitors a deployed URL for regressions. Runs in a loop until stopped or until t
 
 **Quick check** (default): single pass, report results
 ```
-/canary-watch https://myapp.com
+/canary-watch <url>
 ```
 
 **Sustained watch**: check every N minutes for M hours
 ```
-/canary-watch https://myapp.com --interval 5m --duration 2h
+/canary-watch <url> --interval 5m --duration 2h
 ```
 
 **Diff mode**: compare staging vs production
 ```
-/canary-watch --compare https://staging.myapp.com https://myapp.com
+/canary-watch --compare <url> <url>
 ```
 
 ### Alert Thresholds

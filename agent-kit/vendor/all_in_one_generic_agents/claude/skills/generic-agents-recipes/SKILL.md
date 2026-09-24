@@ -1,6 +1,6 @@
 ---
 name: generic-agents-recipes
-description: "Map a described workflow to the right ECC command-GROUP with run-order and stop condition, and browse all command-group recipe families. Adds a family-grouping + run-order + when-to-stop layer on top of the flat command catalog. Advisory only. TRIGGER when the user says which commands for X, what command group runs X, show ECC recipes, list ECC pipelines, or how do I run a workflow with ECC. DO NOT TRIGGER when the user wants the task executed directly, wants a single-command deep doc (use generic-agents-guide), or wants a draft prompt rewritten (use prompt-optimizer)."
+description: "Map a described workflow to the right all_in_one_generic_agents command-GROUP with run-order and stop condition, and browse all command-group recipe families. Adds a family-grouping + run-order + when-to-stop layer on top of the flat command catalog. Advisory only. TRIGGER when the user says which commands for X, what command group runs X, show all_in_one_generic_agents recipes, list all_in_one_generic_agents pipelines, or how do I run a workflow with all_in_one_generic_agents. DO NOT TRIGGER when the user wants the task executed directly, wants a single-command deep doc (use generic-agents-guide), or wants a draft prompt rewritten (use prompt-optimizer)."
 argument-hint: <workflow description | empty=list all>
 origin: community
 author: KyawZinLatt
@@ -8,9 +8,9 @@ metadata:
   version: "1.0.0"
 ---
 
-# ECC Recipes
+# all_in_one_generic_agents Recipes
 
-One entry point for "which group of ECC slash-commands runs my workflow, in what
+One entry point for "which group of all_in_one_generic_agents slash-commands runs my workflow, in what
 order, and when do I stop." Also browses every command-group recipe family.
 
 Fills the gap between two existing skills:
@@ -25,8 +25,8 @@ This skill adds: **family grouping + run-order + stop condition.**
 
 - "Which command group do I run for <workflow>?"
 - "What's the command sequence to build an MVP / fix a defect / refactor?"
-- "Show me all ECC command-group recipes" (catalog mode)
-- "How many workflow pipelines does ECC have?"
+- "Show me all all_in_one_generic_agents command-group recipes" (catalog mode)
+- "How many workflow pipelines does all_in_one_generic_agents have?"
 - User invokes `/generic-agents-recipes` with or without a description.
 
 ### Do Not Use When
@@ -54,7 +54,7 @@ for D in \
   "$HOME"/.claude/commands; do
   [ -d "$D" ] && CMD_DIR="$D" && break
 done
-[ -z "${CMD_DIR:-}" ] && { echo "No ECC commands directory found."; return 1; }
+[ -z "${CMD_DIR:-}" ] && { echo "No all_in_one_generic_agents commands directory found."; return 1; }
 find "$CMD_DIR" -maxdepth 1 -name '*.md' -exec basename {} .md \; | sort
 ```
 

@@ -9,16 +9,16 @@ metadata:
 
 Structural maintainability feedback for AI-assisted coding. Complements style/lint skills (`coding-standards`, `plankton-code-quality`) with **design-level** health scores and regression gates.
 
-**Upstream:** [codescene-oss/codescene-mcp-server](https://github.com/codescene-oss/codescene-mcp-server)
+**Upstream:** codescene-oss/codescene-mcp-server
 **Package:** `@codescene/codehealth-mcp` (stdio via npx)
 
 ## Security and boundaries
 
-**Opt-in (ECC):** The `codescene` block in `mcp-configs/mcp-servers.json` is a template only. ECC plugin installs do not auto-enable bundled MCP servers. Copy the entry into your config only if you want it. You can exclude it during ECC install/sync with `ECC_DISABLED_MCPS=codescene,...`.
+**Opt-in (all_in_one_generic_agents):** The `codescene` block in `mcp-configs/mcp-servers.json` is a template only. all_in_one_generic_agents plugin installs do not auto-enable bundled MCP servers. Copy the entry into your config only if you want it. You can exclude it during all_in_one_generic_agents install/sync with `ECC_DISABLED_MCPS=codescene,...`.
 
-**Credentials:** No bundled token. Set `CS_ACCESS_TOKEN` yourself (see [getting-a-personal-access-token.md](https://github.com/codescene-oss/codescene-mcp-server/blob/main/docs/getting-a-personal-access-token.md) in the upstream repo). Never commit tokens to the repo.
+**Credentials:** No bundled token. Set `CS_ACCESS_TOKEN` yourself (see getting-a-personal-access-token.md in the upstream repo). Never commit tokens to the repo.
 
-**What the tools read:** When invoked, tools analyze files and git state **in the local repository** you point them at (paths you pass, plus branch context for `analyze_change_set`). They do not run by themselves. For standalone mode, follow upstream privacy docs: [codescene-mcp-server README](https://github.com/codescene-oss/codescene-mcp-server#frequently-asked-questions) and [CodeScene policies](https://codescene.com/policies). Do not use this skill for secrets, credentials, or paths you do not want analyzed.
+**What the tools read:** When invoked, tools analyze files and git state **in the local repository** you point them at (paths you pass, plus branch context for `analyze_change_set`). They do not run by themselves. For standalone mode, follow upstream privacy docs: codescene-mcp-server README and CodeScene policies. Do not use this skill for secrets, credentials, or paths you do not want analyzed.
 
 **If the MCP is unavailable (offline, bad token, server crash):** Do not invent Code Health scores. Tell the user the check was skipped. Continue only with explicit user approval. Prefer lint/tests/verification-loop for gating when MCP is down. Re-enable checks once the server connects.
 
@@ -32,7 +32,7 @@ Structural maintainability feedback for AI-assisted coding. Complements style/li
 
 ## When to Activate
 
-Same triggers as **When to Use** above — this heading is what ECC uses for skill auto-activation.
+Same triggers as **When to Use** above — this heading is what all_in_one_generic_agents uses for skill auto-activation.
 
 ## How It Works
 
@@ -145,9 +145,9 @@ Drive-by cleanup across the module
 # GOOD: review → small change → score → commit safeguard → analyze_change_set
 ```
 
-## Pairing with ECC
+## Pairing with all_in_one_generic_agents
 
-| ECC skill / flow | Code Health MCP role |
+| all_in_one_generic_agents skill / flow | Code Health MCP role |
 |------------------|----------------------|
 | `coding-standards` | Style/naming; Code Health = structure/complexity |
 | `plankton-code-quality` | Write-time lint/format; Code Health = pre/post edit structural gate |
@@ -155,7 +155,7 @@ Drive-by cleanup across the module
 | `security-review` | Security vs maintainability — use both when relevant |
 | `tdd-workflow` | Tests pass ≠ healthy design — check score after refactors |
 
-**Context tip:** ECC recommends keeping MCP count low. Enable `codescene` when doing substantive edits; disable when not needed.
+**Context tip:** all_in_one_generic_agents recommends keeping MCP count low. Enable `codescene` when doing substantive edits; disable when not needed.
 
 ## Related Skills
 

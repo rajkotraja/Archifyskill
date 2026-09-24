@@ -1,4 +1,4 @@
-# Everything Claude Code (ECC) — Agent Instructions
+# all_in_one_generic_agents (all_in_one_generic_agents) — Agent Instructions
 
 This is a **production-ready AI coding plugin** providing 68 specialized agents, 292 skills, 94 commands, and automated hook workflows for software development.
 

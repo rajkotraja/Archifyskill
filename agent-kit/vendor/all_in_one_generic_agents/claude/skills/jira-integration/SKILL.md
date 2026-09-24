@@ -2,7 +2,7 @@
 name: jira-integration
 description: Use this skill when retrieving Jira tickets, analyzing requirements, updating ticket status, adding comments, or transitioning issues. Provides Jira API patterns via MCP or direct REST calls.
 metadata:
-  origin: ECC
+  origin: all_in_one_generic_agents
 ---
 
 # Jira Integration Skill
@@ -36,7 +36,7 @@ Install the `mcp-atlassian` MCP server. This exposes Jira tools directly to your
     "command": "uvx",
     "args": ["mcp-atlassian==0.21.0"],
     "env": {
-      "JIRA_URL": "https://YOUR_ORG.atlassian.net",
+      "JIRA_URL": "<url>",
       "JIRA_EMAIL": "your.email@example.com",
       "JIRA_API_TOKEN": "your-api-token"
     },
@@ -48,7 +48,7 @@ Install the `mcp-atlassian` MCP server. This exposes Jira tools directly to your
 > **Security:** Never hardcode secrets. Prefer setting `JIRA_URL`, `JIRA_EMAIL`, and `JIRA_API_TOKEN` in your system environment (or a secrets manager). Only use the MCP `env` block for local, uncommitted config files.
 
 **To get a Jira API token:**
-1. Go to <https://id.atlassian.com/manage-profile/security/api-tokens>
+1. Go to <url>
 2. Click **Create API token**
 3. Copy the token — store it in your environment, never in source code
 
@@ -60,7 +60,7 @@ If MCP is not available, use the Jira REST API v3 directly via `curl` or a helpe
 
 | Variable | Description |
 |----------|-------------|
-| `JIRA_URL` | Your Jira instance URL (e.g., `https://yourorg.atlassian.net`) |
+| `JIRA_URL` | Your Jira instance URL (e.g., `<url>`) |
 | `JIRA_EMAIL` | Your Atlassian account email |
 | `JIRA_API_TOKEN` | API token from id.atlassian.com |
 
@@ -260,7 +260,7 @@ All tests passing locally. Coverage: XX%
 **PR Created:**
 ```
 Pull request created:
-[PR Title](https://github.com/org/repo/pull/XXX)
+PR Title
 
 Ready for review.
 ```

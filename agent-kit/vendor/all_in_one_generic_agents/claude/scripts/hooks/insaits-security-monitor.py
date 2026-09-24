@@ -55,7 +55,7 @@ Detections include:
 
 All processing is local -- no data leaves your machine.
 
-Author: Cristi Bogdan -- YuyAI (https://github.com/Nomadu27/InsAIts)
+Author: Cristi Bogdan -- YuyAI (<url>)
 License: Apache 2.0
 """
 

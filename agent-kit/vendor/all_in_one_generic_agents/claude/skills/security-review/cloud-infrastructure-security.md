@@ -352,10 +352,10 @@ resource "aws_db_instance" "good" {
 
 ## Resources
 
-- [AWS Security Best Practices](https://aws.amazon.com/security/best-practices/)
-- [CIS AWS Foundations Benchmark](https://www.cisecurity.org/benchmark/amazon_web_services)
-- [Cloudflare Security Documentation](https://developers.cloudflare.com/security/)
-- [OWASP Cloud Security](https://owasp.org/www-project-cloud-security/)
-- [Terraform Security Best Practices](https://www.terraform.io/docs/cloud/guides/recommended-practices/)
+- AWS Security Best Practices
+- CIS AWS Foundations Benchmark
+- Cloudflare Security Documentation
+- OWASP Cloud Security
+- Terraform Security Best Practices
 
 **Remember**: Cloud misconfigurations are the leading cause of data breaches. A single exposed S3 bucket or overly permissive IAM policy can compromise your entire infrastructure. Always follow the principle of least privilege and defense in depth.

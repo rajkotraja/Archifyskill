@@ -2,7 +2,7 @@
 name: autonomous-agent-harness
 description: Transform Claude Code into a fully autonomous agent system with persistent memory, scheduled operations, computer use, and task queuing. Replaces standalone agent frameworks (Hermes, AutoGPT) by leveraging Claude Code's native crons, dispatch, MCP tools, and memory. Use when the user wants continuous autonomous operation, scheduled tasks, or a self-directing agent loop.
 metadata:
-  origin: ECC
+  origin: all_in_one_generic_agents
 ---
 
 # Autonomous Agent Harness
@@ -13,7 +13,7 @@ Combine Claude Code's session tools with separately configured scheduling, memor
 
 Autonomous operation must be explicitly requested and scoped by the user. Do not create schedules, dispatch remote agents, write persistent memory, use computer control, post externally, modify third-party resources, or act on private communications unless the user has approved that capability and the target workspace for the current setup.
 
-Prefer dry-run plans and local queue files before enabling recurring or event-driven actions. Keep credentials, private workspace exports, personal datasets, and account-specific automations out of reusable ECC artifacts.
+Prefer dry-run plans and local queue files before enabling recurring or event-driven actions. Keep credentials, private workspace exports, personal datasets, and account-specific automations out of reusable all_in_one_generic_agents artifacts.
 
 ## When to Activate
 
@@ -38,7 +38,7 @@ Prefer dry-run plans and local queue files before enabling recurring or event-dr
 │       │              │             │                │        │
 │       ▼              ▼             ▼                ▼        │
 │  ┌──────────────────────────────────────────────────────┐    │
-│  │              ECC Skill + Agent Layer                  │    │
+│  │              all_in_one_generic_agents Skill + Agent Layer                  │    │
 │  │                                                      │    │
 │  │  skills/     agents/     commands/     hooks/        │    │
 │  └──────────────────────────────────────────────────────┘    │
@@ -85,7 +85,7 @@ Use mcp__memory__add_observations for new facts about known entities
 
 ### 2. Scheduled Operations (Crons)
 
-Use Claude Code's native [scheduled tasks](https://code.claude.com/docs/en/scheduled-tasks) for recurring prompts within an interactive session. These tasks are session-scoped; an external scheduler is required for work that must run independently of an open session. No scheduling MCP server is required for `/loop`.
+Use Claude Code's native scheduled tasks for recurring prompts within an interactive session. These tasks are session-scoped; an external scheduler is required for work that must run independently of an open session. No scheduling MCP server is required for `/loop`.
 
 **Setting up a cron:**
 
@@ -114,7 +114,7 @@ Use an OS scheduler or CI schedule to invoke that command repeatedly when no int
 
 ### 3. Dispatch / Remote Agents
 
-Have an authenticated CI job or webhook receiver invoke Claude Code in a workspace it owns. The supported entrypoint is [programmatic CLI mode](https://code.claude.com/docs/en/headless), not a public Anthropic dispatch endpoint.
+Have an authenticated CI job or webhook receiver invoke Claude Code in a workspace it owns. The supported entrypoint is programmatic CLI mode, not a public Anthropic dispatch endpoint.
 
 **Dispatch patterns:**
 
@@ -131,7 +131,7 @@ claude -p "Analyze the output of the security scan and create issues for finding
 
 ### 4. Computer Use
 
-Computer control needs a separately configured integration. Anthropic's [computer-use tool and reference environment](https://platform.claude.com/docs/en/agents-and-tools/tool-use/computer-use-tool) require an application to execute tool calls in an isolated desktop environment. Adding an MCP package name does not supply that environment.
+Computer control needs a separately configured integration. Anthropic's computer-use tool and reference environment require an application to execute tool calls in an isolated desktop environment. Adding an MCP package name does not supply that environment.
 
 **Capabilities:**
 - Browser automation (navigate, click, fill forms, screenshot)
@@ -172,23 +172,23 @@ description: Persistent task queue for autonomous operation
 
 ## Replacing Hermes
 
-| Hermes Component | ECC Equivalent | How |
+| Hermes Component | all_in_one_generic_agents Equivalent | How |
 |------------------|---------------|-----|
 | Gateway/Router | CLI + external scheduler | An authenticated runner starts agent sessions |
 | Memory System | Claude memory + MCP memory server | Built-in persistence + knowledge graph |
 | Tool Registry | MCP servers | Dynamically loaded tool providers |
-| Orchestration | ECC skills + agents | Skill definitions direct agent behavior |
+| Orchestration | all_in_one_generic_agents skills + agents | Skill definitions direct agent behavior |
 | Computer Use | Separately configured integration | Browser or desktop control in an isolated environment |
-| Context Manager | Session management + memory | ECC 2.0 session lifecycle |
+| Context Manager | Session management + memory | all_in_one_generic_agents 2.0 session lifecycle |
 | Task Queue | Memory-persisted task list | TodoWrite + memory files |
 
 ## Setup Guide
 
 ### Step 1: Configure MCP Servers
 
-Memory MCP is optional. The [MCP reference memory server](https://github.com/modelcontextprotocol/servers/tree/main/src/memory) is published as `@modelcontextprotocol/server-memory`; version `2026.8.31` was verified on the public npm registry on 2026-09-07. It is a reference implementation, not an ECC-bundled service.
+Memory MCP is optional. The MCP reference memory server is published as `@modelcontextprotocol/server-memory`; version `2026.8.31` was verified on the public npm registry on 2026-09-07. It is a reference implementation, not an all_in_one_generic_agents-bundled service.
 
-After reviewing that package and approving its use, merge this entry into the user-scoped MCP configuration in `~/.claude.json`, preserving existing settings. Replace `MEMORY_FILE_PATH` with an absolute path in a private directory you own. See [Claude Code MCP configuration](https://code.claude.com/docs/en/mcp) for CLI registration and Windows `cmd /c npx` configuration.
+After reviewing that package and approving its use, merge this entry into the user-scoped MCP configuration in `~/.claude.json`, preserving existing settings. Replace `MEMORY_FILE_PATH` with an absolute path in a private directory you own. See Claude Code MCP configuration for CLI registration and Windows `cmd /c npx` configuration.
 
 ```json
 {

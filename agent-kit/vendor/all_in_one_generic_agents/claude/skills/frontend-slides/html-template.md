@@ -13,7 +13,7 @@ Reference architecture for generating slide presentations. Every presentation fo
     <title>Presentation Title</title>
 
     <!-- Fonts: use Fontshare or Google Fonts — never system fonts -->
-    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=..." />
+    <link rel="stylesheet" href="<url>]=..." />
 
     <style>
       /* ===========================================

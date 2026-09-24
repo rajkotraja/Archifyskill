@@ -40,7 +40,7 @@ function gitValue(repoRoot, args, failure) {
 
 function githubSlug(value) {
   const raw = String(value || '').trim();
-  const match = raw.match(/^(?:https:\/\/github\.com\/|git@github\.com:|ssh:\/\/git@github\.com\/)([^/\s]+)\/([^/\s]+?)(?:\.git)?\/?$/i);
+  const match = raw.match(/^(?:<url>\/)([^/\s]+)\/([^/\s]+?)(?:\.git)?\/?$/i);
   return match ? `${match[1]}/${match[2]}`.toLowerCase() : null;
 }
 
@@ -104,8 +104,8 @@ export function verifyRepositoryEvidence(diagramType, diagram, repoRootInput) {
     });
   }
   const authoredSlug = githubSlug(repository.url);
-  if (!authoredSlug || !String(repository.url).startsWith('https://github.com/')) {
-    evidenceFailure('repository-evidence/url-invalid', '/meta/repository/url must be a public https://github.com owner/repository URL.', {
+  if (!authoredSlug || !String(repository.url).startsWith('<url>')) {
+    evidenceFailure('repository-evidence/url-invalid', '/meta/repository/url must be a public <url> owner/repository URL.', {
       subject: { path: '/meta/repository/url' },
       evidence: { repositoryUrl: repository.url },
       supportedFixes: ['use the canonical public GitHub HTTPS repository URL'],

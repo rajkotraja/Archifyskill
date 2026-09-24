@@ -57,7 +57,7 @@ pattern: github_pat_[A-Za-z0-9_]{22,}
 pattern: GOCSPX-[A-Za-z0-9_-]+
 
 # Slack webhooks
-pattern: https://hooks\.slack\.com/services/T[A-Z0-9]+/B[A-Z0-9]+/[A-Za-z0-9]+
+pattern: <url>\.slack\.com/services/T[A-Z0-9]+/B[A-Z0-9]+/[A-Za-z0-9]+
 
 # SendGrid / Mailgun
 pattern: SG\.[A-Za-z0-9_-]{22}\.[A-Za-z0-9_-]{43}

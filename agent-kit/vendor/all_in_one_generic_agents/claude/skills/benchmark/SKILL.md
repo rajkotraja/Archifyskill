@@ -3,7 +3,7 @@ name: benchmark
 description: Use this skill to measure performance baselines, detect regressions before/after PRs, and compare stack alternatives.
 license: MIT
 metadata:
-  origin: ECC
+  origin: all_in_one_generic_agents
 ---
 
 # Benchmark — Performance Baseline & Regression Detection

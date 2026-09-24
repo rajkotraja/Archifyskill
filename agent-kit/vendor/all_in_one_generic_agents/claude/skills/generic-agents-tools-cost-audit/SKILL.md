@@ -1,19 +1,19 @@
 ---
 name: generic-agents-tools-cost-audit
-description: Evidence-first ECC Tools burn and billing audit workflow. Use when investigating runaway PR creation, quota bypass, premium-model leakage, duplicate jobs, or GitHub App cost spikes in the ECC Tools repo.
+description: Evidence-first all_in_one_generic_agents Tools burn and billing audit workflow. Use when investigating runaway PR creation, quota bypass, premium-model leakage, duplicate jobs, or GitHub App cost spikes in the all_in_one_generic_agents Tools repo.
 metadata:
-  origin: ECC
+  origin: all_in_one_generic_agents
 ---
 
-# ECC Tools Cost Audit
+# all_in_one_generic_agents Tools Cost Audit
 
-Use this skill when the user suspects the ECC Tools GitHub App is burning cost, over-creating PRs, bypassing usage limits, or routing free users into premium analysis paths.
+Use this skill when the user suspects the all_in_one_generic_agents Tools GitHub App is burning cost, over-creating PRs, bypassing usage limits, or routing free users into premium analysis paths.
 
 This is a focused operator workflow for the sibling [ECC-Tools](../../ECC-Tools) repo. It is not a generic billing skill and it is not a repo-wide code review pass.
 
 ## Skill Stack
 
-Pull these ECC-native skills into the workflow when relevant:
+Pull these all_in_one_generic_agents-native skills into the workflow when relevant:
 
 - `autonomous-loops` for bounded multi-step audits that cross webhooks, queues, billing, and retries
 - `agentic-engineering` for tracing the request path into discrete, provable units
@@ -25,7 +25,7 @@ Pull these ECC-native skills into the workflow when relevant:
 
 ## When To Use
 
-- user says ECC Tools burn rate, PR recursion, over-created PRs, usage-limit bypass, or premium-model leakage
+- user says all_in_one_generic_agents Tools burn rate, PR recursion, over-created PRs, usage-limit bypass, or premium-model leakage
 - the task is in the sibling `ECC-Tools` repo and depends on webhook handlers, queue workers, usage reservation, PR creation logic, or paid-gate enforcement
 - a customer report says the app created too many PRs, billed incorrectly, or analyzed code without producing a usable result
 

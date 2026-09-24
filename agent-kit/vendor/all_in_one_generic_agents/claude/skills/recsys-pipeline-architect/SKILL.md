@@ -7,9 +7,9 @@ metadata:
 
 # recsys-pipeline-architect
 
-A spec-and-scaffold skill for building composable recommendation, ranking, and feed pipelines. It encodes the **six-stage pattern** — Source → Hydrator → Filter → Scorer → Selector → SideEffect — popularized by xAI's open-sourced [For You algorithm](https://github.com/xai-org/x-algorithm) (Apache 2.0). This skill is an independent reimplementation of the pattern (MIT) — no code copied from the original.
+A spec-and-scaffold skill for building composable recommendation, ranking, and feed pipelines. It encodes the **six-stage pattern** — Source → Hydrator → Filter → Scorer → Selector → SideEffect — popularized by xAI's open-sourced For You algorithm (Apache 2.0). This skill is an independent reimplementation of the pattern (MIT) — no code copied from the original.
 
-Upstream: <https://github.com/mturac/recsys-pipeline-architect>
+Upstream: <url>
 
 ## When to Use
 
@@ -84,7 +84,7 @@ Default to isolation. Joint only when there's a specific reason (e.g., explicit 
 ## Hard rules
 
 1. **Do not invent benchmark numbers.** "How much faster?" → "depends on workload, run it yourself."
-2. **Attribution discipline.** When the pattern is referenced, attribute as "popularized by xAI's open-sourced For You algorithm" / `github.com/xai-org/x-algorithm` (Apache 2.0).
+2. **Attribution discipline.** When the pattern is referenced, attribute as "popularized by xAI's open-sourced For You algorithm" / `<url>` (Apache 2.0).
 3. **No trademark use.** Do not name the user's artifact "X-like" or use "For You" branding. Pattern is free; brand is not. Suggested naming: "candidate pipeline", "feed pipeline", "ranking pipeline", "recsys pipeline".
 4. **Surface trade-offs.** Multi-action vs single, isolation vs joint, online vs offline — never default silently.
 5. **The generated scaffold must run.** No pseudocode passing as code.
@@ -101,7 +101,7 @@ Default to isolation. Joint only when there's a specific reason (e.g., explicit 
 
 ## Upstream contents
 
-The upstream repository at <https://github.com/mturac/recsys-pipeline-architect> ships:
+The upstream repository at <url> ships:
 
 - Full `SKILL.md` with the complete 8-step workflow
 - 5 load-on-demand reference docs: interfaces in 4 languages (TS/Go/Python/Rust), multi-action scoring pattern, candidate isolation, filter cookbook (12 patterns), scorer cookbook (weighted sum, MMR, diversity penalty, position debiasing)

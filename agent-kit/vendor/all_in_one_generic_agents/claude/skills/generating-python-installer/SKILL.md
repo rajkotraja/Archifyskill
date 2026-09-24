@@ -144,7 +144,7 @@ This skill targets advanced size/startup optimization — not basic one-file "sc
 **32 位编译方法**：
 ```bash
 # 1. 安装 32 位 Python（和 64 位可以共存）
-# 下载地址：https://www.python.org/downloads/windows/
+# 下载地址：<url>
 
 # 2. 用 32 位 Python 安装依赖
 py -3.12-32 -m pip install -r requirements.txt
@@ -662,7 +662,7 @@ Source: "{#MySourceDir}\..\vc_redist.x86.exe"; DestDir: "{tmp}"; Flags: deleteaf
 Filename: "{tmp}\vc_redist.x86.exe"; Parameters: "/quiet /norestart"; StatusMsg: "正在安装运行库..."; Flags: waituntilterminated
 ```
 
-> 下载地址：[Microsoft Visual C++ Redistributable](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist)
+> 下载地址：Microsoft Visual C++ Redistributable
 
 ---
 

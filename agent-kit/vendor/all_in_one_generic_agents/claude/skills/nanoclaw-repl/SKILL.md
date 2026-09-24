@@ -1,8 +1,8 @@
 ---
 name: nanoclaw-repl
-description: Operate and extend NanoClaw v2, ECC's zero-dependency session-aware REPL built on claude -p. Use when operating or extending the NanoClaw REPL.
+description: Operate and extend NanoClaw v2, all_in_one_generic_agents's zero-dependency session-aware REPL built on claude -p. Use when operating or extending the NanoClaw REPL.
 metadata:
-  origin: ECC
+  origin: all_in_one_generic_agents
 ---
 
 # NanoClaw REPL

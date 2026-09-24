@@ -1,6 +1,6 @@
 ---
 name: cost-tracking
-description: Track and report Claude Code token usage, spending, and budgets from the local ECC cost-tracker metrics log. Use when the user asks about costs, spending, usage, tokens, budgets, or cost breakdowns by model, session, or date.
+description: Track and report Claude Code token usage, spending, and budgets from the local all_in_one_generic_agents cost-tracker metrics log. Use when the user asks about costs, spending, usage, tokens, budgets, or cost breakdowns by model, session, or date.
 metadata:
   origin: community
 ---
@@ -8,7 +8,7 @@ metadata:
 # Cost Tracking
 
 Use this skill to analyze Claude Code cost and usage history from the metrics log
-that ECC's `stop:cost-tracker` hook writes.
+that all_in_one_generic_agents's `stop:cost-tracker` hook writes.
 
 ## Where the data lives
 
@@ -17,7 +17,7 @@ The tracker appends one JSON object per session-stop to
 session**, so to total spend you take the **latest row per `session_id`** and
 sum across sessions — summing every row multiply-counts.
 
-ECC also maintains internal per-session files under
+all_in_one_generic_agents also maintains internal per-session files under
 `~/.claude/metrics/cost-snapshots/` so runtime hooks can read the current
 session total without rescanning all history. Treat those files as a
 rebuildable cache; each snapshot stores a byte cursor so only newly appended

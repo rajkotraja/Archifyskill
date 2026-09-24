@@ -186,7 +186,7 @@ For a shared cache, the same idea needs a distributed lock, or `stale-while-reva
 
 ### INP field data and DevTools workflow
 
-1. **Field data first** — check [CrUX Vis](https://developer.chrome.com/docs/crux/vis) or your RUM tool for real-user INP before optimising
+1. **Field data first** — check CrUX Vis or your RUM tool for real-user INP before optimising
 2. **Identify slow interactions** — open DevTools → Performance panel → record while interacting; look for long tasks triggered by clicks/keystrokes
 3. **Test on mid-range Android** — INP issues often only surface on slower hardware; use a real device or DevTools CPU throttling (4×–6× slowdown)
 

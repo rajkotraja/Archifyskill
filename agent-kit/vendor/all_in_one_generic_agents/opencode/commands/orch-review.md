@@ -40,7 +40,7 @@ If the diff is empty, stop: "Nothing to review."
 
 First derive a **safe numeric PR id** from `$ARGUMENTS` — never pass the raw
 argument to the shell. Accept either a bare integer, or the trailing number of a
-`https://github.com/<owner>/<repo>/pull/<N>` URL. Reject anything else (extra
+`<url><owner>/<repo>/pull/<N>` URL. Reject anything else (extra
 text, shell metacharacters, a non-PR URL) and stop with an error. Use only the
 extracted integer `<NUMBER>` below:
 

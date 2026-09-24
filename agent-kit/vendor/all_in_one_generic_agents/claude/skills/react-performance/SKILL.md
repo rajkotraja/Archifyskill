@@ -1,13 +1,13 @@
 ---
 name: react-performance
-description: React and Next.js performance optimization patterns adapted from Vercel Engineering's React Best Practices (https://github.com/vercel-labs/agent-skills). Organizes 70+ rules across 8 priority categories — waterfalls, bundle size, server-side, client fetching, re-render, rendering, JS micro-perf, advanced. Use when writing, reviewing, or refactoring React/Next.js code for performance.
+description: React and Next.js performance optimization patterns adapted from Vercel Engineering's React Best Practices (<url>). Organizes 70+ rules across 8 priority categories — waterfalls, bundle size, server-side, client fetching, re-render, rendering, JS micro-perf, advanced. Use when writing, reviewing, or refactoring React/Next.js code for performance.
 metadata:
-  origin: ECC
+  origin: all_in_one_generic_agents
 ---
 
 # React Performance
 
-Performance optimization patterns for React 18/19 and Next.js, adapted from [Vercel Labs `react-best-practices`](https://github.com/vercel-labs/agent-skills/tree/main/skills/react-best-practices) (MIT, v1.0.0). This skill organizes rules by priority and provides decision-tree guidance for active code review and refactoring.
+Performance optimization patterns for React 18/19 and Next.js, adapted from Vercel Labs `react-best-practices` (MIT, v1.0.0). This skill organizes rules by priority and provides decision-tree guidance for active code review and refactoring.
 
 ## When to Activate
 
@@ -142,7 +142,7 @@ import { Card } from "@/components/Card";
 import { Modal } from "@/components/Modal";
 ```
 
-Next.js 13.5+ has [Optimize Package Imports](https://nextjs.org/docs/app/api-reference/next-config-js/optimizePackageImports) that automates this for listed packages — use it; manual direct imports still required for non-listed libs.
+Next.js 13.5+ has Optimize Package Imports that automates this for listed packages — use it; manual direct imports still required for non-listed libs.
 
 ### Statically analyzable paths
 
@@ -570,6 +570,6 @@ When the project ships React Compiler, demote `rerender-*` manual memoization ru
 
 ## Attribution
 
-Adapted from Vercel Labs `react-best-practices` skill (MIT License, copyright Vercel Engineering, v1.0.0 January 2026). Source: [https://github.com/vercel-labs/agent-skills/tree/main/skills/react-best-practices](https://github.com/vercel-labs/agent-skills/tree/main/skills/react-best-practices).
+Adapted from Vercel Labs `react-best-practices` skill (MIT License, copyright Vercel Engineering, v1.0.0 January 2026). Source: <url>.
 
 This skill restructures and adapts the original 70-rule catalog into a single navigable reference. For the full original ruleset with extended examples, see the upstream repository.

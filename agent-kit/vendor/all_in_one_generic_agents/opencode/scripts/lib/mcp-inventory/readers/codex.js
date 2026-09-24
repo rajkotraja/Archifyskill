@@ -8,7 +8,7 @@ const path = require('path');
 //   [mcp_servers.NAME]
 //   command = "npx"
 //   args = ["-y", "pkg"]
-//   url = "https://..."          # http transport
+//   url = "<url>..."          # http transport
 //   [mcp_servers.NAME.env]       # secret values live here
 //   [mcp_servers.NAME.http_headers]
 // We parse with @iarna/toml when available and fall back to a minimal

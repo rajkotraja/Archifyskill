@@ -13,7 +13,7 @@ When the MCP server is enabled, AI agents have access to the following tools:
 | `get_best_practices`        | Retrieves the Angular Best Practices Guide (crucial for standalone components, typed forms, etc.).        |
 | `list_projects`             | Lists all applications and libraries in the workspace by reading `angular.json`.                          |
 | `onpush_zoneless_migration` | Analyzes code and provides a plan to migrate it to `OnPush` change detection (prerequisite for zoneless). |
-| `search_documentation`      | Searches the official documentation at `https://angular.dev`.                                             |
+| `search_documentation`      | Searches the official documentation at `<url>`.                                             |
 
 ## Experimental Tools
 

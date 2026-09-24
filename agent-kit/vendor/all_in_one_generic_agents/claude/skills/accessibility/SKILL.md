@@ -3,7 +3,7 @@ name: accessibility
 description: Design, implement, and audit inclusive digital products using WCAG 2.2 Level AA. Use when building or auditing UI that must meet WCAG 2.2 Level AA, or when reviewing a change for keyboard, contrast, or screen-reader support.
   standards. Use this skill to generate semantic ARIA for Web and accessibility traits for Web and Native platforms (iOS/Android).
 metadata:
-  origin: ECC
+  origin: all_in_one_generic_agents
 ---
 
 # Accessibility (WCAG 2.2)
@@ -133,11 +133,11 @@ Switch(
 
 ## References
 
-- [WCAG 2.2 Guidelines](https://www.w3.org/TR/WCAG22/)
-- [WAI-ARIA Authoring Practices](https://www.w3.org/TR/wai-aria-practices/)
-- [iOS Accessibility Programming Guide](https://developer.apple.com/documentation/accessibility)
-- [iOS Human Interface Guidelines - Accessibility](https://developer.apple.com/design/human-interface-guidelines/accessibility)
-- [Android Accessibility Developer Guide](https://developer.android.com/guide/topics/ui/accessibility)
+- WCAG 2.2 Guidelines
+- WAI-ARIA Authoring Practices
+- iOS Accessibility Programming Guide
+- iOS Human Interface Guidelines - Accessibility
+- Android Accessibility Developer Guide
 
 ## Related Skills
 

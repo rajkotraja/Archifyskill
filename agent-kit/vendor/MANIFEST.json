@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "generated_at": "2026-09-24T14:38:51Z",
+  "generated_at": "2026-09-24T16:03:14Z",
   "sources": {
     "SDLC_agents": {
       "commit": "bcab6a1b8503100e8618c3b4e32cc78de43de769",
@@ -14,7 +14,7 @@
         "excluded on request: agents/web-performance-auditor.md, commands/webperf.md (the performance skills and checklist it uses are shared with /review and /test, so they are kept)",
         "renamed agents/code-reviewer.md -> agents/sdlc-code-reviewer.md (name collides with all_in_one_generic_agents)",
         "renamed commands/plan.md -> commands/sdlc-plan.md (name collides with all_in_one_generic_agents)",
-        "rewrote code-reviewer -> sdlc-code-reviewer, /plan -> /sdlc-plan and example @-handles in 7 files",
+        "rewrote code-reviewer -> sdlc-code-reviewer, /plan -> /sdlc-plan and example @-handles in 14 files",
         "hooks: only the three wireable scripts are shipped (session-start.sh is deliberately not wired for Claude Code by its author; *-test.sh are upstream tests)",
         "hook wiring is opt-in (install.py --sdlc-hooks), matching upstream's per-project guidance",
         "using-agent-skills: appended a generated 'Full kit' routing section plus catalog.md, per target. The full variant (all bundles) is in the tree; variants for partial installs are in vendor/SDLC_agents/meta/"
@@ -23,7 +23,14 @@
         "agents/sdlc-code-reviewer.md",
         "agents/security-auditor.md",
         "agents/test-engineer.md",
+        "commands/build.md",
+        "commands/code-simplify.md",
+        "commands/constraints.md",
+        "commands/review.md",
+        "commands/sdlc-plan.md",
         "commands/ship.md",
+        "commands/spec.md",
+        "commands/test.md",
         "references/orchestration-patterns.md",
         "skills/constraint-driven-development/SKILL.md",
         "skills/doubt-driven-development/SKILL.md"
@@ -65,26 +72,26 @@
         "catalog": {
           "full": {
             "claude": {
-              "skills": 221,
+              "skills": 220,
               "agents": 55,
-              "commands": 94
+              "commands": 93
             },
             "opencode": {
-              "skills": 221,
+              "skills": 220,
               "agents": 26,
-              "commands": 100
+              "commands": 99
             }
           },
           "generic": {
             "claude": {
-              "skills": 220,
+              "skills": 219,
               "agents": 55,
-              "commands": 94
+              "commands": 93
             },
             "opencode": {
-              "skills": 220,
+              "skills": 219,
               "agents": 26,
-              "commands": 100
+              "commands": 99
             }
           },
           "archify": {
@@ -564,8 +571,9 @@
         "opencode.json skills.paths ['../skills'] dropped (project-relative, dangling in a global install)",
         "added 56 skills to opencode that the upstream resolver skipped transitively",
         "opencode: removed plugins/index.ts and the './plugins' entry (the hooks plugin was loaded twice, firing every hook twice); root index.ts re-pointed at the single plugin module",
-        "slimmed to SDLC + Python/Java/JS-TS/Go/Rust/C++/.NET: removed 129 skills/agents/commands/rule sets (628 files) across 16 categories",
-        "renamed self-named items: skills/ecc-guide -> skills/generic-agents-guide, skills/ecc-recipes -> skills/generic-agents-recipes, skills/configure-ecc -> skills/configure-generic-agents, skills/ecc-tools-cost-audit -> skills/generic-agents-tools-cost-audit, commands/ecc-guide.md -> commands/generic-agents-guide.md, rules/ecc -> rules/generic-agents; references rewritten in 30 text files"
+        "slimmed to SDLC + Python/Java/JS-TS/Go/Rust/C++/.NET: removed 131 skills/agents/commands/rule sets (632 files) across 17 categories",
+        "renamed self-named items: skills/ecc-guide -> skills/generic-agents-guide, skills/ecc-recipes -> skills/generic-agents-recipes, skills/ecc-tools-cost-audit -> skills/generic-agents-tools-cost-audit, commands/ecc-guide.md -> commands/generic-agents-guide.md, rules/ecc -> rules/generic-agents, skills/github-ops/references/ecc-release-checklist.md -> skills/github-ops/references/generic-agents-release-checklist.md; references rewritten in 30 text files",
+        "text scrub: project name rewritten 848 times in 391 files; 8 author-credit lines and 2 promotional block removed; 8 list/table lines pointing at removed reinstallers dropped"
       ],
       "excluded": {
         "Kotlin / Android": [
@@ -728,9 +736,33 @@
         "document processing": [
           "skill:nutrient-document-processing",
           "skill:visa-doc-translate"
+        ],
+        "reinstallers of the original project (running them would undo this kit)": [
+          "skill:configure-ecc",
+          "command:auto-update"
         ]
       },
       "excluded_names_still_mentioned_in": {
+        "skills/react-patterns/SKILL.md": [
+          "react-native-patterns"
+        ],
+        "skills/inherit-legacy-style/SKILL.md": [
+          "php",
+          "swift"
+        ],
+        "skills/frontend-slides/SKILL.md": [
+          "liquid-glass-design"
+        ],
+        "skills/skill-scout/SKILL.md": [
+          "article-writing",
+          "content-engine"
+        ],
+        "skills/messages-ops/SKILL.md": [
+          "lead-intelligence"
+        ],
+        "rules/ecc/common/agents.md": [
+          "harmonyos-app-resolver"
+        ],
         "skills/plan-orchestrate/SKILL.md": [
           "chief-of-staff",
           "flutter-reviewer",
@@ -738,73 +770,29 @@
           "kotlin-build-resolver",
           "kotlin-reviewer"
         ],
-        "skills/research-ops/SKILL.md": [
-          "lead-intelligence",
-          "market-research"
-        ],
-        "skills/benchmark-methodology/SKILL.md": [
-          "competitive-platform-analysis",
-          "competitive-report-structure"
-        ],
-        "skills/exa-search/SKILL.md": [
-          "market-research"
+        "skills/mle-workflow/SKILL.md": [
+          "product-capability"
         ],
         "skills/email-ops/SKILL.md": [
           "brand-voice",
           "investor-outreach"
         ],
-        "skills/react-patterns/SKILL.md": [
-          "react-native-patterns"
+        "skills/exa-search/SKILL.md": [
+          "market-research"
+        ],
+        "skills/agent-sort/SKILL.md": [
+          "configure-ecc",
+          "swift"
         ],
         "rules/ecc/react/patterns.md": [
           "react-native"
         ],
-        "skills/inherit-legacy-style/SKILL.md": [
-          "php",
-          "swift"
-        ],
-        "skills/agent-sort/SKILL.md": [
-          "swift"
-        ],
-        "AGENTS.md": [
-          "kotlin-build-resolver",
-          "kotlin-reviewer"
-        ],
-        "skills/team-builder/SKILL.md": [
-          "seo",
-          "seo-specialist"
-        ],
-        "mcp-configs/mcp-servers.json": [
-          "ito-compute",
-          "laravel-plugin-discovery"
-        ],
-        "skills/product-lens/SKILL.md": [
-          "product-capability"
-        ],
-        "skills/frontend-slides/SKILL.md": [
-          "liquid-glass-design"
-        ],
         "skills/finance-billing-ops/SKILL.md": [
           "market-research"
         ],
-        "rules/ecc/README.md": [
-          "arkts",
-          "php",
-          "react-native",
-          "ruby",
-          "swift"
-        ],
-        "skills/accessibility/SKILL.md": [
-          "kotlin",
-          "liquid-glass-design",
-          "swift",
-          "swiftui-patterns"
-        ],
-        "skills/messages-ops/SKILL.md": [
-          "lead-intelligence"
-        ],
-        "rules/ecc/common/agents.md": [
-          "harmonyos-app-resolver"
+        "skills/benchmark-methodology/SKILL.md": [
+          "competitive-platform-analysis",
+          "competitive-report-structure"
         ],
         "skills/connections-optimizer/SKILL.md": [
           "brand-voice",
@@ -813,16 +801,20 @@
           "social-graph-ranker",
           "x-api"
         ],
-        "skills/skill-scout/SKILL.md": [
-          "article-writing",
-          "content-engine"
+        "rules/ecc/README.md": [
+          "arkts",
+          "php",
+          "react-native",
+          "ruby",
+          "swift"
         ],
-        "skills/mle-workflow/SKILL.md": [
-          "product-capability"
+        "skills/config-gc/SKILL.md": [
+          "configure-ecc"
         ],
         "skills/prompt-optimizer/SKILL.md": [
           "android-clean-architecture",
           "compose-multiplatform-patterns",
+          "configure-ecc",
           "kotlin-coroutines-flows",
           "kotlin-reviewer",
           "perl-patterns",
@@ -833,6 +825,31 @@
           "swift-concurrency-6-2",
           "swift-protocol-di-testing",
           "swiftui-patterns"
+        ],
+        "skills/product-lens/SKILL.md": [
+          "product-capability"
+        ],
+        "skills/team-builder/SKILL.md": [
+          "seo",
+          "seo-specialist"
+        ],
+        "skills/accessibility/SKILL.md": [
+          "kotlin",
+          "liquid-glass-design",
+          "swift",
+          "swiftui-patterns"
+        ],
+        "skills/research-ops/SKILL.md": [
+          "lead-intelligence",
+          "market-research"
+        ],
+        "mcp-configs/mcp-servers.json": [
+          "ito-compute",
+          "laravel-plugin-discovery"
+        ],
+        "AGENTS.md": [
+          "kotlin-build-resolver",
+          "kotlin-reviewer"
         ]
       },
       "opencode_added_skills": [
@@ -896,13 +913,13 @@
       "counts": {
         "claude": {
           "agents": 52,
-          "commands": 86,
-          "skills": 195,
+          "commands": 85,
+          "skills": 194,
           "rules": 1
         },
         "opencode": {
-          "commands": 92,
-          "skills": 195
+          "commands": 91,
+          "skills": 194
         },
         "claude_hook_commands": 24,
         "opencode_inline_agents": 23,
@@ -919,11 +936,30 @@
       ]
     }
   },
+  "url_policy": {
+    "placeholder": "<url>",
+    "files": 199,
+    "deleted": 4,
+    "manifests": 4,
+    "kept": [
+      "localhost/example addresses",
+      "XML namespace and JSON-schema identifiers",
+      "Go module paths, Kubernetes API groups, container image names",
+      "Google Fonts in archify diagram HTML",
+      "Mermaid CDN in plan-canvas browser view"
+    ],
+    "removed": [
+      "archify online update-check instruction",
+      "package/plugin metadata URLs",
+      "mcp-configs/mcp-servers.json",
+      "an upstream test file with sample remotes"
+    ]
+  },
   "tree_sha256": {
-    "SDLC_agents/claude": "d5f956dc7d9224c928fb51e749838d5848d98c5a209135b28a503bc2ed8b2366",
-    "SDLC_agents/opencode": "2ee704f5fe68ac747f4f22b780fde81a5cdcbdfa15d176002f929b8a2ffb46fe",
-    "all_in_one_generic_agents/claude": "be35a6602bd1099212e04aaa3ffb5da0fc069cf58afc4199b79ff6ff5e5f6a21",
-    "all_in_one_generic_agents/opencode": "d3648a7992f466ca69f7a8012aee38e62262867f4c89771b19e13b0a766a33c0",
-    "archify/common": "6d4c00581d4e9a0637747fca04ca71a86ad6aa5ba0e45544917dcf127c221581"
+    "SDLC_agents/claude": "1b38b4b02a0a989a97ad793073e66029785f3b27cb933c6f4233da7d792d8853",
+    "SDLC_agents/opencode": "9a393cb7920485c5625af1ba2262b85167beb0e272696bb2204be94c4ee53ae2",
+    "all_in_one_generic_agents/claude": "24641c4e9ca7c2fc7b5177eae5aa5764f88dfa69325720dbc30c724b23fc4657",
+    "all_in_one_generic_agents/opencode": "bb5ebcab05c501d9ee9f2353b9129cecbcb127fbf845d98bfe204dbc22a3322a",
+    "archify/common": "57f2c503774ed634649b520b2395685a98a2c79ccddb4958da267ba6fd3a7d8c"
   }
 }

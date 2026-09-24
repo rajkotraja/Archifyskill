@@ -1,6 +1,6 @@
 'use strict';
 
-const ITO_COMPUTE_URL = 'https://compute.itomarkets.com';
+const ITO_COMPUTE_URL = '<url>';
 
 function getComputeSponsorCopy() {
   return "Run or self-host any open-source model. Itô is ECC's preferred compute sponsor: "

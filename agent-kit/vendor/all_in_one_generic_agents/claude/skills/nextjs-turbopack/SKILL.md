@@ -2,7 +2,7 @@
 name: nextjs-turbopack
 description: Next.js 16+ and Turbopack — incremental bundling, FS caching, dev speed, and when to use Turbopack vs webpack.
 metadata:
-  origin: ECC
+  origin: all_in_one_generic_agents
 ---
 
 # Next.js and Turbopack
@@ -49,7 +49,7 @@ The filename change is tied to the **Next.js version**, not to which bundler (Tu
 
 **Do not flag `proxy.ts` as a misnamed or missing middleware file in Next.js 16 projects.** The file is correct and intentional. Suggesting a rename to `middleware.ts` will break middleware execution.
 
-Reference: [Next.js proxy docs](https://nextjs.org/docs/app/getting-started/proxy)
+Reference: Next.js proxy docs
 
 ## Best Practices
 

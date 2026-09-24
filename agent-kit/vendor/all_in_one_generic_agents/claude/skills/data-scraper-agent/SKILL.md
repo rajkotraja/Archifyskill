@@ -246,7 +246,7 @@ def generate(prompt: str, model: str = "", rate_limit: float = 7.0) -> dict:
     _last_call = time.time()
 
     for m in models:
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/{m}:generateContent?key={api_key}"
+        url = f"<url>"
         payload = {
             "contents": [{"parts": [{"text": prompt}]}],
             "generationConfig": {

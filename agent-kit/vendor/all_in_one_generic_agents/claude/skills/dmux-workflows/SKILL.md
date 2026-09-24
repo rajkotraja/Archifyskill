@@ -2,7 +2,7 @@
 name: dmux-workflows
 description: Multi-agent orchestration using dmux (tmux pane manager for AI agents). Patterns for parallel agent workflows across Claude Code, Codex, OpenCode, and other harnesses. Use when running multiple agent sessions in parallel or coordinating multi-agent development workflows.
 metadata:
-  origin: ECC
+  origin: all_in_one_generic_agents
 ---
 
 # dmux Workflows
@@ -23,7 +23,7 @@ dmux is a tmux-based orchestration tool that manages AI agent panes:
 - Press `m` to merge pane output back to the main session
 - Supports: Claude Code, Codex, OpenCode, Cline, Gemini, Qwen
 
-**Install:** Install dmux from its repository after reviewing the package. See [github.com/standardagents/dmux](https://github.com/standardagents/dmux)
+**Install:** Install dmux from its repository after reviewing the package. See <url>
 
 ## Quick Start
 
@@ -137,9 +137,9 @@ git merge feat/billing
 | **Claude Code Task tool** | In-process subagent spawning | Programmatic parallelism within a session |
 | **Codex multi-agent** | Built-in agent roles | Codex-specific parallel work |
 
-## ECC Helper
+## all_in_one_generic_agents Helper
 
-ECC now includes a helper for external tmux-pane orchestration with separate git worktrees:
+all_in_one_generic_agents now includes a helper for external tmux-pane orchestration with separate git worktrees:
 
 ```bash
 node scripts/orchestrate-worktrees.js plan.json --execute

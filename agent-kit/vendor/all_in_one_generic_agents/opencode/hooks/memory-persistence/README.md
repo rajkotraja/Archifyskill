@@ -1,6 +1,6 @@
 # Memory Persistence Hooks
 
-These lifecycle hook definitions document ECC's memory persistence contract for Claude Code plugin and manual installs.
+These lifecycle hook definitions document all_in_one_generic_agents's memory persistence contract for Claude Code plugin and manual installs.
 
 The executable implementations live in `scripts/hooks/`:
 

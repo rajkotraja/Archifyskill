@@ -1,8 +1,8 @@
 ---
 name: email-ops
-description: Evidence-first mailbox triage, drafting, send verification, and sent-mail-safe follow-up workflow for ECC. Use when the user wants to organize email, draft or send through the real mail surface, or prove what landed in Sent.
+description: Evidence-first mailbox triage, drafting, send verification, and sent-mail-safe follow-up workflow for all_in_one_generic_agents. Use when the user wants to organize email, draft or send through the real mail surface, or prove what landed in Sent.
 metadata:
-  origin: ECC
+  origin: all_in_one_generic_agents
 ---
 
 # Email Ops
@@ -13,7 +13,7 @@ This is not a generic writing skill. It is an operator workflow around the actua
 
 ## Skill Stack
 
-Pull these ECC-native skills into the workflow when relevant:
+Pull these all_in_one_generic_agents-native skills into the workflow when relevant:
 
 - `brand-voice` before drafting anything user-facing
 - `investor-outreach` for investor, partner, or sponsor-facing mail

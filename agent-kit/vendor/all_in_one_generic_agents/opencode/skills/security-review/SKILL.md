@@ -2,7 +2,7 @@
 name: security-review
 description: Use this skill when adding authentication, handling user input, working with secrets, creating API endpoints, or implementing payment/sensitive features. Provides comprehensive security checklist and patterns.
 metadata:
-  origin: ECC
+  origin: all_in_one_generic_agents
 ---
 
 # Security Review Skill
@@ -501,10 +501,10 @@ Before ANY production deployment:
 
 ## Resources
 
-- [OWASP Top 10](https://owasp.org/www-project-top-ten/)
-- [Next.js Security](https://nextjs.org/docs/security)
-- [Supabase Security](https://supabase.com/docs/guides/auth)
-- [Web Security Academy](https://portswigger.net/web-security)
+- OWASP Top 10
+- Next.js Security
+- Supabase Security
+- Web Security Academy
 
 ---
 

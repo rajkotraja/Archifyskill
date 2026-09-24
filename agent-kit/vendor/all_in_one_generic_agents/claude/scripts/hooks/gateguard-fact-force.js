@@ -17,7 +17,7 @@
  * Cross-platform (Windows, macOS, Linux).
  *
  * Full package with config support: pip install gateguard-ai
- * Repo: https://github.com/zunoworks/gateguard
+ * Repo: <url>
  */
 
 'use strict';

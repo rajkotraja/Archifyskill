@@ -1,4 +1,4 @@
-# ECC Signed Patch Release Checklist
+# all_in_one_generic_agents Signed Patch Release Checklist
 
 Use this when releasing `affaan-m/ECC`, especially for `ECC-031` or any follow-up
 where the Git tag identity, npm provenance, GitHub Release, and announcement
@@ -6,8 +6,8 @@ evidence all need to align.
 
 ## Milestone And Contract
 
-- Milestone: `M0` in the ECC 2.2 release train.
-- Contract: ship one exact, verified artifact, keep ECC authority over release
+- Milestone: `M0` in the all_in_one_generic_agents 2.2 release train.
+- Contract: ship one exact, verified artifact, keep all_in_one_generic_agents authority over release
   evidence and canonical state, and do not blur current shipped behavior with
   future plans.
 - Current gate: close the unsigned `v2.2.0` exception by releasing a new signed
@@ -144,7 +144,7 @@ git pull --ff-only origin main
 git status --short
 git rev-parse HEAD
 git rev-parse origin/main
-git tag -s "v${VERSION}" -m "ECC ${VERSION}" HEAD
+git tag -s "v${VERSION}" -m "all_in_one_generic_agents ${VERSION}" HEAD
 git tag -v "v${VERSION}"
 git push origin "refs/tags/v${VERSION}"
 ```
@@ -189,7 +189,7 @@ required by the checked-in runbook, and verify the native Claude marketplace
 path remains installable:
 
 ```text
-/plugin marketplace add https://github.com/affaan-m/ECC
+/plugin marketplace add <url>
 /plugin install ecc@ecc
 ```
 

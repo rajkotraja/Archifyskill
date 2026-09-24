@@ -2,7 +2,7 @@
 name: iterative-retrieval
 description: Pattern for progressively refining context retrieval to solve the subagent context problem. Use when a subagent lacks the context it needs and retrieval must be refined across passes.
 metadata:
-  origin: ECC
+  origin: all_in_one_generic_agents
 ---
 
 # Iterative Retrieval Pattern
@@ -207,6 +207,5 @@ When retrieving context for this task:
 
 ## Related
 
-- [The Longform Guide](https://x.com/affaanmustafa/status/2014040193557471352) - Subagent orchestration section
 - `continuous-learning` skill - For patterns that improve over time
-- Agent definitions bundled with ECC (manual install path: `agents/`)
+- Agent definitions bundled with all_in_one_generic_agents (manual install path: `agents/`)

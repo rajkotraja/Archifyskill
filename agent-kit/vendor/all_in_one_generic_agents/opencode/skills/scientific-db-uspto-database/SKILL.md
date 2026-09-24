@@ -75,7 +75,7 @@ import os
 import requests
 
 API_KEY = os.environ["PATENTSVIEW_API_KEY"]
-BASE = "https://search.patentsview.org/api/v1"
+BASE = "<url>"
 
 payload = {
     "q": {
@@ -171,8 +171,8 @@ For final writeups, separate:
 
 ## References
 
-- [USPTO APIs catalog](https://developer.uspto.gov/api-catalog)
-- [USPTO Open Data Portal](https://data.uspto.gov/)
-- [PatentSearch API reference](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/)
-- [PatentSearch API updates](https://search.patentsview.org/docs/)
-- [TSDR API bulk download FAQ](https://developer.uspto.gov/faq/tsdr-api-bulk-download)
+- USPTO APIs catalog
+- USPTO Open Data Portal
+- PatentSearch API reference
+- PatentSearch API updates
+- TSDR API bulk download FAQ

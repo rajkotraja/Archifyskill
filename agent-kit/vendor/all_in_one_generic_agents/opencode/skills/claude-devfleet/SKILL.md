@@ -13,8 +13,8 @@ Use this skill when you need to dispatch multiple Claude Code agents to work on 
 
 ## Setup
 
-The DevFleet server is a separate project, not bundled with ECC. Install and
-run it from its repository first: <https://github.com/LEC-AI/claude-devfleet>
+The DevFleet server is a separate project, not bundled with all_in_one_generic_agents. Install and
+run it from its repository first: <url>
 
 Then connect the running instance via MCP:
 ```bash

@@ -15,7 +15,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://airtable.com/newsroom"
+      "source": "<url>"
     }
   },
   {
@@ -35,7 +35,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://www.alibabagroup.com/en/ir/reports"
+      "source": "<url>"
     }
   },
   {
@@ -52,11 +52,11 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://angular.dev/press-kit",
-      "guidelines": "https://angular.dev/press-kit",
+      "source": "<url>",
+      "guidelines": "<url>",
       "license": {
         "type": "CC-BY-4.0",
-        "url": "https://spdx.org/licenses/CC-BY-4.0"
+        "url": "<url>"
       }
     }
   },
@@ -74,7 +74,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://www.ansible.com/logos"
+      "source": "<url>"
     }
   },
   {
@@ -91,7 +91,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://www.anthropic.com"
+      "source": "<url>"
     }
   },
   {
@@ -110,11 +110,11 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://apache.org/logos",
-      "guidelines": "https://www.apache.org/foundation/marks",
+      "source": "<url>",
+      "guidelines": "<url>",
       "license": {
         "type": "Apache-2.0",
-        "url": "https://spdx.org/licenses/Apache-2.0"
+        "url": "<url>"
       }
     }
   },
@@ -134,11 +134,11 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://apache.org/logos",
-      "guidelines": "https://www.apache.org/foundation/marks",
+      "source": "<url>",
+      "guidelines": "<url>",
       "license": {
         "type": "Apache-2.0",
-        "url": "https://spdx.org/licenses/Apache-2.0"
+        "url": "<url>"
       }
     }
   },
@@ -159,7 +159,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://github.com/cncf/artwork/blob/c2e619cdf85e8bac090ceca7c0834c5cfedf9426/projects/argo/icon/black/argo-icon-black.svg"
+      "source": "<url>"
     }
   },
   {
@@ -176,8 +176,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://asana.com/brand",
-      "guidelines": "https://asana.com/brand"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -194,8 +194,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://atlassian.design/resources/logo-library",
-      "guidelines": "https://atlassian.design/foundations/logos"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -214,7 +214,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://circleci.com/press"
+      "source": "<url>"
     }
   },
   {
@@ -233,7 +233,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://claude.ai"
+      "source": "<url>"
     }
   },
   {
@@ -250,7 +250,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://github.com/ClickHouse/ClickHouse/blob/12bd453a43819176d25ecf247033f6cb1af54beb/website/images/logo-clickhouse.svg"
+      "source": "<url>"
     }
   },
   {
@@ -267,8 +267,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://www.cloudflare.com/logo/",
-      "guidelines": "https://www.cloudflare.com/trademark/"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -285,7 +285,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://cloudinary.com"
+      "source": "<url>"
     }
   },
   {
@@ -302,8 +302,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://www.databricks.com",
-      "guidelines": "https://brand.databricks.com/Styleguide/Guide/"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -320,8 +320,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://www.datadoghq.com/about/resources",
-      "guidelines": "https://www.datadoghq.com/about/resources/"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -338,7 +338,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://www.deepseek.com"
+      "source": "<url>"
     }
   },
   {
@@ -357,8 +357,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://www.digitalocean.com/press/",
-      "guidelines": "https://www.digitalocean.com/press/"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -375,8 +375,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://discord.com/branding",
-      "guidelines": "https://discord.com/branding"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -393,7 +393,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://www.djangoproject.com/community/logos/"
+      "source": "<url>"
     }
   },
   {
@@ -410,7 +410,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://www.docker.com/company/newsroom/media-resources"
+      "source": "<url>"
     }
   },
   {
@@ -429,11 +429,11 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://github.com/dotnet/brand/blob/c7d0f51b8ec59531332d05fb27a5b758a7a3d689/logo/dotnet-logo.svg",
-      "guidelines": "https://github.com/dotnet/brand/blob/c7d0f51b8ec59531332d05fb27a5b758a7a3d689/dotnet-styleGuide-2024.pdf",
+      "source": "<url>",
+      "guidelines": "<url>",
       "license": {
         "type": "CC0-1.0",
-        "url": "https://spdx.org/licenses/CC0-1.0"
+        "url": "<url>"
       }
     }
   },
@@ -453,7 +453,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://www.elastic.co/brand"
+      "source": "<url>"
     }
   },
   {
@@ -470,8 +470,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://about.meta.com/brand/resources/facebook/logo",
-      "guidelines": "https://about.meta.com/brand/resources/facebook/logo"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -488,7 +488,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://github.com/tiangolo/fastapi/blob/ffb4f77a11f83132b521ba0aac6c95792c19e797/docs/en/docs/img/icon-white.svg"
+      "source": "<url>"
     }
   },
   {
@@ -505,8 +505,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://www.figma.com/using-the-figma-brand/",
-      "guidelines": "https://www.figma.com/using-the-figma-brand/"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -523,8 +523,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://firebase.google.com/brand-guidelines",
-      "guidelines": "https://firebase.google.com/brand-guidelines"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -541,7 +541,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://github.com/pallets/flask/blob/85c5d93cbd049c4bd0679c36fd1ddcae8c37b642/docs/_static/flask-icon.svg"
+      "source": "<url>"
     }
   },
   {
@@ -560,8 +560,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://fly.io/docs/about/brand",
-      "guidelines": "https://fly.io/docs/about/brand"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -578,8 +578,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://github.com/logos",
-      "guidelines": "https://github.com/logos"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -594,7 +594,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://github.com/features/actions"
+      "source": "<url>"
     }
   },
   {
@@ -611,8 +611,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://about.gitlab.com/press/press-kit/",
-      "guidelines": "https://about.gitlab.com/handbook/marketing/corporate-marketing/brand-activation/trademark-guidelines/"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -631,8 +631,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://blog.golang.org/go-brand",
-      "guidelines": "https://blog.golang.org/go-brand"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -652,7 +652,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://cloud.google.com"
+      "source": "<url>"
     }
   },
   {
@@ -671,7 +671,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://gemini.google.com"
+      "source": "<url>"
     }
   },
   {
@@ -688,7 +688,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://grafana.com"
+      "source": "<url>"
     }
   },
   {
@@ -705,7 +705,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://helm.sh"
+      "source": "<url>"
     }
   },
   {
@@ -722,8 +722,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://www.hubspot.com/style-guide",
-      "guidelines": "https://www.hubspot.com/style-guide"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -742,8 +742,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://huggingface.co/brand",
-      "guidelines": "https://huggingface.co/brand"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -762,8 +762,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://influxdata.github.io/branding/logo/downloads/",
-      "guidelines": "https://influxdata.github.io/branding/logo/usage/"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -780,8 +780,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://about.meta.com/brand/resources/instagram",
-      "guidelines": "https://about.meta.com/brand/resources/instagram"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -798,8 +798,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://www.intercom.com/press",
-      "guidelines": "https://www.intercom.com/press"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -816,10 +816,10 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://github.com/voodootikigod/logo.js/blob/1544bdeed6d618a6cfe4f0650d04ab8d9cfa76d9/js.svg",
+      "source": "<url>",
       "license": {
         "type": "MIT",
-        "url": "https://spdx.org/licenses/MIT"
+        "url": "<url>"
       }
     }
   },
@@ -837,11 +837,11 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://get.jenkins.io/art/",
-      "guidelines": "https://www.jenkins.io/press/",
+      "source": "<url>",
+      "guidelines": "<url>",
       "license": {
         "type": "CC-BY-SA-3.0",
-        "url": "https://spdx.org/licenses/CC-BY-SA-3.0"
+        "url": "<url>"
       }
     }
   },
@@ -859,8 +859,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://atlassian.design/resources/logo-library",
-      "guidelines": "https://atlassian.design/foundations/logos/"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -879,7 +879,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://github.com/kubernetes/kubernetes/tree/cac53883f4714452f3084a22e4be20d042a9df33/logo"
+      "source": "<url>"
     }
   },
   {
@@ -896,7 +896,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://linear.app"
+      "source": "<url>"
     }
   },
   {
@@ -915,8 +915,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://mariadb.com/about-us/logos/",
-      "guidelines": "https://mariadb.com/about-us/logos/"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -935,8 +935,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://www.meta.com",
-      "guidelines": "https://www.facebook.com/brand/resources/meta/company-brand"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -953,7 +953,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://miro.com"
+      "source": "<url>"
     }
   },
   {
@@ -972,7 +972,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://chat.mistral.ai"
+      "source": "<url>"
     }
   },
   {
@@ -991,7 +991,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://www.mongodb.com/pressroom"
+      "source": "<url>"
     }
   },
   {
@@ -1008,8 +1008,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://www.mysql.com/about/legal/logos.html",
-      "guidelines": "https://www.mysql.com/about/legal/logos.html"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -1026,8 +1026,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://neon.com/brand",
-      "guidelines": "https://neon.com/brand"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -1044,8 +1044,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://www.netlify.com/press/",
-      "guidelines": "https://www.netlify.com/press/"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -1065,8 +1065,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://vercel.com/design/brands#next-js",
-      "guidelines": "https://vercel.com/design/brands#next-js"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -1086,8 +1086,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://nodejs.org/en/about/branding",
-      "guidelines": "https://nodejs.org/en/about/branding"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -1104,7 +1104,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://www.notion.so"
+      "source": "<url>"
     }
   },
   {
@@ -1121,7 +1121,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://github.com/ollama/ollama/issues/2152#issuecomment-1905286922"
+      "source": "<url>"
     }
   },
   {
@@ -1142,8 +1142,8 @@ export const BRAND_MARKS = Object.freeze([
     "path": "M11.248 18.25q-.825 0-1.568-.314a4.3 4.3 0 0 1-1.32-.874 4 4 0 0 1-1.304.214 4 4 0 0 1-2.046-.544 4.27 4.27 0 0 1-1.518-1.485 4 4 0 0 1-.56-2.095q0-.48.131-1.04A4.4 4.4 0 0 1 2.04 10.71a4.07 4.07 0 0 1 .017-3.4 4.2 4.2 0 0 1 1.056-1.418 3.8 3.8 0 0 1 1.6-.842 3.9 3.9 0 0 1 .76-1.683q.593-.759 1.451-1.188a4.04 4.04 0 0 1 1.832-.429q.825 0 1.567.313.742.314 1.32.875a4 4 0 0 1 1.304-.215q1.106 0 2.046.545a4.14 4.14 0 0 1 1.501 1.485q.578.941.578 2.095 0 .48-.132 1.04.66.61 1.023 1.419.363.792.363 1.666 0 .892-.38 1.717a4.3 4.3 0 0 1-1.072 1.435 3.8 3.8 0 0 1-1.584.825 3.8 3.8 0 0 1-.775 1.683 4.06 4.06 0 0 1-1.436 1.188 4.04 4.04 0 0 1-1.832.429m-4.076-2.062q.825 0 1.435-.347l3.103-1.782a.36.36 0 0 0 .164-.313v-1.42L7.881 14.62a.67.67 0 0 1-.726 0l-3.118-1.798a.5.5 0 0 1-.017.115v.198q0 .841.396 1.551.413.693 1.139 1.089a3.2 3.2 0 0 0 1.617.412m.165-2.69a.4.4 0 0 0 .181.05q.083 0 .165-.05l1.238-.71-3.977-2.31a.7.7 0 0 1-.363-.643v-3.58q-.825.362-1.32 1.122a2.9 2.9 0 0 0-.495 1.65q0 .809.413 1.55.412.743 1.072 1.123zm3.91 3.663q.875 0 1.585-.396a2.96 2.96 0 0 0 1.534-2.64v-3.564a.32.32 0 0 0-.165-.297l-1.254-.726v4.604a.7.7 0 0 1-.363.643l-3.119 1.799a3 3 0 0 0 1.783.577m.627-6.039V8.878L10.01 7.822 8.129 8.878v2.244l1.881 1.056zM7.057 5.859a.7.7 0 0 1 .363-.644l3.119-1.798a3 3 0 0 0-1.782-.578q-.874 0-1.584.396A2.96 2.96 0 0 0 6.05 4.324a3.07 3.07 0 0 0-.396 1.551v3.547q0 .199.165.314l1.237.726zm8.383 7.887q.825-.364 1.303-1.123.495-.758.495-1.65a3.15 3.15 0 0 0-.412-1.55q-.413-.743-1.073-1.123l-3.086-1.782q-.099-.065-.181-.049a.3.3 0 0 0-.165.05l-1.238.692 3.993 2.327a.6.6 0 0 1 .264.264.64.64 0 0 1 .1.363zm-3.317-8.382a.63.63 0 0 1 .726 0l3.135 1.831v-.297q0-.792-.396-1.501a2.86 2.86 0 0 0-1.105-1.155q-.71-.43-1.65-.43-.825 0-1.436.347L8.294 5.941a.36.36 0 0 0-.165.314v1.418z",
     "provenance": {
       "provider": "Official brand asset",
-      "source": "https://openai.com/brand/",
-      "guidelines": "https://openai.com/brand/"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -1162,7 +1162,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://openrouter.ai"
+      "source": "<url>"
     }
   },
   {
@@ -1181,8 +1181,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://opensearch.org/trademark-brand-policy.html",
-      "guidelines": "https://opensearch.org/trademark-brand-policy.html"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -1201,8 +1201,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://www.pagerduty.com/brand/",
-      "guidelines": "https://www.pagerduty.com/brand/"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -1219,8 +1219,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://www.paypal.com/us",
-      "guidelines": "https://newsroom.paypal-corp.com/media-resources"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -1237,7 +1237,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://www.perplexity.ai"
+      "source": "<url>"
     }
   },
   {
@@ -1254,8 +1254,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://business.pinterest.com/en/brand-guidelines",
-      "guidelines": "https://business.pinterest.com/en/brand-guidelines"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -1274,7 +1274,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://planetscale.com"
+      "source": "<url>"
     }
   },
   {
@@ -1293,8 +1293,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://wiki.postgresql.org/wiki/Logo",
-      "guidelines": "https://www.postgresql.org/about/policies/trademarks/"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -1311,7 +1311,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://github.com/prisma/presskit/tree/4bcb64181f266723439d955d60afa1c55fefa715"
+      "source": "<url>"
     }
   },
   {
@@ -1328,7 +1328,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://prometheus.io"
+      "source": "<url>"
     }
   },
   {
@@ -1345,8 +1345,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://www.pulumi.com",
-      "guidelines": "https://www.pulumi.com/brand/"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -1363,8 +1363,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://www.python.org/community/logos/",
-      "guidelines": "https://www.python.org/community/logos/"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -1381,8 +1381,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://github.com/pytorch/pytorch.github.io/blob/8f083bd12192ca12d5e1c1f3d236f4831d823d8f/assets/images/logo.svg",
-      "guidelines": "https://github.com/pytorch/pytorch.github.io/blob/381117ec296f002b2de475402ef29cca6c55e209/assets/brand-guidelines/PyTorch-Brand-Guidelines.pdf"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -1399,7 +1399,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://qwen.ai"
+      "source": "<url>"
     }
   },
   {
@@ -1418,8 +1418,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://www.rabbitmq.com",
-      "guidelines": "https://www.rabbitmq.com/trademark-guidelines.html"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -1437,7 +1437,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://railway.app"
+      "source": "<url>"
     }
   },
   {
@@ -1456,7 +1456,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://github.com/facebook/create-react-app/blob/282c03f9525fdf8061ffa1ec50dce89296d916bd/test/fixtures/relative-paths/src/logo.svg"
+      "source": "<url>"
     }
   },
   {
@@ -1473,8 +1473,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://www.redditinc.com/brand",
-      "guidelines": "https://www.redditinc.com/brand"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -1491,8 +1491,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://redis.io/brand-guidelines",
-      "guidelines": "https://redis.io/brand-guidelines"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -1509,7 +1509,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://render.com"
+      "source": "<url>"
     }
   },
   {
@@ -1526,7 +1526,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://replicate.com"
+      "source": "<url>"
     }
   },
   {
@@ -1543,11 +1543,11 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://www.rust-lang.org",
-      "guidelines": "https://www.rust-lang.org/policies/media-guide",
+      "source": "<url>",
+      "guidelines": "<url>",
       "license": {
         "type": "CC-BY-SA-4.0",
-        "url": "https://spdx.org/licenses/CC-BY-SA-4.0"
+        "url": "<url>"
       }
     }
   },
@@ -1565,7 +1565,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://sentry.io/branding/"
+      "source": "<url>"
     }
   },
   {
@@ -1582,8 +1582,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://www.shopify.com/brand-assets",
-      "guidelines": "https://www.shopify.com/brand-assets"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -1600,8 +1600,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://www.snowflake.com/brand-guidelines/",
-      "guidelines": "https://www.snowflake.com/brand-guidelines/"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -1620,7 +1620,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://spring.io/trademarks"
+      "source": "<url>"
     }
   },
   {
@@ -1637,7 +1637,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://github.com/sqlite/sqlite/blob/43e862723ec680542ca6f608f9963c0993dd7324/art/sqlite370.eps"
+      "source": "<url>"
     }
   },
   {
@@ -1654,7 +1654,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://stripe.com/newsroom/information"
+      "source": "<url>"
     }
   },
   {
@@ -1671,7 +1671,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://github.com/supabase/supabase/blob/4031a7549f5d46da7bc79c01d56be4177dc7c114/packages/common/assets/images/supabase-logo-wordmark--light.svg"
+      "source": "<url>"
     }
   },
   {
@@ -1688,7 +1688,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://github.com/sveltejs/branding/blob/c4dfca6743572087a6aef0e109ffe3d95596e86a/svelte-logo.svg"
+      "source": "<url>"
     }
   },
   {
@@ -1706,7 +1706,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://telegram.org/tour/screenshots"
+      "source": "<url>"
     }
   },
   {
@@ -1723,7 +1723,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://www.tensorflow.org"
+      "source": "<url>"
     }
   },
   {
@@ -1740,8 +1740,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://www.hashicorp.com/brand",
-      "guidelines": "https://www.hashicorp.com/brand"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -1762,7 +1762,7 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://tiktok.com"
+      "source": "<url>"
     }
   },
   {
@@ -1779,8 +1779,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://atlassian.design/resources/logo-library",
-      "guidelines": "https://atlassian.design/foundations/logos"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -1799,8 +1799,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://www.typescriptlang.org/branding",
-      "guidelines": "https://www.typescriptlang.org/branding"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -1817,8 +1817,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://vercel.com/geist/brands",
-      "guidelines": "https://vercel.com/geist/brands"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -1838,11 +1838,11 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://github.com/vuejs/art/blob/a1c78b74569b70a25300925b4eacfefcc143b8f6/logo.svg",
-      "guidelines": "https://github.com/vuejs/art/blob/a1c78b74569b70a25300925b4eacfefcc143b8f6/README.md",
+      "source": "<url>",
+      "guidelines": "<url>",
       "license": {
         "type": "CC-BY-NC-SA-4.0",
-        "url": "https://spdx.org/licenses/CC-BY-NC-SA-4.0"
+        "url": "<url>"
       }
     }
   },
@@ -1863,8 +1863,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://wechat.design/tool/brand",
-      "guidelines": "https://wechat.design/brand/main-brand"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -1881,8 +1881,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://about.meta.com/brand/resources/whatsapp/whatsapp-brand",
-      "guidelines": "https://about.meta.com/brand/resources/whatsapp/whatsapp-brand"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -1901,8 +1901,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://woocommerce.com/style-guide",
-      "guidelines": "https://woocommerce.com/trademark-guidelines"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -1920,8 +1920,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://wordpress.org/about/logos",
-      "guidelines": "https://wordpressfoundation.org/trademark-policy"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -1941,8 +1941,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://x.com",
-      "guidelines": "https://about.x.com/en/who-we-are/brand-toolkit"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -1960,8 +1960,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://www.youtube.com/howyoutubeworks/resources/brand-resources/#logos-icons-and-colors",
-      "guidelines": "https://www.youtube.com/howyoutubeworks/resources/brand-resources/#logos-icons-and-colors"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -1978,8 +1978,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://brandland.zendesk.com",
-      "guidelines": "https://brandland.zendesk.com"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   },
   {
@@ -1996,8 +1996,8 @@ export const BRAND_MARKS = Object.freeze([
     "provenance": {
       "provider": "Simple Icons",
       "providerVersion": "16.28.0",
-      "source": "https://brand.zoom.us/media-library/",
-      "guidelines": "https://brand.zoom.us/usage-legal/"
+      "source": "<url>",
+      "guidelines": "<url>"
     }
   }
 ]);

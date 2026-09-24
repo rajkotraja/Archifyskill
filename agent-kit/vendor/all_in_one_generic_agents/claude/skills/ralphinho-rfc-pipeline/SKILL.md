@@ -2,12 +2,12 @@
 name: ralphinho-rfc-pipeline
 description: RFC-driven multi-agent DAG execution pattern with quality gates, merge queues, and work unit orchestration. Use when running RFC-driven multi-agent execution with quality gates and a merge queue.
 metadata:
-  origin: ECC
+  origin: all_in_one_generic_agents
 ---
 
 # Ralphinho RFC Pipeline
 
-Inspired by [humanplane](https://github.com/humanplane) style RFC decomposition patterns and multi-unit orchestration workflows.
+Inspired by humanplane style RFC decomposition patterns and multi-unit orchestration workflows.
 
 Use this skill when a feature is too large for a single agent pass and must be split into independently verifiable work units.
 

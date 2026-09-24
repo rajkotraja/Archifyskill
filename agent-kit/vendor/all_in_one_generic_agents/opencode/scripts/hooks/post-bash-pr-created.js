@@ -11,10 +11,10 @@ function run(rawInput) {
 
     if (/\bgh\s+pr\s+create\b/.test(cmd)) {
       const out = String(input.tool_output?.output || '');
-      const match = out.match(/https:\/\/github\.com\/[^/]+\/[^/]+\/pull\/\d+/);
+      const match = out.match(/<url>\/[^/]+\/[^/]+\/pull\/\d+/);
       if (match) {
         const prUrl = match[0];
-        const repo = prUrl.replace(/https:\/\/github\.com\/([^/]+\/[^/]+)\/pull\/\d+/, '$1');
+        const repo = prUrl.replace(/<url>\/([^/]+\/[^/]+)\/pull\/\d+/, '$1');
         const prNum = prUrl.replace(/.+\/pull\/(\d+)/, '$1');
         return {
           stdout: typeof rawInput === 'string' ? rawInput : JSON.stringify(rawInput),

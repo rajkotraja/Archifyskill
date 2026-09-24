@@ -2,7 +2,7 @@
 name: continuous-learning
 description: "[DEPRECATED - use continuous-learning-v2] Legacy v1 stop-hook skill extractor. v2 is a strict superset with instinct-based, project-scoped, hook-reliable learning. Do not invoke v1: when continuous learning, session learning, or pattern extraction is requested, route to continuous-learning-v2 instead."
 metadata:
-  origin: ECC
+  origin: all_in_one_generic_agents
 ---
 
 # Continuous Learning Skill - DEPRECATED
@@ -98,7 +98,6 @@ Add to your `~/.claude/settings.json`:
 
 ## Related
 
-- [The Longform Guide](https://x.com/affaanmustafa/status/2014040193557471352) - Section on continuous learning
 - `/learn` command - Manual pattern extraction mid-session
 
 ---

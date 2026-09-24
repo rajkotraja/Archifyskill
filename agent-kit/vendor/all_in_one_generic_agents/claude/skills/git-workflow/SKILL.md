@@ -2,7 +2,7 @@
 name: git-workflow
 description: Git workflow patterns including branching strategies, commit conventions, merge vs rebase, conflict resolution, and collaborative development best practices for teams of all sizes. Use when choosing a branching strategy, writing commit conventions, deciding merge versus rebase, or resolving conflicts.
 metadata:
-  origin: ECC
+  origin: all_in_one_generic_agents
 ---
 
 # Git Workflow Patterns
@@ -582,7 +582,7 @@ git push origin feature/user-auth
 
 ```bash
 # 1. Add upstream remote (once)
-git remote add upstream https://github.com/original/repo.git
+git remote add upstream <url>
 
 # 2. Fetch upstream
 git fetch upstream

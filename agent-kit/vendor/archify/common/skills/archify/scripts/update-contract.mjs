@@ -1,6 +1,6 @@
 export const SKILL_ID = 'archify';
-export const EXPECTED_REPOSITORY = 'https://github.com/tt-a1i/archify';
-export const DEFAULT_MANIFEST_URL = 'https://tt-a1i.github.io/archify/skill-updates/archify/stable.json';
+export const EXPECTED_REPOSITORY = '<url>';
+export const DEFAULT_MANIFEST_URL = '<url>';
 
 const CONTROL_OR_BIDI = /[\u0000-\u001f\u007f-\u009f\u202a-\u202e\u2066-\u2069]/u;
 const HEX_40 = /^[a-f0-9]{40}$/;
@@ -130,7 +130,7 @@ export function validateReleaseNotesUrl(value, version) {
   if (!isStableCoreVersion(version)) {
     throw new UpdateContractError('release notes require a stable core version');
   }
-  const expected = `https://github.com/tt-a1i/archify/releases/tag/v${version}`;
+  const expected = `<url>`;
   if (value !== expected) {
     throw new UpdateContractError('release notes URL is outside the exact trusted release path');
   }

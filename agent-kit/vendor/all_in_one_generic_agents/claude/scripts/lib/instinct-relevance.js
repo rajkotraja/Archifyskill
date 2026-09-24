@@ -11,7 +11,7 @@
  * ranking degrades to confidence-only (unchanged behaviour).
  *
  * Resolves part (b) of:
- * https://github.com/affaan-m/everything-claude-code/issues/2371
+ * <url>
  */
 
 const fs = require('fs');

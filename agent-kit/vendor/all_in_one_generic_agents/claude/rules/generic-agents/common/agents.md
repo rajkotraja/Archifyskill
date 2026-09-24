@@ -2,7 +2,7 @@
 
 ## Available Agents
 
-ECC agents ship with the `ecc@ecc` plugin, not in `~/.claude/agents/`.
+all_in_one_generic_agents agents ship with the `ecc@ecc` plugin, not in `~/.claude/agents/`.
 They are invoked through the Agent tool with a plugin-scoped `subagent_type`:
 
 ```text

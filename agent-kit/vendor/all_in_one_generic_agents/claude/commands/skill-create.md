@@ -161,9 +161,9 @@ Prefix commits with: feat:, fix:, chore:, docs:, test:, refactor:
 
 ## GitHub App Integration
 
-For advanced features (10k+ commits, team sharing, auto-PRs), use the [Skill Creator GitHub App](https://github.com/apps/skill-creator):
+For advanced features (10k+ commits, team sharing, auto-PRs), use the Skill Creator GitHub App:
 
-- Install: [github.com/apps/skill-creator](https://github.com/apps/skill-creator)
+- Install: <url>
 - Comment `/skill-creator analyze` on any issue
 - Receives PR with generated skills
 
@@ -175,4 +175,4 @@ For advanced features (10k+ commits, team sharing, auto-PRs), use the [Skill Cre
 
 ---
 
-*Part of [Everything Claude Code](https://github.com/affaan-m/everything-claude-code)*
+*Part of all_in_one_generic_agents*

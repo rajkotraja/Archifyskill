@@ -1,5 +1,5 @@
 ---
-description: Run the ECC formatter quality gate for a single file and report remediation steps.
+description: Run the all_in_one_generic_agents formatter quality gate for a single file and report remediation steps.
 ---
 
 # Quality Gate Command

@@ -2,7 +2,7 @@
 name: project-flow-ops
 description: Operate execution flow across GitHub and Linear by triaging issues and pull requests, linking active work, and keeping GitHub public-facing while Linear remains the internal execution layer. Use when the user wants backlog control, PR triage, or GitHub-to-Linear coordination.
 metadata:
-  origin: ECC
+  origin: all_in_one_generic_agents
 ---
 
 # Project Flow Ops
@@ -50,7 +50,7 @@ Every item should end up in one of these states:
 | State | Meaning |
 |-------|---------|
 | Merge | self-contained, policy-compliant, ready |
-| Port/Rebuild | useful idea, but should be manually re-landed inside ECC |
+| Port/Rebuild | useful idea, but should be manually re-landed inside all_in_one_generic_agents |
 | Close | wrong direction, stale, unsafe, or duplicated |
 | Park | potentially useful, but not scheduled now |
 
@@ -80,7 +80,7 @@ When work ships or is rejected:
 ## Review Rules
 
 - Never merge from title, summary, or trust alone; use the full diff
-- External-source features should be rebuilt inside ECC when they are valuable but not self-contained
+- External-source features should be rebuilt inside all_in_one_generic_agents when they are valuable but not self-contained
 - CI red means classify and fix or block; do not pretend it is merge-ready
 - If the real blocker is product direction, say so instead of hiding behind tooling
 
@@ -108,5 +108,5 @@ NEXT OPERATOR ACTION
 ## Good Use Cases
 
 - "Audit the open PR backlog and tell me what to merge vs rebuild"
-- "Map GitHub issues into our ECC 1.x and ECC 2.0 program lanes"
+- "Map GitHub issues into our all_in_one_generic_agents 1.x and all_in_one_generic_agents 2.0 program lanes"
 - "Check whether this needs a Linear issue or should stay GitHub-only"

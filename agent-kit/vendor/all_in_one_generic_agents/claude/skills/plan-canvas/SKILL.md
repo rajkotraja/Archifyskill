@@ -3,7 +3,7 @@ name: plan-canvas
 description: Open plans and HTML artifacts in a local browser canvas where the human annotates elements, chats, and approves or requests changes without leaving the page. Use when presenting a plan for review, or when feedback like "move this, change that" is easier pointed at than typed.
 metadata:
   version: "1.0.0"
-  origin: ECC
+  origin: all_in_one_generic_agents
 ---
 
 # Plan Canvas
@@ -13,8 +13,8 @@ reviews it in the browser — annotating the exact element they mean, chatting,
 and delivering an **Approve plan / Request changes** verdict — while you block
 on a single CLI call that returns their feedback as JSON.
 
-Inspired by [lavish-axi](https://github.com/kunchenguid/lavish-axi); rebuilt
-ECC-native around the `/plan` confirmation gate, with zero dependencies.
+Inspired by lavish-axi; rebuilt
+all_in_one_generic_agents-native around the `/plan` confirmation gate, with zero dependencies.
 
 ## When to Use
 
@@ -136,14 +136,14 @@ flowchart LR
 ```
 ````
 
-Diagrams render in the ECC dark theme with the accent palette. Mermaid loads in
+Diagrams render in the all_in_one_generic_agents dark theme with the accent palette. Mermaid loads in
 the browser from a pinned CDN; if that is unavailable (offline), the block
 degrades to showing its source, so the review is never blocked. Point a local
 mirror at `ECC_PLAN_CANVAS_MERMAID_URL` for air-gapped use.
 
 ## Rules
 
-- Markdown artifacts render in ECC's plan template (including Mermaid blocks);
+- Markdown artifacts render in all_in_one_generic_agents's plan template (including Mermaid blocks);
   `.html` artifacts render as-is with the annotation layer injected. For HTML
   authoring guidance use the `frontend-design-direction` and `artifact-design`
   skills.

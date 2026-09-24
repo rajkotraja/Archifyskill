@@ -4,7 +4,7 @@
  * Cross-platform (Windows, macOS, Linux) project type detection
  * by inspecting files in the working directory.
  *
- * Resolves: https://github.com/affaan-m/everything-claude-code/issues/293
+ * Resolves: <url>
  */
 
 const fs = require('fs');
@@ -201,7 +201,7 @@ function getPythonDeps(projectDir) {
             .split(/[\s>=<!~@[;]/)[0]
             .trim()
             .toLowerCase();
-          // Bare VCS/URL requirement lines (e.g. `git+https://...#egg=pkg`)
+          // Bare VCS/URL requirement lines (e.g. `git+<url>`)
           // carry no leading package name; skip them instead of recording
           // the URL fragment as a dependency name.
           if (name && !name.startsWith('git+') && !name.includes('://')) deps.push(name);

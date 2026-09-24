@@ -42,5 +42,5 @@ paths:
 
 ## Reference
 
-- ECC skills: `frontend-patterns`, `vite-patterns`.
-- Docs: <https://vuejs.org/guide/best-practices/security.html> · <https://github.com/cure53/DOMPurify> · <https://github.com/braintree/sanitize-url>
+- all_in_one_generic_agents skills: `frontend-patterns`, `vite-patterns`.
+- Docs: <url> · <url> · <url>

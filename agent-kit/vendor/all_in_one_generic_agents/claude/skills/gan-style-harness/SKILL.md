@@ -2,13 +2,13 @@
 name: gan-style-harness
 description: "GAN-inspired Generator-Evaluator agent harness for building high-quality applications autonomously. Based on Anthropic's March 2026 harness design paper. Use when a feature should be built autonomously through generator and evaluator iteration until it clears a quality bar."
 metadata:
-  origin: ECC-community
+  origin: all_in_one_generic_agents-community
 tools: Read, Write, Edit, Bash, Grep, Glob, Task
 ---
 
 # GAN-Style Harness Skill
 
-> Inspired by [Anthropic's Harness Design for Long-Running Application Development](https://www.anthropic.com/engineering/harness-design-long-running-apps) (March 24, 2026)
+> Inspired by Anthropic's Harness Design for Long-Running Application Development (March 24, 2026)
 
 A multi-agent harness that separates **generation** from **evaluation**, creating an adversarial feedback loop that drives quality far beyond what a single agent can achieve.
 
@@ -273,7 +273,7 @@ Based on Anthropic's published results:
 
 ## References
 
-- [Anthropic: Harness Design for Long-Running Apps](https://www.anthropic.com/engineering/harness-design-long-running-apps) — Original paper by Prithvi Rajasekaran
-- [Epsilla: The GAN-Style Agent Loop](https://www.epsilla.com/blogs/anthropic-harness-engineering-multi-agent-gan-architecture) — Architecture deconstruction
-- [Martin Fowler: Harness Engineering](https://martinfowler.com/articles/exploring-gen-ai/harness-engineering.html) — Broader industry context
-- [OpenAI: Harness Engineering](https://openai.com/index/harness-engineering/) — OpenAI's parallel work
+- Anthropic: Harness Design for Long-Running Apps — Original paper by Prithvi Rajasekaran
+- Epsilla: The GAN-Style Agent Loop — Architecture deconstruction
+- Martin Fowler: Harness Engineering — Broader industry context
+- OpenAI: Harness Engineering — OpenAI's parallel work

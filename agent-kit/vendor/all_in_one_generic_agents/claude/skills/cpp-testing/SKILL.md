@@ -2,7 +2,7 @@
 name: cpp-testing
 description: Use only when writing/updating/fixing C++ tests, configuring GoogleTest/CTest, diagnosing failing or flaky tests, or adding coverage/sanitizers.
 metadata:
-  origin: ECC
+  origin: all_in_one_generic_agents
 ---
 
 # C++ Testing (Agent Skill)
@@ -163,7 +163,7 @@ set(GTEST_VERSION v1.17.0) # Adjust to project policy.
 FetchContent_Declare(
   googletest
   # Google Test framework (official repository)
-  URL https://github.com/google/googletest/archive/refs/tags/${GTEST_VERSION}.zip
+  URL <url>
 )
 FetchContent_MakeAvailable(googletest)
 

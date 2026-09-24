@@ -2,7 +2,7 @@
 name: exa-search
 description: Neural search via Exa MCP for web, code, and company research. Use when the user needs web search, code examples, company intel, people lookup, or AI-powered deep research with Exa's neural search engine.
 metadata:
-  origin: ECC
+  origin: all_in_one_generic_agents
 ---
 
 # Exa Search
@@ -34,7 +34,7 @@ Exa MCP server must be configured. Add to `~/.claude.json`:
 }
 ```
 
-Get an API key at [exa.ai](https://exa.ai).
+Get an API key at exa.ai.
 This repo's current Exa setup documents the tool surface exposed here: `web_search_exa` and `get_code_context_exa`.
 If your Exa server exposes additional tools, verify their exact names before depending on them in docs or prompts.
 

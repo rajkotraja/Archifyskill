@@ -3,10 +3,10 @@
 const { version: ECC_VERSION } = require('../../package.json');
 
 const COMMUNITY_LINKS = Object.freeze({
-  github: 'https://github.com/affaan-m/ECC',
-  discord: 'https://discord.gg/36yGMHGFbR',
-  documentation: 'https://github.com/affaan-m/ECC#readme',
-  githubApp: 'https://github.com/apps/ecc-tools',
+  github: '<url>',
+  discord: '<url>',
+  documentation: '<url>',
+  githubApp: '<url>',
 });
 
 const SUCCESS_ACTIONS = Object.freeze([
@@ -25,7 +25,7 @@ const SUCCESS_MESSAGES = Object.freeze({
   'already-migrated': 'ECC is configured — thank you for using ECC!',
   configured: 'ECC is configured — thank you for using ECC!',
 });
-// CFonts' default "block" face: https://github.com/dominikwilkowski/cfonts
+// CFonts' default "block" face: <url>
 const ECC_WORDMARK = Object.freeze([
   ' ███████╗  ██████╗  ██████╗',
   ' ██╔════╝ ██╔════╝ ██╔════╝',

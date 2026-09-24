@@ -5,7 +5,7 @@ metadata:
   version: 2.0.0
   origin: community
 author: sreedhargs89
-repo: https://github.com/sreedhargs89/context-keeper
+repo: <url>
 ---
 
 # ck — Context Keeper

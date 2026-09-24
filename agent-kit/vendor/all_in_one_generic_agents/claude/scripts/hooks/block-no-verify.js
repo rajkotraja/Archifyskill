@@ -38,7 +38,7 @@ const VALID_BEFORE_GIT = ' \t\n\r;&|$`(<{!"\']/.~\\';
 // Git config section and variable names are case-insensitive
 // (subsection names are case-sensitive but core.hooksPath has none),
 // so we normalize the candidate token to lowercase before matching.
-// See https://git-scm.com/docs/git-config — "The variable names are
+// See <url> — "The variable names are
 // case-insensitive."
 const GIT_CONFIG_KEY_PREFIX = 'core.hookspath=';
 

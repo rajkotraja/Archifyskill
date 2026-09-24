@@ -2,7 +2,7 @@
 name: code-tour
 description: Create CodeTour `.tour` files — persona-targeted, step-by-step walkthroughs with real file and line anchors. Use for onboarding tours, architecture walkthroughs, PR tours, RCA tours, and structured "explain how this works" requests. Use when the user asks for a code tour, onboarding walkthrough, PR tour, or an explanation of how a subsystem works.
 metadata:
-  origin: ECC
+  origin: all_in_one_generic_agents
 ---
 
 # Code Tour
@@ -169,7 +169,7 @@ Use when exact lines may drift:
 Use for PRs, issues, or docs when helpful:
 
 ```json
-{ "uri": "https://github.com/org/repo/pull/456", "title": "The PR" }
+{ "uri": "<url>", "title": "The PR" }
 ```
 
 ## Writing Rule: SMIG
@@ -197,7 +197,7 @@ The tour should feel like a path, not an inventory.
 
 ```json
 {
-  "$schema": "https://aka.ms/codetour-schema",
+  "$schema": "<url>",
   "title": "API Service Tour",
   "description": "Walkthrough of the request path for the payments service.",
   "ref": "main",

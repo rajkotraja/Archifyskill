@@ -68,8 +68,8 @@ Fetch the specific documentation page for the feature you're implementing. Not t
 
 | Priority | Source | Example |
 |----------|--------|---------|
-| 1 | Official documentation | react.dev, docs.djangoproject.com, symfony.com/doc |
-| 2 | Official blog / changelog | react.dev/blog, nextjs.org/blog |
+| 1 | Official documentation | react.dev, docs.djangoproject.com, <url> |
+| 2 | Official blog / changelog | <url>, <url> |
 | 3 | Web standards references | MDN, web.dev, html.spec.whatwg.org |
 | 4 | Browser/runtime compatibility | caniuse.com, node.green |
 
@@ -84,10 +84,10 @@ Fetch the specific documentation page for the feature you're implementing. Not t
 
 ```
 BAD:  Fetch the React homepage
-GOOD: Fetch react.dev/reference/react/useActionState
+GOOD: Fetch <url>
 
 BAD:  Search "django authentication best practices"
-GOOD: Fetch docs.djangoproject.com/en/6.0/topics/auth/
+GOOD: Fetch <url>
 ```
 
 After fetching, extract the key patterns and note any deprecation warnings or migration guidance.
@@ -128,7 +128,7 @@ Write code that matches what the documentation shows:
 CONFLICT DETECTED:
 The existing codebase uses useState for form loading state,
 but React 19 docs recommend useActionState for this pattern.
-(Source: react.dev/reference/react/useActionState)
+(Source: <url>)
 
 Options:
 A) Use the modern pattern (useActionState) — consistent with current docs
@@ -146,7 +146,7 @@ Every framework-specific pattern gets a citation. The user must be able to verif
 
 ```typescript
 // React 19 form handling with useActionState
-// Source: https://react.dev/reference/react/useActionState#usage
+// Source: <url>
 const [state, formAction, isPending] = useActionState(submitOrder, initialState);
 ```
 
@@ -157,7 +157,7 @@ I'm using useActionState instead of manual useState for the
 form submission state. React 19 replaced the manual
 isPending/setIsPending pattern with this hook.
 
-Source: https://react.dev/blog/2024/12/05/react-19#actions
+Source: <url>
 "useTransition now supports async functions [...] to handle
 pending states automatically"
 ```

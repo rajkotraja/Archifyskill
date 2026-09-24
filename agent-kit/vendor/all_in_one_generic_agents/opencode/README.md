@@ -1,15 +1,15 @@
-# OpenCode ECC Plugin
+# OpenCode all_in_one_generic_agents Plugin
 
 > WARNING: This README is specific to OpenCode usage.
-> If you installed ECC via npm (e.g. `npm install opencode-ecc`), refer to the root README instead.
+> If you installed all_in_one_generic_agents via npm (e.g. `npm install opencode-ecc`), refer to the root README instead.
 
-ECC plugin for OpenCode - agents, commands, hooks, and skills.
+all_in_one_generic_agents plugin for OpenCode - agents, commands, hooks, and skills.
 
 ## Installation
 
 ## Installation Overview
 
-There are two ways to use ECC:
+There are two ways to use all_in_one_generic_agents:
 
 1. **npm package (recommended for most users)**
    Install via npm/bun/yarn and use the `ecc-install` CLI to set up rules and agents.
@@ -33,11 +33,11 @@ Add to your `opencode.json`:
 }
 ```
 
-This loads the ECC OpenCode plugin module from npm:
+This loads the all_in_one_generic_agents OpenCode plugin module from npm:
 - hook/event integrations
 - bundled custom tools exported by the plugin
 
-It does **not** auto-register the full ECC command/agent/instruction catalog in your project config. For the full OpenCode setup, either:
+It does **not** auto-register the full all_in_one_generic_agents command/agent/instruction catalog in your project config. For the full OpenCode setup, either:
 - run OpenCode inside this repository, or
 - copy the relevant `.opencode/commands/`, `.opencode/prompts/`, `.opencode/instructions/`, and the `instructions`, `agent`, and `command` config entries into your own project
 
@@ -52,12 +52,12 @@ npx ecc-universal install typescript
 Clone and run OpenCode in the repository:
 
 ```bash
-git clone https://github.com/affaan-m/ECC
-cd ECC
+git clone <url>
+cd all_in_one_generic_agents
 opencode
 ```
 
-If you also want to apply the ECC home install
+If you also want to apply the all_in_one_generic_agents home install
 (`node scripts/install-apply.js --target opencode --profile full`), build the
 plugin first so the compiled payload at `.opencode/dist/` exists:
 
@@ -195,7 +195,7 @@ export ECC_DISABLED_HOOKS="pre:bash:tmux-reminder,post:edit:typecheck"
 
 ## Skills
 
-The default OpenCode config loads 11 curated ECC skills via the `instructions` array:
+The default OpenCode config loads 11 curated all_in_one_generic_agents skills via the `instructions` array:
 
 - coding-standards
 - backend-patterns
@@ -235,7 +235,7 @@ Full configuration in `opencode.json`:
 ```
 
 The reference config intentionally leaves model selection to OpenCode. Connect a
-provider and select a model in OpenCode; ECC's primary agent uses that global
+provider and select a model in OpenCode; all_in_one_generic_agents's primary agent uses that global
 selection, and its subagents inherit the invoking primary agent's model.
 
 ## License

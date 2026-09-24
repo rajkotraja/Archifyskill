@@ -92,10 +92,10 @@ For seller-side API flows, fetch the latest language-specific guide before gener
 
 | Runtime | Current guide |
 |---------|---------------|
-| TypeScript | `https://raw.githubusercontent.com/okx/payments/main/typescript/SELLER.md` |
-| Go | `https://raw.githubusercontent.com/okx/payments/main/go/x402/SELLER.md` |
-| Rust | `https://raw.githubusercontent.com/okx/payments/main/rust/x402/SELLER.md` |
-| Java | `https://raw.githubusercontent.com/okx/payments/main/java/SELLER.md` |
+| TypeScript | `<url>` |
+| Go | `<url>` |
+| Rust | `<url>` |
+| Java | `<url>` |
 
 Do not copy examples from older docs without checking the current OKX repository. Current OKX guidance uses `okx-agent-payments-protocol` as the dispatcher, and Java seller docs are now available.
 
@@ -217,9 +217,9 @@ main().catch((err) => {
 
 ## Production Reference
 
-- **npm**: [`agentwallet-sdk`](https://www.npmjs.com/package/agentwallet-sdk)
-- **Merged into NVIDIA NeMo Agent Toolkit**: [PR #17](https://github.com/NVIDIA/NeMo-Agent-Toolkit-Examples/pull/17) — x402 payment tool for NVIDIA's agent examples
-- **Protocol spec**: [x402.org](https://x402.org)
-- **OKX Payments SDKs**: [`okx/payments`](https://github.com/okx/payments) — TypeScript, Go, Rust, and Java seller integrations for X Layer x402
-- **OKX Agent Payments Protocol skill**: [`okx/onchainos-skills`](https://github.com/okx/onchainos-skills/tree/main/skills/okx-agent-payments-protocol)
-- **OKX Payments overview**: [web3.okx.com/onchainos/dev-docs/payments/overview](https://web3.okx.com/onchainos/dev-docs/payments/overview)
+- **npm**: `agentwallet-sdk`
+- **Merged into NVIDIA NeMo Agent Toolkit**: PR #17 — x402 payment tool for NVIDIA's agent examples
+- **Protocol spec**: <url>
+- **OKX Payments SDKs**: `okx/payments` — TypeScript, Go, Rust, and Java seller integrations for X Layer x402
+- **OKX Agent Payments Protocol skill**: `okx/onchainos-skills`
+- **OKX Payments overview**: <url>

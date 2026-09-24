@@ -111,7 +111,7 @@ the gate cannot know which calls arrived together.
 
 ## Quick Start
 
-### Option A: Use the ECC hook (zero install)
+### Option A: Use the all_in_one_generic_agents hook (zero install)
 
 The hook at `scripts/hooks/gateguard-fact-force.js` is included in this plugin. Enable it via hooks.json.
 
