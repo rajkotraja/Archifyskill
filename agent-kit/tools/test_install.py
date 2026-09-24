@@ -24,8 +24,9 @@ from pathlib import Path
 KIT = Path(__file__).resolve().parent.parent
 INSTALL = KIT / "install.py"
 MANIFEST = json.loads((KIT / "vendor" / "MANIFEST.json").read_text())
-ECC = MANIFEST["sources"]["ecc"]
-ECC_MARKER, ADDY_MARKER = ECC["hook_marker"], MANIFEST["sources"]["addy"]["hook_marker"]
+SDLC, GENERIC = "SDLC_agents", "all_in_one_generic_agents"
+GEN = MANIFEST["sources"][GENERIC]
+GEN_MARKER, SDLC_MARKER = GEN["hook_marker"], MANIFEST["sources"][SDLC]["hook_marker"]
 
 
 def snapshot(root: Path) -> dict:
@@ -70,23 +71,23 @@ class InstallTest(unittest.TestCase):
         self.run_install()
         c = MANIFEST["sources"]
         for d in ("agents", "commands"):
-            n = ECC["counts"]["claude"][d] + c["addy"]["counts"]["claude"][d]
+            n = GEN["counts"]["claude"][d] + c[SDLC]["counts"]["claude"][d]
             self.assertEqual(len(list((self.claude / d).glob("*.md"))), n, d)
         self.assertEqual(len([p for p in (self.claude / "skills").iterdir() if p.is_dir()]),
-                         ECC["counts"]["claude"]["skills"] + c["addy"]["counts"]["claude"]["skills"])
-        # renamed collisions: both personas exist, ECC keeps the plain names
+                         GEN["counts"]["claude"]["skills"] + c[SDLC]["counts"]["claude"]["skills"])
+        # renamed collisions: both personas exist, the generic bundle keeps the plain names
         self.assertTrue((self.claude / "agents" / "code-reviewer.md").exists())
-        self.assertIn("name: addy-code-reviewer", (self.claude / "agents" / "addy-code-reviewer.md").read_text())
-        self.assertTrue((self.claude / "commands" / "addy-plan.md").exists())
-        # addy's skills link to ../../references/, which must sit beside skills/
+        self.assertIn("name: sdlc-code-reviewer", (self.claude / "agents" / "sdlc-code-reviewer.md").read_text())
+        self.assertTrue((self.claude / "commands" / "sdlc-plan.md").exists())
+        # SDLC_agents skills link to ../../references/, which must sit beside skills/
         self.assertTrue((self.claude / "references" / "security-checklist.md").exists())
         self.assertTrue((self.oc / "references" / "security-checklist.md").exists())
         # install-state records from the build machine are never shipped
         self.assertFalse((self.claude / "ecc" / "state.db").exists())
         self.assertFalse((self.oc / "ecc-install-state.json").exists())
-        self.assertEqual(hook_groups(self.settings(), ECC_MARKER), ECC["counts"]["claude_hook_commands"])
-        self.assertEqual(hook_groups(self.settings(), ADDY_MARKER), 0, "addy hooks must be opt-in")
-        self.assertEqual(len(self.opencode()["agent"]), ECC["counts"]["opencode_inline_agents"])
+        self.assertEqual(hook_groups(self.settings(), GEN_MARKER), GEN["counts"]["claude_hook_commands"])
+        self.assertEqual(hook_groups(self.settings(), SDLC_MARKER), 0, "SDLC_agents hooks must be opt-in")
+        self.assertEqual(len(self.opencode()["agent"]), GEN["counts"]["opencode_inline_agents"])
 
     def test_web_performance_auditor_is_excluded(self):
         self.run_install()
@@ -126,19 +127,19 @@ class InstallTest(unittest.TestCase):
             for gone in ("web-performance-auditor", "kotlin-reviewer", "flutter-reviewer", "gradle-build", "webperf"):
                 self.assertNotIn(gone, generated + catalog)
 
-    def test_meta_skill_follows_ecc_presence(self):
+    def test_meta_skill_follows_generic_presence(self):
         meta = self.claude / "skills" / "using-agent-skills"
-        stock = (KIT / "vendor" / "addy" / "standalone" / "claude" / "skills" / "using-agent-skills" / "SKILL.md").read_text()
-        self.run_install("--source", "addy")
-        self.assertEqual((meta / "SKILL.md").read_text(), stock, "without ECC the stock meta-skill is installed")
+        stock = (KIT / "vendor" / SDLC / "standalone" / "claude" / "skills" / "using-agent-skills" / "SKILL.md").read_text()
+        self.run_install("--source", SDLC)
+        self.assertEqual((meta / "SKILL.md").read_text(), stock, f"without {GENERIC} the stock meta-skill is installed")
         self.assertFalse((meta / "catalog.md").exists())
-        self.run_install("--source", "ecc")
-        self.assertIn("Full kit: agent-skills + ECC", (meta / "SKILL.md").read_text())
+        self.run_install("--source", GENERIC)
+        self.assertIn(f"Full kit: {SDLC} + {GENERIC}", (meta / "SKILL.md").read_text())
         self.assertTrue((meta / "catalog.md").exists())
-        self.run_install("--uninstall", "--source", "ecc")
+        self.run_install("--uninstall", "--source", GENERIC)
         self.assertEqual((meta / "SKILL.md").read_text(), stock)
         self.assertFalse((meta / "catalog.md").exists())
-        self.assertTrue((self.claude / "skills" / "spec-driven-development").exists(), "addy stays installed")
+        self.assertTrue((self.claude / "skills" / "spec-driven-development").exists(), f"{SDLC} stays installed")
         self.run_install("--uninstall")
         self.assertEqual(snapshot(self.home), {})
 
@@ -152,6 +153,55 @@ class InstallTest(unittest.TestCase):
         digest = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
         self.assertEqual(digest(committed), digest(fresh),
                          "agent-kit.zip is stale; run tools/build_zip.py and commit it")
+
+    def test_kit_layer_carries_no_upstream_names(self):
+        vendor = KIT / "vendor"
+        self.assertEqual([p for p in vendor.rglob("*") if "licen" in p.name.lower()], [])
+        self.assertEqual(sorted(p.name for p in vendor.iterdir()), sorted(["MANIFEST.json", GENERIC, SDLC]))
+        manifest_text = (vendor / "MANIFEST.json").read_text()
+        for word in ("addy", "agent-skills (", "Affaan", "Osmani", "github.com", "MIT"):
+            self.assertNotIn(word, manifest_text)
+        self.run_install()
+        for target, root in (("claude", self.claude), ("opencode", self.oc)):
+            paths = [p.relative_to(root).as_posix() for p in root.rglob("*")]
+            self.assertEqual([p for p in paths if "addy" in p.lower()], [], target)
+            for old in ("skills/ecc-guide", "skills/ecc-recipes", "skills/configure-ecc",
+                        "skills/ecc-tools-cost-audit", "commands/ecc-guide.md", "rules/ecc"):
+                self.assertFalse((root / old).exists(), f"{target}: {old}")
+            for new in ("skills/generic-agents-guide", "skills/configure-generic-agents", "commands/generic-agents-guide.md"):
+                self.assertTrue((root / new).exists(), f"{target}: {new}")
+            meta = root / "skills" / "using-agent-skills"
+            generated = (meta / "SKILL.md").read_text().split("BEGIN agent-kit generated section", 1)[1]
+            for word in ("ECC", "addy", "agent-skills +", "agent-skills personas"):
+                self.assertNotIn(word, generated, f"{target} router")
+            labels = set(re.findall(r"^- `[^`]+` \[([^\]]+)\]", (meta / "catalog.md").read_text(), re.M))
+            self.assertEqual(labels, {SDLC, GENERIC}, f"{target} catalog labels")
+        self.assertTrue((self.claude / "rules" / "generic-agents").is_dir())
+        self.assertIn("name: generic-agents-guide",
+                      (self.claude / "skills" / "generic-agents-guide" / "SKILL.md").read_text())
+
+    def test_state_from_earlier_versions_is_migrated(self):
+        # Earlier versions stored the bundles under other keys; a stale file they
+        # installed must be cleaned up by the next run, not orphaned.
+        self.run_install("--sdlc-hooks")
+        state_path = self.claude / ".agent-kit-state.json"
+        state = json.loads(state_path.read_text())
+        stale = self.claude / "agents" / "old-name-reviewer.md"
+        stale.write_text("stale\n")
+        state["sources"][SDLC]["files"]["agents/old-name-reviewer.md"] = {
+            "sha256": hashlib.sha256(b"stale\n").hexdigest(), "backup": None}
+        state["sources"] = {("addy" if k == SDLC else "ecc"): v for k, v in state["sources"].items()}
+        state["options"]["addy_hooks"] = state["options"].pop("sdlc_hooks")
+        state_path.write_text(json.dumps(state))
+
+        self.run_install()
+        migrated = json.loads(state_path.read_text())
+        self.assertEqual(sorted(migrated["sources"]), sorted([SDLC, GENERIC]))
+        self.assertIs(migrated["options"]["sdlc_hooks"], True, "remembered hook choice survives")
+        self.assertFalse(stale.exists(), "file from the old layout is cleaned up")
+        self.assertEqual(hook_groups(self.settings(), SDLC_MARKER), 5)
+        self.run_install("--uninstall")
+        self.assertEqual(snapshot(self.home), {})
 
     def test_second_run_changes_nothing(self):
         self.run_install()
@@ -175,7 +225,7 @@ class InstallTest(unittest.TestCase):
         cmds = [h["command"] for gs in self.settings()["hooks"].values() for g in gs for h in g["hooks"]]
         roots = {base64.b64decode(m).decode() for c in cmds for m in re.findall(r"Buffer\.from\('([^']+)'", c)}
         self.assertEqual(roots, {str(self.claude.absolute())})
-        self.assertNotIn(ECC["root_placeholder"], json.dumps(self.settings()))
+        self.assertNotIn(GEN["root_placeholder"], json.dumps(self.settings()))
 
     @unittest.skipUnless(shutil.which("node"), "node not installed")
     def test_installed_hook_actually_runs(self):
@@ -195,7 +245,7 @@ class InstallTest(unittest.TestCase):
             if os.path.isabs(entry):
                 self.assertTrue(Path(entry).is_file(), entry)
         self.assertNotIn("skills", self.opencode(), "dangling skills.paths must not be installed")
-        # the five skills ECC's own opencode.json lists but its resolver skipped
+        # the five skills the upstream opencode.json lists but its resolver skipped
         for skill in ("coding-standards", "frontend-patterns", "frontend-slides", "backend-patterns", "api-design"):
             self.assertTrue((self.oc / "skills" / skill / "SKILL.md").is_file(), skill)
 
@@ -224,7 +274,7 @@ class InstallTest(unittest.TestCase):
         # a pre-existing file that collides is replaced, but backed up
         mine = "---\nname: code-reviewer\n---\nmine\n"
         self.assertEqual((self.claude / "agents" / "code-reviewer.md").read_bytes(),
-                         (KIT / "vendor" / "ecc" / "claude" / "agents" / "code-reviewer.md").read_bytes())
+                         (KIT / "vendor" / GENERIC / "claude" / "agents" / "code-reviewer.md").read_bytes())
         backups = list((self.claude / ".agent-kit-backups").rglob("code-reviewer.md"))
         self.assertEqual([b.read_text() for b in backups], [mine])
 
@@ -250,7 +300,7 @@ class InstallTest(unittest.TestCase):
         original_configs = (json.loads((self.claude / "settings.json").read_text()),
                             json.loads((self.oc / "opencode.json").read_text()))
 
-        self.run_install("--addy-hooks")
+        self.run_install("--sdlc-hooks")
         self.run_install("--uninstall")
         after = snapshot(self.home)
         for cfg in (".claude/settings.json", ".config/opencode/opencode.json"):
@@ -282,20 +332,20 @@ class InstallTest(unittest.TestCase):
     def test_no_hooks_converges_and_is_remembered(self):
         self.run_install()
         self.run_install("--no-hooks")
-        self.assertEqual(hook_groups(self.settings(), ECC_MARKER), 0)
+        self.assertEqual(hook_groups(self.settings(), GEN_MARKER), 0)
         for target, root in (("claude", self.claude), ("opencode", self.oc)):
-            for rel in ECC["hook_runtime_paths"][target]:
+            for rel in GEN["hook_runtime_paths"][target]:
                 self.assertFalse((root / rel).exists(), f"{target}: {rel}")
         self.assertNotIn("plugin", self.opencode())
         self.assertFalse((self.oc / "plugins").exists())
         self.run_install()                                   # plain re-run keeps the choice
-        self.assertEqual(hook_groups(self.settings(), ECC_MARKER), 0)
+        self.assertEqual(hook_groups(self.settings(), GEN_MARKER), 0)
         self.run_install("--hooks")
-        self.assertEqual(hook_groups(self.settings(), ECC_MARKER), ECC["counts"]["claude_hook_commands"])
+        self.assertEqual(hook_groups(self.settings(), GEN_MARKER), GEN["counts"]["claude_hook_commands"])
         self.assertTrue((self.oc / "plugins" / "ecc-hooks.ts").is_file())
 
-    def test_opencode_loads_ecc_hooks_plugin_once(self):
-        # opencode auto-loads every plugins/*.{ts,js} as a separate module; ECC's
+    def test_opencode_loads_hooks_plugin_once(self):
+        # opencode auto-loads every plugins/*.{ts,js} as a separate module; the upstream
         # upstream output shipped a re-export too, so its hooks fired twice.
         self.run_install()
         modules = sorted(p.name for p in (self.oc / "plugins").iterdir() if p.suffix in (".ts", ".js"))
@@ -303,28 +353,28 @@ class InstallTest(unittest.TestCase):
         self.assertNotIn("./plugins", self.opencode().get("plugin", []))
         self.assertIn('from "./plugins/ecc-hooks.ts"', (self.oc / "index.ts").read_text())
 
-    def test_addy_hooks_opt_in(self):
-        self.run_install("--addy-hooks")
-        self.assertEqual(hook_groups(self.settings(), ADDY_MARKER), 5)
+    def test_sdlc_hooks_opt_in(self):
+        self.run_install("--sdlc-hooks")
+        self.assertEqual(hook_groups(self.settings(), SDLC_MARKER), 5)
         cmd = json.dumps(self.settings()["hooks"])
-        script = (self.claude / "hooks" / "addy" / "simplify-ignore.sh").absolute().as_posix()
+        script = (self.claude / "hooks" / SDLC / "simplify-ignore.sh").absolute().as_posix()
         self.assertIn(script, cmd)
         self.assertTrue(Path(script).is_file())
-        self.run_install("--no-addy-hooks")
-        self.assertEqual(hook_groups(self.settings(), ADDY_MARKER), 0)
-        self.assertFalse((self.claude / "hooks" / "addy").exists())
-        self.assertEqual(hook_groups(self.settings(), ECC_MARKER), ECC["counts"]["claude_hook_commands"])
+        self.run_install("--no-sdlc-hooks")
+        self.assertEqual(hook_groups(self.settings(), SDLC_MARKER), 0)
+        self.assertFalse((self.claude / "hooks" / SDLC).exists())
+        self.assertEqual(hook_groups(self.settings(), GEN_MARKER), GEN["counts"]["claude_hook_commands"])
 
     def test_source_selection_is_independent(self):
-        self.run_install("--source", "addy")
+        self.run_install("--source", SDLC)
         self.assertTrue((self.claude / "skills" / "spec-driven-development").exists())
         self.assertFalse((self.claude / "agents" / "architect.md").exists())
-        self.assertFalse((self.claude / "settings.json").exists(), "addy alone must not touch settings")
-        self.run_install("--source", "ecc")
-        self.run_install("--uninstall", "--source", "addy")
+        self.assertFalse((self.claude / "settings.json").exists(), f"{SDLC} alone must not touch settings")
+        self.run_install("--source", GENERIC)
+        self.run_install("--uninstall", "--source", SDLC)
         self.assertFalse((self.claude / "skills" / "spec-driven-development").exists())
-        self.assertTrue((self.claude / "agents" / "architect.md").exists(), "ECC must survive addy's uninstall")
-        self.assertEqual(hook_groups(self.settings(), ECC_MARKER), ECC["counts"]["claude_hook_commands"])
+        self.assertTrue((self.claude / "agents" / "architect.md").exists(), f"{GENERIC} must survive the {SDLC} uninstall")
+        self.assertEqual(hook_groups(self.settings(), GEN_MARKER), GEN["counts"]["claude_hook_commands"])
 
     def test_target_selection(self):
         self.run_install("--target", "opencode")

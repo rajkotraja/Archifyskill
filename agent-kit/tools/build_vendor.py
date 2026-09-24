@@ -3,43 +3,29 @@
 
 This is the maintainer tool. End users never need it: they run install.py,
 which only copies the already-built vendor/ trees. Run this when you want to
-pull newer upstream content, then commit the resulting vendor/ changes.
+pull newer upstream content, then run tools/build_zip.py and commit the
+resulting vendor/ changes together with agent-kit.zip.
 
 Requires: git, node (>=18) and npm on PATH, plus network access to GitHub and
 the npm registry.
 
-How ECC is vendored
--------------------
-ECC ships its own manifest-driven Node installer. Instead of re-implementing
-its module/target rules, this script runs that installer into throwaway HOME
-directories (one per target) and vendors the resulting trees. The vendored
-copy is therefore exactly what ECC itself installs, with these deliberate,
-documented changes (all recorded in vendor/MANIFEST.json):
+It produces two bundles:
 
-  1. Install-state records are dropped (ecc/install-state.json, ecc/state.db,
-     ecc-install-state.json). They hold absolute paths of the build machine and
-     no ECC hook reads them.
-  2. settings.json / opencode.json are split out of the trees into
-     vendor/ecc/config/ so install.py can MERGE them into the user's existing
-     config rather than overwrite it.
-  3. ECC's hook commands embed the install root base64-encoded and trust it
-     without checking it exists. That value is replaced with a placeholder
-     that install.py fills in with the real target root.
-  4. opencode.json "skills.paths": ["../skills"] is dropped. opencode resolves
-     it against the current *project* directory, so in a global install it
-     points nowhere; opencode already scans <config>/skills natively.
-  5. ECC's resolver skips the framework-language and machine-learning skill
-     modules for opencode only because they depend on Claude-only modules
-     (rules-core, agents-core). The skills themselves are plain SKILL.md
-     folders, and ECC's own opencode.json lists five of them as instructions,
-     so they are added to the opencode tree.
+- all_in_one_generic_agents (from GENERIC_REPO). That project ships its own
+  manifest-driven Node installer; instead of re-implementing its rules, this
+  script runs it into throwaway HOME directories (one per target) and vendors
+  the resulting trees, with these documented changes (see vendor/MANIFEST.json):
+  install-state records dropped; settings.json / opencode.json split out so
+  install.py can merge them; the base64 install root in hook commands replaced
+  by a placeholder; project-relative opencode paths fixed; skills its resolver
+  skipped for opencode added; the double-loaded opencode plugin fixed; the
+  curated GENERIC_EXCLUDE list removed; its self-named items renamed.
 
-How agent-skills (skills.addy.ie) is vendored
----------------------------------------------
-agent-skills is plain files, so it is copied directly. Two names collide with
-ECC (agent "code-reviewer", command "plan"); ECC keeps the plain names because
-dozens of its own files reference them, and agent-skills' copies are renamed
-to addy-code-reviewer / addy-plan with their in-repo references rewritten.
+- SDLC_agents (from SDLC_REPO), plain files copied directly. Two names collide
+  with the generic bundle (agent "code-reviewer", command "plan"); the generic
+  bundle keeps the plain names because dozens of its files reference them, and
+  the SDLC copies become sdlc-code-reviewer / sdlc-plan with their references
+  rewritten.
 """
 
 from __future__ import annotations
@@ -57,29 +43,55 @@ import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 
-ADDY_REPO = "https://github.com/addyosmani/agent-skills.git"
-ECC_REPO = "https://github.com/affaan-m/ECC.git"
+SDLC_REPO = "https://github.com/addyosmani/agent-skills.git"
+GENERIC_REPO = "https://github.com/affaan-m/ECC.git"
 
 # Pinned upstream commits. Bump these to refresh, then re-run this script.
-ADDY_REF = "bcab6a1b8503100e8618c3b4e32cc78de43de769"
-ECC_REF = "bf70150eb2df8070024e5bdf08e4aa08959e2735"
+SDLC_REF = "bcab6a1b8503100e8618c3b4e32cc78de43de769"
+GENERIC_REF = "bf70150eb2df8070024e5bdf08e4aa08959e2735"
 
-ECC_ROOT_PLACEHOLDER = "__AGENT_KIT_ECC_ROOT_B64__"
-ADDY_HOOKS_PLACEHOLDER = "__AGENT_KIT_ADDY_HOOKS_DIR__"
-# Every ECC hook command embeds ECC's root resolver (hooks split across
+GENERIC_ROOT_PLACEHOLDER = "__AGENT_KIT_GENERIC_ROOT_B64__"
+SDLC_HOOKS_PLACEHOLDER = "__AGENT_KIT_SDLC_HOOKS_DIR__"
+# Every generic-bundle hook command embeds its root resolver (hooks split across
 # plugin-hook-bootstrap.js and lifecycle-hook-bootstrap.js, but all resolve the
 # root the same way). install.py uses this to recognise, and replace on
-# reinstall, the hooks ECC owns.
-ECC_HOOK_MARKER = "resolve-ecc-root"
-ADDY_HOOK_MARKER = "/hooks/addy/"
+# reinstall, the hooks this bundle owns.
+GENERIC_HOOK_MARKER = "resolve-ecc-root"
+SDLC_HOOK_MARKER = "/hooks/SDLC_agents/"
 
-ECC_STATE_FILES = {"ecc/install-state.json", "ecc/state.db", "ecc-install-state.json"}
+SDLC = "SDLC_agents"
+GENERIC = "all_in_one_generic_agents"
 
-# ECC slimmed to SDLC + Python, Java/JVM, JS/TS web, Go, Rust, C++ and .NET.
-# ECC's own components cannot express this (every lang:*/framework:* component
+GENERIC_STATE_FILES = {"ecc/install-state.json", "ecc/state.db", "ecc-install-state.json"}
+
+# The upstream project's self-named items, renamed so the installed kit does not
+# carry its name. Nothing executable refers to them (the only code hits are
+# comments in its installer's link-rewriter, which never runs here), so only
+# text references are rewritten. Script internals keep their names (env vars
+# such as ECC_HOOK_PROFILE, resolve-ecc-root.js, ecc-hooks.ts) because the
+# hooks depend on them.
+GENERIC_RENAMES = {
+    "skills/ecc-guide": "skills/generic-agents-guide",
+    "skills/ecc-recipes": "skills/generic-agents-recipes",
+    "skills/configure-ecc": "skills/configure-generic-agents",
+    "skills/ecc-tools-cost-audit": "skills/generic-agents-tools-cost-audit",
+    "commands/ecc-guide.md": "commands/generic-agents-guide.md",
+    "rules/ecc": "rules/generic-agents",
+}
+GENERIC_TOKEN_REWRITES = [  # text references, longest first
+    ("ecc-tools-cost-audit", "generic-agents-tools-cost-audit"),
+    ("configure-ecc", "configure-generic-agents"),
+    ("ecc-recipes", "generic-agents-recipes"),
+    ("ecc-guide", "generic-agents-guide"),
+    ("rules/ecc", "rules/generic-agents"),
+]
+TEXT_SUFFIXES = (".md", ".json", ".txt", ".yaml", ".yml", ".toml")
+
+# all_in_one_generic_agents slimmed to SDLC + Python, Java/JVM, JS/TS web, Go, Rust, C++ and .NET.
+# The upstream installer's components cannot express this (every lang:*/framework:* component
 # maps to the single framework-language module), so it is done per file. Every
 # name below was confirmed with the user; nothing is matched by pattern.
-ECC_EXCLUDE = {
+GENERIC_EXCLUDE = {
     "Kotlin / Android": {
         "skills": ["android-clean-architecture", "compose-multiplatform-patterns", "kotlin-coroutines-flows",
                    "kotlin-exposed-patterns", "kotlin-ktor-patterns", "kotlin-patterns", "kotlin-testing"],
@@ -152,20 +164,20 @@ ECC_EXCLUDE = {
     "document processing": {"skills": ["nutrient-document-processing", "visa-doc-translate"]},
 }
 
-# name collisions with ECC -> the agent-skills copy is renamed
-ADDY_RENAMES = {
-    "agents": {"code-reviewer": "addy-code-reviewer"},
-    "commands": {"plan": "addy-plan"},
+# name collisions with all_in_one_generic_agents -> the SDLC_agents copy is renamed
+SDLC_RENAMES = {
+    "agents": {"code-reviewer": "sdlc-code-reviewer"},
+    "commands": {"plan": "sdlc-plan"},
 }
 # Left out on request. Only files that exist solely for this persona are listed:
 # the skills it uses (performance-optimization, browser-testing-with-devtools)
 # and references/performance-checklist.md are shared with /review, /test and
 # several other skills, so they stay.
-ADDY_EXCLUDE = {
+SDLC_EXCLUDE = {
     "agents/web-performance-auditor.md": "web-performance-auditor",
     "commands/webperf.md": "/webperf",
 }
-ADDY_HOOK_SCRIPTS = ["sdd-cache-pre.sh", "sdd-cache-post.sh", "simplify-ignore.sh"]
+SDLC_HOOK_SCRIPTS = ["sdd-cache-pre.sh", "sdd-cache-post.sh", "simplify-ignore.sh"]
 
 # ---- using-agent-skills: routing data for the generated "Full kit" section.
 # Every name is checked against the built trees; anything not installed in a
@@ -208,8 +220,8 @@ LANGUAGE_MAP = {
     "Any backend": {"skills": ["api-design", "backend-patterns", "coding-standards", "contract-first",
                                "hexagonal-architecture", "mcp-server-patterns"], "agents": [], "commands": []},
 }
-# ECC's own module grouping, used to list its remaining skills by area.
-ECC_AREAS = [
+# The upstream module grouping, used to list the remaining generic skills by area.
+GENERIC_AREAS = [
     ("workflow-quality", "Quality workflow (TDD, verification, review, git, e2e)"),
     ("security", "Security"),
     ("database", "Databases"),
@@ -221,8 +233,8 @@ ECC_AREAS = [
     ("optimization-workflows", "Benchmarking and performance"),
     ("skill-unified-memory", "Memory"),
 ]
-# Where agent-skills and ECC cover the same step: the agent-skills phase skill
-# stays the process, the ECC item adds depth.
+# Where both bundles cover the same step: the SDLC_agents phase skill stays the
+# process, the generic item adds depth.
 OVERLAPS = [
     ("test-driven-development", ["tdd-workflow", "e2e-testing"]),
     ("code-review-and-quality", ["code-reviewer"]),
@@ -233,7 +245,7 @@ OVERLAPS = [
     ("planning-and-task-breakdown", ["planner"]),
     ("frontend-ui-engineering", ["frontend-patterns"]),
 ]
-ADDY_HOOK_DOCS = ["SDD-CACHE.md", "SIMPLIFY-IGNORE.md"]
+SDLC_HOOK_DOCS = ["SDD-CACHE.md", "SIMPLIFY-IGNORE.md"]
 
 
 def log(msg: str) -> None:
@@ -283,9 +295,9 @@ def tree_digest(root: Path) -> str:
     return h.hexdigest()
 
 
-# --------------------------------------------------------------------- ECC
+# ------------------------------------------------ all_in_one_generic_agents
 
-def ecc_install(src: Path, target: str, home: Path, hooks: bool) -> Path:
+def upstream_install(src: Path, target: str, home: Path, hooks: bool) -> Path:
     home.mkdir(parents=True)
     env = {k: v for k, v in os.environ.items() if k not in ("OPENCODE_CONFIG_DIR", "XDG_CONFIG_HOME")}
     env.update(HOME=str(home), USERPROFILE=str(home), XDG_CONFIG_HOME=str(home / ".config"))
@@ -295,12 +307,12 @@ def ecc_install(src: Path, target: str, home: Path, hooks: bool) -> Path:
     result = json.loads(out)["result"]
     root = Path(result["targetRoot"] if "targetRoot" in result else result["plan"]["targetRoot"])
     if not root.is_dir():
-        sys.exit(f"ECC reported target root {root} but it does not exist")
+        sys.exit(f"upstream installer reported target root {root} but it does not exist")
     return root
 
 
-def apply_ecc_exclusions(out: Path, oc: dict) -> tuple[dict, dict]:
-    """Delete ECC_EXCLUDE entries from both trees and from opencode.json's inline config."""
+def apply_generic_exclusions(out: Path, oc: dict) -> tuple[dict, dict]:
+    """Delete GENERIC_EXCLUDE entries from both trees and from opencode.json's inline config."""
     trees = {"claude": out / "claude", "opencode": out / "opencode"}
     layout = {  # kind -> (claude path, opencode path); opencode has no agents/ or rules/ dirs
         "skills": ("skills/{}", "skills/{}"),
@@ -309,7 +321,7 @@ def apply_ecc_exclusions(out: Path, oc: dict) -> tuple[dict, dict]:
         "rules": ("rules/ecc/{}", None),
     }
     removed = {"files": 0, "names": {}}
-    for reason, kinds in ECC_EXCLUDE.items():
+    for reason, kinds in GENERIC_EXCLUDE.items():
         for kind, names in kinds.items():
             for name in names:
                 hits = 0
@@ -330,7 +342,7 @@ def apply_ecc_exclusions(out: Path, oc: dict) -> tuple[dict, dict]:
                 if kind == "commands" and oc.get("command", {}).pop(name, None) is not None:
                     hits += 1
                 if not hits:
-                    sys.exit(f"ECC_EXCLUDE: {kind[:-1]} '{name}' ({reason}) does not exist; typo or upstream rename")
+                    sys.exit(f"GENERIC_EXCLUDE: {kind[:-1]} '{name}' ({reason}) does not exist; typo or upstream rename")
                 removed["names"].setdefault(reason, []).append(f"{kind[:-1]}:{name}")
 
     # Inline opencode entries that point at something now gone would break at load time.
@@ -345,7 +357,7 @@ def apply_ecc_exclusions(out: Path, oc: dict) -> tuple[dict, dict]:
     oc["instructions"] = [i for i in oc.get("instructions", [])
                           if not i.startswith("skills/") or (trees["opencode"] / i).exists()]
 
-    # Report (don't fail on) kept files that still mention a removed name: ECC's
+    # Report (don't fail on) kept files that still mention a removed name: the
     # catalog/guide skills list everything, which is harmless prose.
     gone = {n.split(":", 1)[1] for names in removed["names"].values() for n in names}
     pattern = re.compile(r"(?<![\w-])(" + "|".join(map(re.escape, sorted(gone, key=len, reverse=True))) + r")(?![\w-])")
@@ -358,10 +370,42 @@ def apply_ecc_exclusions(out: Path, oc: dict) -> tuple[dict, dict]:
     return removed, dangling
 
 
-def build_ecc(src: Path, work: Path, out: Path, meta: dict) -> None:
-    log("ECC: installing npm dependencies (--ignore-scripts)")
+def apply_generic_renames(out: Path, config: Path) -> tuple[list, int]:
+    """Rename GENERIC_RENAMES in both trees and rewrite text references to them."""
+    moved = []
+    for tree in (out / "claude", out / "opencode"):
+        for old, new in GENERIC_RENAMES.items():
+            src, dst = tree / old, tree / new
+            if src.exists():
+                if dst.exists():
+                    sys.exit(f"cannot rename {tree.name}/{old}: {new} already exists")
+                src.rename(dst)
+                moved.append(f"{tree.name}/{old}")
+    if len(moved) < len(GENERIC_RENAMES):
+        sys.exit(f"GENERIC_RENAMES: only found {moved}; an upstream item was renamed or removed")
+
+    patterns = [(re.compile(rf"(?<![\w-]){re.escape(old)}(?![\w-])"), new) for old, new in GENERIC_TOKEN_REWRITES]
+    rewritten = 0
+    for root in (out / "claude", out / "opencode", config):
+        for path in sorted(root.rglob("*")):
+            if path.is_file() and path.suffix in TEXT_SUFFIXES:
+                text = path.read_text(encoding="utf-8", errors="surrogateescape")
+                new_text = text
+                for pattern, new in patterns:
+                    new_text = pattern.sub(new, new_text)
+                if new_text != text:
+                    path.write_text(new_text, encoding="utf-8", errors="surrogateescape")
+                    rewritten += 1
+                for pattern, _ in patterns:
+                    if pattern.search(new_text):
+                        sys.exit(f"{path} still references {pattern.pattern} after rewriting")
+    return moved, rewritten
+
+
+def build_generic(src: Path, work: Path, out: Path, meta: dict) -> None:
+    log("all_in_one_generic_agents: installing npm dependencies (--ignore-scripts)")
     run(["npm", "install", "--ignore-scripts", "--no-audit", "--no-fund", "--loglevel=error"], cwd=src)
-    log("ECC: compiling the opencode plugin payload")
+    log("all_in_one_generic_agents: compiling the opencode plugin payload")
     run(["node", "scripts/build-opencode.js"], cwd=src)
     meta["version"] = (src / "VERSION").read_text().strip()
 
@@ -369,8 +413,8 @@ def build_ecc(src: Path, work: Path, out: Path, meta: dict) -> None:
     for target in ("claude", "opencode"):
         for hooks in (True, False):
             key = f"{target}-{'hooks' if hooks else 'nohooks'}"
-            log(f"ECC: running upstream installer --target {target} --profile full {'with' if hooks else 'without'} hooks")
-            roots[key] = ecc_install(src, target, work / f"home-{key}", hooks)
+            log(f"all_in_one_generic_agents: running upstream installer --target {target} --profile full {'with' if hooks else 'without'} hooks")
+            roots[key] = upstream_install(src, target, work / f"home-{key}", hooks)
 
     config = out / "config"
     config.mkdir(parents=True)
@@ -381,15 +425,15 @@ def build_ecc(src: Path, work: Path, out: Path, meta: dict) -> None:
     real_b64 = base64.b64encode(str(c_root).encode()).decode()
     commands = [h["command"] for groups in settings.get("hooks", {}).values() for g in groups for h in g["hooks"]]
     if not commands:
-        sys.exit("ECC settings.json contains no hooks; installer output changed shape")
+        sys.exit("upstream settings.json contains no hooks; installer output changed shape")
     for cmd in commands:
-        if ECC_HOOK_MARKER not in cmd or real_b64 not in cmd:
-            sys.exit(f"ECC hook command lacks the expected marker/root, refusing to vendor:\n{cmd[:300]}")
-    settings_text = json.dumps(settings, indent=2).replace(real_b64, ECC_ROOT_PLACEHOLDER)
+        if GENERIC_HOOK_MARKER not in cmd or real_b64 not in cmd:
+            sys.exit(f"upstream hook command lacks the expected marker/root, refusing to vendor:\n{cmd[:300]}")
+    settings_text = json.dumps(settings, indent=2).replace(real_b64, GENERIC_ROOT_PLACEHOLDER)
     if str(c_root) in settings_text:
         sys.exit("plain build path still present in settings.json after placeholder substitution")
     (config / "claude-settings.json").write_text(settings_text + "\n")
-    copytree(c_root, out / "claude", skip=ECC_STATE_FILES | {"settings.json", "ecc"})
+    copytree(c_root, out / "claude", skip=GENERIC_STATE_FILES | {"settings.json", "ecc"})
 
     # ---- OpenCode
     o_root = roots["opencode-hooks"]
@@ -398,9 +442,9 @@ def build_ecc(src: Path, work: Path, out: Path, meta: dict) -> None:
     if "skills" in oc and not oc["skills"]:
         del oc["skills"]
     (config / "opencode.json").write_text(json.dumps(oc, indent=2) + "\n")
-    copytree(o_root, out / "opencode", skip=ECC_STATE_FILES | {"opencode.json"})
+    copytree(o_root, out / "opencode", skip=GENERIC_STATE_FILES | {"opencode.json"})
 
-    # opencode auto-loads every plugins/*.ts as its own module, and ECC ships
+    # opencode auto-loads every plugins/*.ts as its own module, and upstream ships
     # both ecc-hooks.ts and index.ts (a re-export of it); the "./plugins" entry
     # resolves to index.ts too. opencode only dedupes exports within a module,
     # so ECCHooksPlugin initialised twice and every hook fired twice (verified
@@ -425,9 +469,10 @@ def build_ecc(src: Path, work: Path, out: Path, meta: dict) -> None:
             copytree(skill, oc_skills / skill.name)
             added.append(skill.name)
 
-    excluded, dangling = apply_ecc_exclusions(out, oc)
+    excluded, dangling = apply_generic_exclusions(out, oc)
     (config / "opencode.json").write_text(json.dumps(oc, indent=2) + "\n")
     added = [s for s in added if (oc_skills / s).exists()]
+    renamed, rewritten = apply_generic_renames(out, config)
 
     # Any path left holding a build-machine absolute path is a bug.
     for tree in (out / "claude", out / "opencode", config):
@@ -436,14 +481,14 @@ def build_ecc(src: Path, work: Path, out: Path, meta: dict) -> None:
             if str(work).encode() in data or base64.b64encode(str(work).encode())[:24] in data:
                 sys.exit(f"build path leaked into vendored file {tree.name}/{rel}")
 
-    # Hook-runtime paths, as ECC itself classifies them: what --enable-hooks
+    # Hook-runtime paths, as the upstream installer classifies them: what --enable-hooks
     # installs that --no-hooks does not.
     hook_paths = {}
     for target in ("claude", "opencode"):
-        with_h = files_under(roots[f"{target}-hooks"]) - ECC_STATE_FILES
-        without = files_under(roots[f"{target}-nohooks"]) - ECC_STATE_FILES
+        with_h = files_under(roots[f"{target}-hooks"]) - GENERIC_STATE_FILES
+        without = files_under(roots[f"{target}-nohooks"]) - GENERIC_STATE_FILES
         hook_paths[target] = sorted(with_h - without)
-    # ECC's --no-hooks still ships the opencode hooks plugin (plugins/ is
+    # The upstream --no-hooks still ships the opencode hooks plugin (plugins/ is
     # auto-loaded by opencode), so treat it as hook runtime too.
     hook_paths["opencode"] = sorted(set(hook_paths["opencode"]) |
                                     {p for p in files_under(out / "opencode") if p.startswith("plugins/")})
@@ -451,20 +496,22 @@ def build_ecc(src: Path, work: Path, out: Path, meta: dict) -> None:
     meta.update(
         profile="full",
         hook_runtime_paths=hook_paths,
-        hook_marker=ECC_HOOK_MARKER,
-        root_placeholder=ECC_ROOT_PLACEHOLDER,
+        hook_marker=GENERIC_HOOK_MARKER,
+        root_placeholder=GENERIC_ROOT_PLACEHOLDER,
         opencode_plugin_entry="./plugins",
         transforms=[
-            "dropped install-state records: " + ", ".join(sorted(ECC_STATE_FILES)),
-            "settings.json and opencode.json moved to vendor/ecc/config/ for merging",
-            f"base64 install root in {len(commands)} hook commands replaced by {ECC_ROOT_PLACEHOLDER}",
+            "dropped install-state records: " + ", ".join(sorted(GENERIC_STATE_FILES)),
+            "settings.json and opencode.json moved to vendor/all_in_one_generic_agents/config/ for merging",
+            f"base64 install root in {len(commands)} hook commands replaced by {GENERIC_ROOT_PLACEHOLDER}",
             f"opencode.json skills.paths {dropped_paths!r} dropped (project-relative, dangling in a global install)",
-            f"added {len(added)} skills to opencode that ECC's resolver skipped transitively",
-            "opencode: removed plugins/index.ts and the './plugins' entry (ECCHooksPlugin was "
-            "loaded twice, firing every hook twice); root index.ts re-pointed at plugins/ecc-hooks.ts",
+            f"added {len(added)} skills to opencode that the upstream resolver skipped transitively",
+            "opencode: removed plugins/index.ts and the './plugins' entry (the hooks plugin was "
+            "loaded twice, firing every hook twice); root index.ts re-pointed at the single plugin module",
             f"slimmed to SDLC + Python/Java/JS-TS/Go/Rust/C++/.NET: removed "
             f"{sum(len(v) for v in excluded['names'].values())} skills/agents/commands/rule sets "
             f"({excluded['files']} files) across {len(excluded['names'])} categories",
+            "renamed self-named items: " + ", ".join(f"{o} -> {n}" for o, n in GENERIC_RENAMES.items())
+            + f"; references rewritten in {rewritten} text files",
         ],
         excluded=excluded["names"],
         excluded_names_still_mentioned_in=dangling,
@@ -479,16 +526,18 @@ def build_ecc(src: Path, work: Path, out: Path, meta: dict) -> None:
     )
 
 
-# ------------------------------------------------------------ agent-skills
+# ------------------------------------------------------------ SDLC_agents
 
 def rewrite_names(text: str) -> str:
     # word-bounded so e.g. "code-reviewer's" is rewritten but "my-code-reviewer" is not
-    text = re.sub(r"(?<![\w-])code-reviewer(?![\w-])", "addy-code-reviewer", text)
-    text = re.sub(r"(?<![\w/-])/plan(?![\w-])", "/addy-plan", text)
+    text = re.sub(r"(?<![\w-])code-reviewer(?![\w-])", "sdlc-code-reviewer", text)
+    text = re.sub(r"(?<![\w/-])/plan(?![\w-])", "/sdlc-plan", text)
+    # upstream uses "@addy" as an example owner handle in templates
+    text = re.sub(r"@addy\b", "@owner", text)
     return text
 
 
-def build_addy(src: Path, out: Path, meta: dict) -> None:
+def build_sdlc(src: Path, out: Path, meta: dict) -> None:
     plugin = json.loads((src / ".claude-plugin" / "plugin.json").read_text())
     meta["version"] = plugin.get("version")
 
@@ -499,18 +548,18 @@ def build_addy(src: Path, out: Path, meta: dict) -> None:
     # commands/*.toml are Gemini CLI format; the Claude/opencode markdown ones live here
     copytree(src / ".claude" / "commands", staging / "commands")
 
-    for rel in ADDY_EXCLUDE:
+    for rel in SDLC_EXCLUDE:
         (staging / rel).unlink()
     for path in sorted(staging.rglob("*")):
         if path.is_file():
             text = path.read_text(encoding="utf-8", errors="ignore")
-            for rel, name in ADDY_EXCLUDE.items():
+            for rel, name in SDLC_EXCLUDE.items():
                 if re.search(rf"(?<![\w-]){re.escape(name)}(?![\w-])", text):
                     sys.exit(f"{path.relative_to(staging)} still references excluded {name} ({rel}); "
-                             "update ADDY_EXCLUDE or rewrite that reference")
+                             "update SDLC_EXCLUDE or rewrite that reference")
 
     renamed = []
-    for kind, mapping in ADDY_RENAMES.items():
+    for kind, mapping in SDLC_RENAMES.items():
         for old, new in mapping.items():
             (staging / kind / f"{old}.md").rename(staging / kind / f"{new}.md")
             renamed.append(f"{kind}/{old}.md -> {kind}/{new}.md")
@@ -523,20 +572,20 @@ def build_addy(src: Path, out: Path, meta: dict) -> None:
             path.write_text(after, encoding="utf-8")
             rewritten.append(path.relative_to(staging).as_posix())
 
-    fm = (staging / "agents" / "addy-code-reviewer.md").read_text()
-    if not re.search(r"^name:\s*addy-code-reviewer\s*$", fm, re.M):
+    fm = (staging / "agents" / "sdlc-code-reviewer.md").read_text()
+    if not re.search(r"^name:\s*sdlc-code-reviewer\s*$", fm, re.M):
         sys.exit("renamed agent frontmatter was not updated")
 
     for target in ("claude", "opencode"):
         copytree(staging, out / target)
     shutil.rmtree(staging)
 
-    hooks_dir = out / "claude" / "hooks" / "addy"
+    hooks_dir = out / "claude" / "hooks" / SDLC
     hooks_dir.mkdir(parents=True)
-    for name in ADDY_HOOK_SCRIPTS + ADDY_HOOK_DOCS:
+    for name in SDLC_HOOK_SCRIPTS + SDLC_HOOK_DOCS:
         shutil.copy2(src / "hooks" / name, hooks_dir / name)
 
-    cmd = lambda script: f'bash "{ADDY_HOOKS_PLACEHOLDER}/{script}"'
+    cmd = lambda script: f'bash "{SDLC_HOOKS_PLACEHOLDER}/{script}"'
     fragment = {"hooks": {
         "PreToolUse": [
             {"matcher": "WebFetch", "hooks": [{"type": "command", "command": cmd("sdd-cache-pre.sh"), "timeout": 10}]},
@@ -554,17 +603,17 @@ def build_addy(src: Path, out: Path, meta: dict) -> None:
     (out / "config" / "claude-hooks.json").write_text(json.dumps(fragment, indent=2) + "\n")
 
     meta.update(
-        hook_marker=ADDY_HOOK_MARKER,
-        hooks_placeholder=ADDY_HOOKS_PLACEHOLDER,
+        hook_marker=SDLC_HOOK_MARKER,
+        hooks_placeholder=SDLC_HOOKS_PLACEHOLDER,
         transforms=[
             "commands taken from .claude/commands/*.md (commands/*.toml are Gemini CLI format)",
-            "excluded on request: " + ", ".join(sorted(ADDY_EXCLUDE)) + " (the performance skills and "
+            "excluded on request: " + ", ".join(sorted(SDLC_EXCLUDE)) + " (the performance skills and "
             "checklist it uses are shared with /review and /test, so they are kept)",
-            *[f"renamed {r} (name collides with ECC)" for r in renamed],
-            f"rewrote code-reviewer -> addy-code-reviewer and /plan -> /addy-plan in {len(rewritten)} files",
+            *[f"renamed {r} (name collides with all_in_one_generic_agents)" for r in renamed],
+            f"rewrote code-reviewer -> sdlc-code-reviewer, /plan -> /sdlc-plan and example @-handles in {len(rewritten)} files",
             "hooks: only the three wireable scripts are shipped (session-start.sh is deliberately "
             "not wired for Claude Code by its author; *-test.sh are upstream tests)",
-            "hook wiring is opt-in (install.py --enable-addy-hooks), matching upstream's per-project guidance",
+            "hook wiring is opt-in (install.py --sdlc-hooks), matching upstream's per-project guidance",
         ],
         rewritten_files=rewritten,
         counts={t: {d: len(list((out / t / d).iterdir())) for d in ("agents", "commands", "skills", "references")}
@@ -602,7 +651,7 @@ def short(desc: str, limit: int = 150) -> str:
 def inventory(staged: Path, target: str) -> dict:
     """Every skill/agent/command installed into `target`, by source, with descriptions."""
     inv = {"skills": {}, "agents": {}, "commands": {}}
-    for source in ("addy", "ecc"):
+    for source in (SDLC, GENERIC):
         root = staged / source / target
         for skill in sorted((root / "skills").iterdir()) if (root / "skills").is_dir() else []:
             if (skill / "SKILL.md").is_file():
@@ -610,13 +659,13 @@ def inventory(staged: Path, target: str) -> dict:
         for kind in ("agents", "commands"):
             for f in sorted((root / kind).glob("*.md")) if (root / kind).is_dir() else []:
                 inv[kind][f.stem] = (source, short(frontmatter_description(f)))
-    if target == "opencode":                          # ECC defines these inline in opencode.json
-        oc = json.loads((staged / "ecc" / "config" / "opencode.json").read_text())
+    if target == "opencode":                          # the generic bundle defines these inline in opencode.json
+        oc = json.loads((staged / GENERIC / "config" / "opencode.json").read_text())
         for name, spec in oc.get("agent", {}).items():
             mode = " (primary agent)" if spec.get("mode") == "primary" else ""
-            inv["agents"].setdefault(name, ("ecc", short(spec.get("description", "")) + mode))
+            inv["agents"].setdefault(name, (GENERIC, short(spec.get("description", "")) + mode))
         for name, spec in oc.get("command", {}).items():
-            inv["commands"].setdefault(name, ("ecc", short(spec.get("description", ""))))
+            inv["commands"].setdefault(name, (GENERIC, short(spec.get("description", ""))))
     return inv
 
 
@@ -628,9 +677,10 @@ def render_full_kit(inv: dict, target: str, skill_area: dict) -> str:
     has = lambda kind, n: n in inv[kind]
     delegate = ("use the Agent tool with `subagent_type` set to the agent's name"
                 if target == "claude" else "mention it as `@agent-name`, or let the primary agent call it via the task tool")
-    out = [GEN_BEGIN, "", "## Full kit: agent-skills + ECC", "",
-           "This environment also has **ECC** installed next to agent-skills. Combine them like this:", "",
-           "1. **Pick the phase with the flowchart above.** The agent-skills phase skills are the default process.",
+    out = [GEN_BEGIN, "", "## Full kit: SDLC_agents + all_in_one_generic_agents", "",
+           "This environment has **SDLC_agents** (the phase workflow above) and **all_in_one_generic_agents** installed. "
+           "Combine them like this:", "",
+           "1. **Pick the phase with the flowchart above.** The SDLC_agents phase skills are the default process.",
            "2. **Layer in the stack-specific skills** for the language you are touching (table below). They add "
            "idioms, testing and verification detail to the phase skill; they do not replace it.",
            f"3. **Delegate to a specialist agent** for a focused review or build fix: {delegate}.",
@@ -649,37 +699,37 @@ def render_full_kit(inv: dict, target: str, skill_area: dict) -> str:
             out.append(f"| {stack} | {code(s)} | {code(a)} | {code(c, '/')} |")
 
     out += ["", "### When both kits cover the same step", "",
-            "Follow the agent-skills skill as the process and pull in the ECC item for depth:", ""]
-    for addy_skill, ecc_items in OVERLAPS:
+            "Follow the SDLC_agents skill as the process and pull in the all_in_one_generic_agents item for depth:", ""]
+    for sdlc_skill, generic_items in OVERLAPS:
         present = [f"`{n}` skill" if has("skills", n) else f"`{n}` agent"
-                   for n in ecc_items if has("skills", n) or has("agents", n)]
-        if has("skills", addy_skill) and present:
-            out.append(f"- `{addy_skill}` → also {', '.join(present)}")
+                   for n in generic_items if has("skills", n) or has("agents", n)]
+        if has("skills", sdlc_skill) and present:
+            out.append(f"- `{sdlc_skill}` → also {', '.join(present)}")
 
-    out += ["", "### Other ECC skills by area", ""]
-    for module, label in ECC_AREAS:
+    out += ["", "### Other all_in_one_generic_agents skills by area", ""]
+    for module, label in GENERIC_AREAS:
         names = [n for n in skill_area.get(module, []) if has("skills", n) and n not in routed]
         if names:
             out.append(f"- **{label}:** {code(names)}")
 
-    addy_agents = sorted(n for n, (src, _) in inv["agents"].items() if src == "addy")
-    ecc_agents = sorted(n for n, (src, _) in inv["agents"].items() if src == "ecc" and n not in routed)
+    sdlc_agents = sorted(n for n, (src, _) in inv["agents"].items() if src == SDLC)
+    generic_agents = sorted(n for n, (src, _) in inv["agents"].items() if src == GENERIC and n not in routed)
     out += ["", "### Agents", "",
-            f"- **agent-skills personas** (fanned out by `/ship`): {code(addy_agents)}",
-            f"- **ECC general-purpose:** {code(ecc_agents)}",
+            f"- **SDLC_agents personas** (fanned out by `/ship`): {code(sdlc_agents)}",
+            f"- **all_in_one_generic_agents, general-purpose:** {code(generic_agents)}",
             "- Language reviewers and build resolvers are in the table above."]
 
-    addy_cmds = sorted(n for n, (src, _) in inv["commands"].items() if src == "addy")
-    ecc_cmds = sorted(n for n, (src, _) in inv["commands"].items() if src == "ecc" and n not in routed)
+    sdlc_cmds = sorted(n for n, (src, _) in inv["commands"].items() if src == SDLC)
+    generic_cmds = sorted(n for n, (src, _) in inv["commands"].items() if src == GENERIC and n not in routed)
     out += ["", "### Commands", "",
-            f"- **agent-skills lifecycle:** {code(addy_cmds, '/')}",
-            f"- **ECC:** {code(ecc_cmds, '/')}",
+            f"- **SDLC_agents lifecycle:** {code(sdlc_cmds, '/')}",
+            f"- **all_in_one_generic_agents:** {code(generic_cmds, '/')}",
             "- Language-specific commands are in the table above.", "", GEN_END, ""]
     return "\n".join(out)
 
 
 def render_catalog(inv: dict, target: str) -> str:
-    label = {"addy": "agent-skills", "ecc": "ECC"}
+    label = {SDLC: SDLC, GENERIC: GENERIC}
     out = [f"# Installed catalog ({'Claude Code' if target == 'claude' else 'opencode'})", "",
            "Every skill, agent and command this kit installed, with the first sentence of its description. "
            "Generated by agent-kit/tools/build_vendor.py; do not edit by hand.", ""]
@@ -692,15 +742,16 @@ def render_catalog(inv: dict, target: str) -> str:
     return "\n".join(out)
 
 
-def build_meta_skill(staged: Path, ecc_src: Path, manifest: dict) -> None:
-    modules = json.loads((ecc_src / "manifests" / "install-modules.json").read_text())["modules"]
+def build_meta_skill(staged: Path, generic_src: Path, manifest: dict) -> None:
+    modules = json.loads((generic_src / "manifests" / "install-modules.json").read_text())["modules"]
     skill_area = {}
     for m in modules:
         for p in m["paths"]:
             if p.startswith("skills/"):
+                p = GENERIC_RENAMES.get(p, p)             # follow our renames of self-named skills
                 skill_area.setdefault(m["id"], []).append(p.split("/", 1)[1])
 
-    excluded = {n for kinds in ECC_EXCLUDE.values() for names in kinds.values() for n in names}
+    excluded = {n for kinds in GENERIC_EXCLUDE.values() for names in kinds.values() for n in names}
     wanted = {n for items in LANGUAGE_MAP.values() for kind in items.values() for n in kind}
     wanted |= {n for a, e in OVERLAPS for n in [a, *e]}
     if wanted & excluded:
@@ -717,16 +768,16 @@ def build_meta_skill(staged: Path, ecc_src: Path, manifest: dict) -> None:
 
     stats = {}
     for target, inv in invs.items():
-        meta_dir = staged / "addy" / target / META_REL
+        meta_dir = staged / SDLC / target / META_REL
         stock = (meta_dir / "SKILL.md").read_text(encoding="utf-8")
-        standalone = staged / "addy" / "standalone" / target / META_REL / "SKILL.md"
+        standalone = staged / SDLC / "standalone" / target / META_REL / "SKILL.md"
         standalone.parent.mkdir(parents=True, exist_ok=True)
         standalone.write_text(stock, encoding="utf-8")
 
         combined = stock.replace(
             "This is the meta-skill that governs how all other skills are discovered and invoked.",
             "This is the meta-skill that governs how all other skills are discovered and invoked, including "
-            "the installed ECC language skills, specialist agents and slash commands.", 1)
+            "the installed all_in_one_generic_agents language skills, specialist agents and slash commands.", 1)
         if combined == stock:
             sys.exit("using-agent-skills description changed upstream; update build_meta_skill")
         combined = combined.rstrip("\n") + "\n\n" + render_full_kit(inv, target, skill_area)
@@ -734,11 +785,11 @@ def build_meta_skill(staged: Path, ecc_src: Path, manifest: dict) -> None:
         (meta_dir / "catalog.md").write_text(render_catalog(inv, target), encoding="utf-8")
         stats[target] = {k: len(v) for k, v in inv.items()}
 
-    manifest["sources"]["addy"]["transforms"].append(
-        "using-agent-skills: appended a generated 'Full kit' routing section (by language, overlaps, ECC areas, "
-        "agents, commands) plus catalog.md, per target; the stock SKILL.md is kept in vendor/addy/standalone "
-        "for installs without ECC")
-    manifest["sources"]["addy"]["meta_skill"] = {"rel": META_REL, "catalog": stats}
+    manifest["sources"][SDLC]["transforms"].append(
+        "using-agent-skills: appended a generated 'Full kit' routing section (by language, overlaps, generic areas, "
+        "agents, commands) plus catalog.md, per target; the stock SKILL.md is kept in vendor/SDLC_agents/standalone "
+        "for installs without all_in_one_generic_agents")
+    manifest["sources"][SDLC]["meta_skill"] = {"rel": META_REL, "catalog": stats}
 
 
 # ------------------------------------------------------------------ main
@@ -746,8 +797,8 @@ def build_meta_skill(staged: Path, ecc_src: Path, manifest: dict) -> None:
 def main() -> None:
     here = Path(__file__).resolve().parent
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    ap.add_argument("--addy-ref", default=ADDY_REF, help="agent-skills commit/branch/tag (default: pinned)")
-    ap.add_argument("--ecc-ref", default=ECC_REF, help="ECC commit/branch/tag (default: pinned)")
+    ap.add_argument("--sdlc-ref", default=SDLC_REF, help="SDLC_agents upstream commit/branch/tag (default: pinned)")
+    ap.add_argument("--generic-ref", default=GENERIC_REF, help="all_in_one_generic_agents upstream commit/branch/tag (default: pinned)")
     ap.add_argument("--out", type=Path, default=here.parent / "vendor", help="output directory (replaced)")
     ap.add_argument("--keep-work", action="store_true", help="keep the temporary work directory")
     args = ap.parse_args()
@@ -762,25 +813,27 @@ def main() -> None:
         manifest = {"schema": 1, "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
                     "sources": {}}
 
-        log(f"fetching agent-skills @ {args.addy_ref}")
-        addy = {"name": "agent-skills (skills.addy.ie)", "license": "MIT",
-                **fetch(ADDY_REPO, args.addy_ref, work / "src-addy")}
-        build_addy(work / "src-addy", staged / "addy", addy)
-        shutil.copy2(work / "src-addy" / "LICENSE", staged / "addy" / "LICENSE")
-        manifest["sources"]["addy"] = addy
+        # The shipped manifest records only commit, date and version (no upstream names or URLs).
+        def pinned(repo, ref, dest):
+            info = fetch(repo, ref, dest)
+            info.pop("repo")
+            return info
 
-        log(f"fetching ECC @ {args.ecc_ref}")
-        ecc = {"name": "ECC (Everything Claude Code) by Affaan Mustafa", "license": "MIT",
-               **fetch(ECC_REPO, args.ecc_ref, work / "src-ecc")}
-        build_ecc(work / "src-ecc", work, staged / "ecc", ecc)
-        shutil.copy2(work / "src-ecc" / "LICENSE", staged / "ecc" / "LICENSE")
-        manifest["sources"]["ecc"] = ecc
+        log(f"fetching {SDLC} @ {args.sdlc_ref}")
+        sdlc = pinned(SDLC_REPO, args.sdlc_ref, work / "src-sdlc")
+        build_sdlc(work / "src-sdlc", staged / SDLC, sdlc)
+        manifest["sources"][SDLC] = sdlc
+
+        log(f"fetching {GENERIC} @ {args.generic_ref}")
+        generic = pinned(GENERIC_REPO, args.generic_ref, work / "src-generic")
+        build_generic(work / "src-generic", work, staged / GENERIC, generic)
+        manifest["sources"][GENERIC] = generic
 
         log("generating the combined using-agent-skills catalog")
-        build_meta_skill(staged, work / "src-ecc", manifest)
+        build_meta_skill(staged, work / "src-generic", manifest)
 
         manifest["tree_sha256"] = {
-            f"{s}/{t}": tree_digest(staged / s / t) for s in ("addy", "ecc") for t in ("claude", "opencode")
+            f"{s}/{t}": tree_digest(staged / s / t) for s in (SDLC, GENERIC) for t in ("claude", "opencode")
         }
         (staged / "MANIFEST.json").write_text(json.dumps(manifest, indent=2) + "\n")
 

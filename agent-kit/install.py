@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Install the vendored agent-skills + ECC bundle into Claude Code and opencode.
+"""Install the vendored SDLC_agents + all_in_one_generic_agents bundles into Claude Code and opencode.
 
     python install.py                 # everything, into ~/.claude and ~/.config/opencode
     python install.py --dry-run       # show what would change, touch nothing
@@ -37,16 +37,21 @@ KIT = Path(__file__).resolve().parent
 VENDOR = KIT / "vendor"
 STATE_FILE = ".agent-kit-state.json"
 BACKUP_DIR = ".agent-kit-backups"
-SOURCES = ("addy", "ecc")
+SDLC, GENERIC = "SDLC_agents", "all_in_one_generic_agents"
+SOURCES = (SDLC, GENERIC)
 TARGETS = ("claude", "opencode")
-SOURCE_LABEL = {"addy": "agent-skills (skills.addy.ie)", "ecc": "ECC"}
+SOURCE_LABEL = {SDLC: SDLC, GENERIC: GENERIC}
 TARGET_LABEL = {"claude": "Claude Code", "opencode": "opencode"}
-# opencode manages <config>/package.json itself; ECC's copy is only installed
+# opencode manages <config>/package.json itself; the generic bundle's copy is only installed
 # when the user does not already have one.
 OPENCODE_PKG_FILES = ("package.json", "package-lock.json")
-# agent-skills' meta-skill has two variants: the full-kit one (routes to ECC too)
-# and the stock one, used when ECC is not installed in that target.
+# The SDLC_agents meta-skill has two variants: the full-kit one (also routes to
+# all_in_one_generic_agents) and the stock one, used when that bundle is not installed.
 META_FILES = ("skills/using-agent-skills/SKILL.md", "skills/using-agent-skills/catalog.md")
+# State written by earlier versions of this script used other bundle keys; they
+# are migrated on load so a re-run cleans up files from renamed items.
+LEGACY_SOURCES = {"addy": SDLC, "ecc": GENERIC}
+LEGACY_SDLC_HOOK_MARKER = "/hooks/addy/"
 MISSING = object()
 
 
@@ -90,7 +95,7 @@ def default_claude_dir() -> Path:
 
 
 def default_opencode_dir() -> Path:
-    # Same resolution order as ECC's own installer.
+    # Same resolution order as the upstream installer of the generic bundle.
     if os.environ.get("OPENCODE_CONFIG_DIR"):
         return Path(os.environ["OPENCODE_CONFIG_DIR"]).expanduser()
     xdg = os.environ.get("XDG_CONFIG_HOME")
@@ -261,6 +266,12 @@ class Target:
         self.state_path = root / STATE_FILE
         self.state = read_json(self.state_path, TARGET_LABEL[name]) or {"schema": 1, "sources": {}}
         self.state.setdefault("sources", {})
+        for old, new in LEGACY_SOURCES.items():
+            if old in self.state["sources"] and new not in self.state["sources"]:
+                self.state["sources"][new] = self.state["sources"].pop(old)
+        legacy_opts = self.state.get("options", {})
+        if "addy_hooks" in legacy_opts:
+            legacy_opts.setdefault("sdlc_hooks", legacy_opts.pop("addy_hooks"))
         self.backup_root = root / BACKUP_DIR / datetime.now().strftime("%Y%m%d-%H%M%S")
         self.stats = {"created": 0, "updated": 0, "unchanged": 0, "removed": 0, "backed up": 0, "restored": 0}
         self.notes = []
@@ -371,39 +382,39 @@ class Target:
     def planned_files(self, source: str, opts: dict) -> dict:
         tree = VENDOR / source / self.name
         files = {rel: tree / rel for rel in vendor_files(tree)}
-        if source == "ecc" and not opts["hooks"]:
-            for rel in self.manifest["sources"]["ecc"]["hook_runtime_paths"][self.name]:
+        if source == GENERIC and not opts["hooks"]:
+            for rel in self.manifest["sources"][GENERIC]["hook_runtime_paths"][self.name]:
                 files.pop(rel, None)
-        if source == "addy" and not opts["addy_hooks"]:
-            files = {r: p for r, p in files.items() if not r.startswith("hooks/addy/")}
-        if source == "addy":
+        if source == SDLC and not opts["sdlc_hooks"]:
+            files = {r: p for r, p in files.items() if not r.startswith(f"hooks/{SDLC}/")}
+        if source == SDLC:
             for rel in META_FILES:
                 files.pop(rel, None)
-            files.update(self.addy_meta_plan(opts["ecc_present"]))
-        if source == "ecc" and self.name == "opencode":
-            owned = self.state["sources"].get("ecc", {}).get("files", {})
+            files.update(self.sdlc_meta_plan(opts["generic_present"]))
+        if source == GENERIC and self.name == "opencode":
+            owned = self.state["sources"].get(GENERIC, {}).get("files", {})
             pkg = self.dest("package.json")
             if pkg.exists() and "package.json" not in owned:
                 for rel in OPENCODE_PKG_FILES:
                     files.pop(rel, None)
                 self.notes.append("kept your existing package.json (opencode adds the plugin "
-                                  "dependency ECC needs by itself)")
+                                  "dependency the hooks plugin needs by itself)")
         return files
 
-    def addy_meta_plan(self, ecc_present: bool) -> dict:
-        if ecc_present:
-            tree = VENDOR / "addy" / self.name
+    def sdlc_meta_plan(self, generic_present: bool) -> dict:
+        if generic_present:
+            tree = VENDOR / SDLC / self.name
             return {rel: tree / rel for rel in META_FILES}
-        stock = VENDOR / "addy" / "standalone" / self.name / META_FILES[0]
+        stock = VENDOR / SDLC / "standalone" / self.name / META_FILES[0]
         return {META_FILES[0]: stock}
 
-    def resync_addy_meta(self, ecc_present: bool):
-        """Keep the meta-skill in step with ECC when only ECC was (un)installed this run."""
-        entry = self.state["sources"].get("addy")
+    def resync_sdlc_meta(self, generic_present: bool):
+        """Keep the meta-skill in step when only the generic bundle was (un)installed this run."""
+        entry = self.state["sources"].get(SDLC)
         if not entry:
             return
         files = entry.setdefault("files", {})
-        want = self.addy_meta_plan(ecc_present)
+        want = self.sdlc_meta_plan(generic_present)
         for rel, src in want.items():
             rec = self.install_file(src, rel, files.get(rel))
             if rec:
@@ -422,25 +433,25 @@ class Target:
         hook_msgs = []
         root_b64 = base64.b64encode(str(self.root.absolute()).encode()).decode()
 
-        if "ecc" in sources:
-            meta = self.manifest["sources"]["ecc"]
-            frag_text = (VENDOR / "ecc" / "config" / "claude-settings.json").read_text(encoding="utf-8")
+        if GENERIC in sources:
+            meta = self.manifest["sources"][GENERIC]
+            frag_text = (VENDOR / GENERIC / "config" / "claude-settings.json").read_text(encoding="utf-8")
             fragment = json.loads(frag_text.replace(meta["root_placeholder"], root_b64))
-            ecc_hooks = fragment.pop("hooks", {})     # hooks are handled here, never by merge_config
+            generic_hooks = fragment.pop("hooks", {})     # hooks are handled here, never by merge_config
             removed = strip_hooks(settings, meta["hook_marker"])
-            added = add_hooks(settings, ecc_hooks) if opts["hooks"] else 0
-            hook_msgs.append(f"ECC hooks: {added} wired" if added else f"ECC hooks: {removed} removed")
-            owned = self.state["sources"].setdefault("ecc", {}).get("settings_owned", {})
-            self.state["sources"]["ecc"]["settings_owned"] = merge_config(settings, fragment, owned, changes)
+            added = add_hooks(settings, generic_hooks) if opts["hooks"] else 0
+            hook_msgs.append(f"{GENERIC} hooks: {added} wired" if added else f"{GENERIC} hooks: {removed} removed")
+            owned = self.state["sources"].setdefault(GENERIC, {}).get("settings_owned", {})
+            self.state["sources"][GENERIC]["settings_owned"] = merge_config(settings, fragment, owned, changes)
 
-        if "addy" in sources:
-            meta = self.manifest["sources"]["addy"]
-            hooks_dir = (self.root / "hooks" / "addy").absolute().as_posix()
-            frag_text = (VENDOR / "addy" / "config" / "claude-hooks.json").read_text(encoding="utf-8")
+        if SDLC in sources:
+            meta = self.manifest["sources"][SDLC]
+            hooks_dir = (self.root / "hooks" / SDLC).absolute().as_posix()
+            frag_text = (VENDOR / SDLC / "config" / "claude-hooks.json").read_text(encoding="utf-8")
             fragment = json.loads(frag_text.replace(meta["hooks_placeholder"], hooks_dir))
-            removed = strip_hooks(settings, meta["hook_marker"])
-            added = add_hooks(settings, fragment["hooks"]) if opts["addy_hooks"] else 0
-            hook_msgs.append(f"agent-skills hooks: {added} wired" if added else f"agent-skills hooks: {removed} removed")
+            removed = strip_hooks(settings, meta["hook_marker"]) + strip_hooks(settings, LEGACY_SDLC_HOOK_MARKER)
+            added = add_hooks(settings, fragment["hooks"]) if opts["sdlc_hooks"] else 0
+            hook_msgs.append(f"{SDLC} hooks: {added} wired" if added else f"{SDLC} hooks: {removed} removed")
 
         prune_hooks(settings)
         if json.dumps(settings.get("hooks"), sort_keys=True) != hooks_before:
@@ -451,17 +462,17 @@ class Target:
         return settings
 
     def configure_opencode(self, sources, opts):
-        if "ecc" not in sources:
+        if GENERIC not in sources:
             return
         path = self.root / "opencode.json"
         before = path.read_text(encoding="utf-8-sig") if path.exists() else None
         config = read_json(path, TARGET_LABEL["opencode"])
-        want = json.loads((VENDOR / "ecc" / "config" / "opencode.json").read_text(encoding="utf-8"))
-        meta = self.manifest["sources"]["ecc"]
+        want = json.loads((VENDOR / GENERIC / "config" / "opencode.json").read_text(encoding="utf-8"))
+        meta = self.manifest["sources"][GENERIC]
 
         # opencode resolves relative "instructions" against the current *project*,
         # so point entries that ship with the bundle at their installed location.
-        tree = VENDOR / "ecc" / "opencode"
+        tree = VENDOR / GENERIC / "opencode"
         want["instructions"] = [
             self.dest(e).absolute().as_posix() if (tree / e).is_file() else e
             for e in want.get("instructions", [])
@@ -472,11 +483,11 @@ class Target:
                 del want["plugin"]
 
         changes = []
-        owned = self.state["sources"].setdefault("ecc", {}).get("opencode_owned", {})
-        self.state["sources"]["ecc"]["opencode_owned"] = merge_config(config, want, owned, changes)
+        owned = self.state["sources"].setdefault(GENERIC, {}).get("opencode_owned", {})
+        self.state["sources"][GENERIC]["opencode_owned"] = merge_config(config, want, owned, changes)
         jsonc = self.root / "opencode.jsonc"
         if jsonc.exists() and changes:
-            self.notes.append("you have opencode.jsonc; ECC's settings went into opencode.json, which "
+            self.notes.append("you have opencode.jsonc; the bundled settings went into opencode.json, which "
                               "opencode merges underneath it, so your opencode.jsonc still wins")
         self.write_config(path, before, config, changes, "opencode.json")
 
@@ -496,29 +507,29 @@ class Target:
                 merge_config(settings, {}, owned, changes)
             prune_hooks(settings)
             self.write_config(path, before, settings, changes, "settings.json")
-        elif "ecc" in sources:
+        elif GENERIC in sources:
             path = self.root / "opencode.json"
             if not path.exists():
                 return
             before = path.read_text(encoding="utf-8-sig")
             config = read_json(path, TARGET_LABEL["opencode"])
             changes = []
-            merge_config(config, {}, self.state["sources"].get("ecc", {}).get("opencode_owned", {}), changes)
+            merge_config(config, {}, self.state["sources"].get(GENERIC, {}).get("opencode_owned", {}), changes)
             self.write_config(path, before, config, changes, "opencode.json")
 
     # -- entry points ----------------------------------------------------------
     def install(self, sources, cli_opts):
         remembered = self.state.get("options", {})
         opts = {k: (cli_opts[k] if cli_opts[k] is not None else remembered.get(k, default))
-                for k, default in (("hooks", True), ("addy_hooks", False))}
+                for k, default in (("hooks", True), ("sdlc_hooks", False))}
         if self.name == "opencode":
-            opts["addy_hooks"] = False                    # Claude Code hook format only
-        ecc_present = "ecc" in sources or "ecc" in self.state["sources"]
+            opts["sdlc_hooks"] = False                    # Claude Code hook format only
+        generic_present = GENERIC in sources or GENERIC in self.state["sources"]
 
         # Validate config files before touching anything.
         read_json(self.root / ("settings.json" if self.name == "claude" else "opencode.json"), TARGET_LABEL[self.name])
 
-        plans = {s: self.planned_files(s, {**opts, "ecc_present": ecc_present}) for s in sources}
+        plans = {s: self.planned_files(s, {**opts, "generic_present": generic_present}) for s in sources}
         claimed = {}
         for s, files in [*plans.items(), *[(s, v.get("files", {})) for s, v in self.state["sources"].items()
                                            if s not in sources]]:
@@ -542,8 +553,8 @@ class Target:
             entry.update(files=new_files, commit=self.manifest["sources"][s]["commit"],
                          version=self.manifest["sources"][s].get("version"))
 
-        if "addy" not in sources:
-            self.resync_addy_meta(ecc_present)
+        if SDLC not in sources:
+            self.resync_sdlc_meta(generic_present)
         if self.name == "claude":
             self.configure_claude(sources, opts)
         else:
@@ -569,8 +580,8 @@ class Target:
                 entry.pop("opencode_owned", None)
             else:
                 del self.state["sources"][s]
-        if "addy" not in sources:
-            self.resync_addy_meta("ecc" in self.state["sources"] and "ecc" not in sources)
+        if SDLC not in sources:
+            self.resync_sdlc_meta(GENERIC in self.state["sources"] and GENERIC not in sources)
         if self.dry:
             return
         if self.state["sources"]:
@@ -596,23 +607,23 @@ class Target:
 
 def check_prereqs(targets, sources, opts_by_target):
     warn = []
-    if "ecc" in sources and any(o["hooks"] for t, o in opts_by_target.items() if t == "claude"):
+    if GENERIC in sources and any(o["hooks"] for t, o in opts_by_target.items() if t == "claude"):
         if not shutil.which("node"):
-            warn.append("ECC's Claude Code hooks run with `node`, which is not on PATH. "
+            warn.append(f"{GENERIC} Claude Code hooks run with `node`, which is not on PATH. "
                         "Install Node.js 18+ or re-run with --no-hooks.")
-    if any(o.get("addy_hooks") for o in opts_by_target.values()):
+    if any(o.get("sdlc_hooks") for o in opts_by_target.values()):
         missing = [t for t in ("bash", "jq", "curl", "perl") if not shutil.which(t)]
         if not (shutil.which("shasum") or shutil.which("sha1sum")):
             missing.append("shasum/sha1sum")
         if missing:
-            warn.append("agent-skills hooks need " + ", ".join(missing) + " on PATH.")
+            warn.append(f"{SDLC} hooks need " + ", ".join(missing) + " on PATH.")
     for w in warn:
         print(f"warning: {w}")
 
 
 def main():
     ap = argparse.ArgumentParser(
-        description="Install agent-skills (skills.addy.ie) and ECC into Claude Code and opencode.",
+        description=f"Install {SDLC} and {GENERIC} into Claude Code and opencode.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="Hook choices are remembered, so a plain re-run keeps whatever you chose last time.",
     )
@@ -622,14 +633,14 @@ def main():
                     help="which bundle to install (default: all)")
     hooks = ap.add_mutually_exclusive_group()
     hooks.add_argument("--hooks", dest="hooks", action="store_const", const=True,
-                       help="wire ECC's hooks (default on first install)")
+                       help=f"wire the {GENERIC} hooks (default on first install)")
     hooks.add_argument("--no-hooks", dest="hooks", action="store_const", const=False,
-                       help="install everything except ECC's hook runtime")
-    addy = ap.add_mutually_exclusive_group()
-    addy.add_argument("--addy-hooks", dest="addy_hooks", action="store_const", const=True,
-                      help="also wire agent-skills' opt-in Claude Code hooks (WebFetch cache, simplify-ignore)")
-    addy.add_argument("--no-addy-hooks", dest="addy_hooks", action="store_const", const=False,
-                      help="unwire agent-skills' hooks")
+                       help=f"install everything except the {GENERIC} hook runtime")
+    sdlc = ap.add_mutually_exclusive_group()
+    sdlc.add_argument("--sdlc-hooks", dest="sdlc_hooks", action="store_const", const=True,
+                      help=f"also wire the opt-in {SDLC} Claude Code hooks (WebFetch cache, simplify-ignore)")
+    sdlc.add_argument("--no-sdlc-hooks", dest="sdlc_hooks", action="store_const", const=False,
+                      help=f"unwire the {SDLC} hooks")
     ap.add_argument("--claude-dir", type=Path, help="Claude Code config dir (default: $CLAUDE_CONFIG_DIR or ~/.claude)")
     ap.add_argument("--opencode-dir", type=Path,
                     help="opencode config dir (default: $OPENCODE_CONFIG_DIR, $XDG_CONFIG_HOME/opencode or ~/.config/opencode)")
@@ -649,13 +660,13 @@ def main():
     sources = SOURCES if args.source == "all" else (args.source,)
     dirs = {"claude": (args.claude_dir.expanduser() if args.claude_dir else default_claude_dir()),
             "opencode": (args.opencode_dir.expanduser() if args.opencode_dir else default_opencode_dir())}
-    cli_opts = {"hooks": args.hooks, "addy_hooks": args.addy_hooks}
+    cli_opts = {"hooks": args.hooks, "sdlc_hooks": args.sdlc_hooks}
 
     verb = "Uninstalling" if args.uninstall else "Installing"
     print(f"{verb} {', '.join(SOURCE_LABEL[s] for s in sources)}" + ("  [dry run: nothing will be written]" if args.dry_run else ""))
     for s in sources:
         m = manifest["sources"][s]
-        print(f"  {SOURCE_LABEL[s]}: {m['repo']} @ {m['commit'][:12]} (v{m.get('version')}, {m['commit_date']})")
+        print(f"  {SOURCE_LABEL[s]}: v{m.get('version')} @ {m['commit'][:12]} ({m['commit_date']})")
 
     opts_by_target = {}
     for t in targets:
@@ -666,9 +677,9 @@ def main():
         else:
             opts = target.install(sources, cli_opts)
             opts_by_target[t] = opts
-            flags = [f"ECC hooks {'on' if opts['hooks'] else 'off'}"]
+            flags = [f"{GENERIC} hooks {'on' if opts['hooks'] else 'off'}"]
             if t == "claude":
-                flags.append(f"agent-skills hooks {'on' if opts['addy_hooks'] else 'off'}")
+                flags.append(f"{SDLC} hooks {'on' if opts['sdlc_hooks'] else 'off'}")
             print(f"    options: {', '.join(flags)}")
         target.summary()
 

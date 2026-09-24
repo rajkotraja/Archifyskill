@@ -171,9 +171,8 @@ The skill is extracted verbatim from `archify.zip` at tag `v2.16.0` of
 
 ## Also in this repo: agent-kit
 
-[`agent-kit/`](agent-kit/) installs Addy Osmani's
-[agent-skills](https://github.com/addyosmani/agent-skills) and a slimmed
-[ECC](https://github.com/affaan-m/ECC) into Claude Code and opencode from local copies:
+[`agent-kit/`](agent-kit/) installs two agent bundles, **SDLC_agents** and
+**all_in_one_generic_agents**, into Claude Code and opencode from local copies:
 
 ```bash
 cd agent-kit && python3 install.py
