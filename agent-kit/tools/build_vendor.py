@@ -799,7 +799,8 @@ def open_urls(rel: str, text: str) -> list:
             if GO_MODULE_LINE.search(line):
                 continue
             found += [m.group(0) for m in SCHEMELESS_URL.finditer(re.sub(r"[a-z]+://\S+", " ", line))
-                      if not IDENTIFIER_NAMESPACE.match(m.group(0)) and not LOCAL_URL.match(m.group(0))]
+                      if not IDENTIFIER_NAMESPACE.match(m.group(0)) and not LOCAL_URL.match(m.group(0))
+                      and not IDENTIFIER_URL.search(m.group(0))]
     return found
 
 
@@ -835,7 +836,8 @@ def scrub_url_text(rel: str, text: str) -> str:
         for line in text.splitlines(keepends=True):
             if not GO_MODULE_LINE.search(line):
                 line = SCHEMELESS_URL.sub(lambda m: m.group(0) if IDENTIFIER_NAMESPACE.match(m.group(0))
-                                          or LOCAL_URL.match(m.group(0)) else URL_PLACEHOLDER, line)
+                                          or LOCAL_URL.match(m.group(0)) or IDENTIFIER_URL.search(m.group(0))
+                                          else URL_PLACEHOLDER, line)
             out.append(line)
         text = "".join(out)
     return text

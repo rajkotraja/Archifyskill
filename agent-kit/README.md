@@ -56,9 +56,9 @@ Restart Claude Code / opencode afterwards.
 
 | | Claude Code | opencode |
 |---|---|---|
-| Skills | 221 (25 SDLC_agents + 195 all_in_one_generic_agents + archify) | 221 |
+| Skills | 220 (25 SDLC_agents + 194 all_in_one_generic_agents + archify) | 220 |
 | Agents | 55 (3 + 52) | 26 (3 + 23 defined in `opencode.json`) |
-| Slash commands | 94 (8 + 86) | 100 |
+| Slash commands | 93 (8 + 85) | 99 |
 | Hooks | 24 hooks in `settings.json` | a hooks plugin |
 | Rules | `rules/generic-agents/` for the kept languages | (not an opencode feature) |
 
@@ -86,8 +86,10 @@ Rust, C++ and .NET. Removed, with their skills, agents, commands and rule sets:
 - Domain security: DeFi, EVM, healthcare / HIPAA, trading, bug bounty
 - Business, marketing and SEO content; media and video generation; supply chain; prediction markets
   and compute marketplaces; operator-desk contracts; social posting; document processing
+- Two items that fetch and reinstall the original project over this kit: its configure skill and
+  `/auto-update`
 
-In total 129 skills, agents, commands and rule sets (628 files). The exact names are listed in
+In total 131 skills, agents, commands and rule sets (632 files). The exact names are listed in
 `GENERIC_EXCLUDE` in `tools/build_vendor.py` and recorded in `vendor/MANIFEST.json`.
 
 Kept: the full quality workflow (TDD, verification, code review, git, e2e), databases,
@@ -99,18 +101,45 @@ harness), research, operator workflows (GitHub, Jira), benchmarking and memory.
 - The two bundles are called `SDLC_agents` and `all_in_one_generic_agents` everywhere in this kit: the
   `vendor/` folders, the `--source` values, the installer output, the router and the catalog.
 - The generic bundle's self-named items are renamed:
-  - `generic-agents-guide`, `generic-agents-recipes`, `configure-generic-agents` and
-    `generic-agents-tools-cost-audit` (skills)
+  - `generic-agents-guide`, `generic-agents-recipes` and `generic-agents-tools-cost-audit` (skills)
   - `/generic-agents-guide` (command)
-  - `rules/generic-agents/` (rules folder)
+  - `rules/generic-agents/` (rules folder) and `generic-agents-release-checklist.md` (a reference file)
+- In the bundled text (skills, agents, commands, rules, hook docs), the original project's name is
+  rewritten to `all_in_one_generic_agents`, and credits and links to its author are removed. The
+  SDLC_agents commands name their skills directly (`test-driven-development`, not a plugin-prefixed
+  name), so they point at skills that are actually installed.
 - Where the two bundles clash on a name, the SDLC_agents copy is renamed: `sdlc-code-reviewer` and
   `/sdlc-plan`.
-- **archify** keeps its own name and ships exactly as released, including its LICENSE file. The
-  LICENSE removal applied only to the other two bundles.
-- **Unchanged:** names inside the generic bundle's scripts, such as the `ECC_*` environment variables
-  and the hook script filenames. The hooks load and read those exact names, so renaming them would
-  break the hooks. Text inside the bundled skills also still mentions the original project names in
-  places.
+- **archify** keeps its own name and its LICENSE file (the LICENSE removal applied only to the other
+  two bundles). Its content is unchanged apart from the internet-address rules below.
+- **Unchanged, because the code depends on them:** the `ECC_*` environment variables, hook script
+  filenames, command-line and plugin identifiers, and the name of the separate `ECC-Tools` repository.
+
+## No internet addresses
+
+Nothing in the kit mentions or reaches the open internet: every such address is replaced by `<url>`,
+and a Markdown link keeps only its text. That covers text, code examples, scripts and config, and a
+test scans every installed file for it. Also removed:
+
+- archify's instruction to run its online update check
+- homepage, repository and bug-tracker fields in package and plugin metadata
+- an unused catalog of remote MCP servers
+- one upstream test file made of sample repository addresses
+
+What stays, and why:
+
+| Kept | Why |
+|---|---|
+| `localhost`, `127.0.0.1`, `*.example.com` and addresses built from `${host}` | Local or reserved for documentation; the kit's own local servers build their addresses this way |
+| XML namespaces (`www.w3.org/2000/svg`) and JSON-schema identifiers (`$schema`, `$id`) | Identifiers, never fetched; diagrams and validators need them exactly as written |
+| Go module paths, Kubernetes API groups, container image names | Identifiers in code examples, not links |
+| Google Fonts in archify's diagram HTML | Kept on request; opening a diagram in a browser loads the font |
+| The Mermaid library CDN in plan-canvas's browser view | Kept on request; plan-canvas loads it to draw diagrams |
+
+Two features lose something they relied on:
+- archify's check that a diagram's cited repository is a GitHub address no longer accepts any address
+  (fine, because diagrams here never cite one)
+- the hook that notices a newly created GitHub pull request no longer recognises one
 
 ## Options
 

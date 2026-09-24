@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "generated_at": "2026-09-24T16:03:14Z",
+  "generated_at": "2026-09-24T16:08:40Z",
   "sources": {
     "SDLC_agents": {
       "commit": "bcab6a1b8503100e8618c3b4e32cc78de43de769",
@@ -743,73 +743,8 @@
         ]
       },
       "excluded_names_still_mentioned_in": {
-        "skills/react-patterns/SKILL.md": [
-          "react-native-patterns"
-        ],
-        "skills/inherit-legacy-style/SKILL.md": [
-          "php",
-          "swift"
-        ],
-        "skills/frontend-slides/SKILL.md": [
-          "liquid-glass-design"
-        ],
-        "skills/skill-scout/SKILL.md": [
-          "article-writing",
-          "content-engine"
-        ],
-        "skills/messages-ops/SKILL.md": [
-          "lead-intelligence"
-        ],
-        "rules/ecc/common/agents.md": [
-          "harmonyos-app-resolver"
-        ],
-        "skills/plan-orchestrate/SKILL.md": [
-          "chief-of-staff",
-          "flutter-reviewer",
-          "kotlin",
-          "kotlin-build-resolver",
-          "kotlin-reviewer"
-        ],
-        "skills/mle-workflow/SKILL.md": [
-          "product-capability"
-        ],
-        "skills/email-ops/SKILL.md": [
-          "brand-voice",
-          "investor-outreach"
-        ],
         "skills/exa-search/SKILL.md": [
           "market-research"
-        ],
-        "skills/agent-sort/SKILL.md": [
-          "configure-ecc",
-          "swift"
-        ],
-        "rules/ecc/react/patterns.md": [
-          "react-native"
-        ],
-        "skills/finance-billing-ops/SKILL.md": [
-          "market-research"
-        ],
-        "skills/benchmark-methodology/SKILL.md": [
-          "competitive-platform-analysis",
-          "competitive-report-structure"
-        ],
-        "skills/connections-optimizer/SKILL.md": [
-          "brand-voice",
-          "content-engine",
-          "lead-intelligence",
-          "social-graph-ranker",
-          "x-api"
-        ],
-        "rules/ecc/README.md": [
-          "arkts",
-          "php",
-          "react-native",
-          "ruby",
-          "swift"
-        ],
-        "skills/config-gc/SKILL.md": [
-          "configure-ecc"
         ],
         "skills/prompt-optimizer/SKILL.md": [
           "android-clean-architecture",
@@ -826,12 +761,12 @@
           "swift-protocol-di-testing",
           "swiftui-patterns"
         ],
-        "skills/product-lens/SKILL.md": [
-          "product-capability"
+        "rules/ecc/common/agents.md": [
+          "harmonyos-app-resolver"
         ],
-        "skills/team-builder/SKILL.md": [
-          "seo",
-          "seo-specialist"
+        "skills/skill-scout/SKILL.md": [
+          "article-writing",
+          "content-engine"
         ],
         "skills/accessibility/SKILL.md": [
           "kotlin",
@@ -839,17 +774,82 @@
           "swift",
           "swiftui-patterns"
         ],
+        "skills/product-lens/SKILL.md": [
+          "product-capability"
+        ],
+        "skills/react-patterns/SKILL.md": [
+          "react-native-patterns"
+        ],
+        "skills/agent-sort/SKILL.md": [
+          "configure-ecc",
+          "swift"
+        ],
+        "rules/ecc/README.md": [
+          "arkts",
+          "php",
+          "react-native",
+          "ruby",
+          "swift"
+        ],
         "skills/research-ops/SKILL.md": [
           "lead-intelligence",
+          "market-research"
+        ],
+        "skills/frontend-slides/SKILL.md": [
+          "liquid-glass-design"
+        ],
+        "skills/plan-orchestrate/SKILL.md": [
+          "chief-of-staff",
+          "flutter-reviewer",
+          "kotlin",
+          "kotlin-build-resolver",
+          "kotlin-reviewer"
+        ],
+        "rules/ecc/react/patterns.md": [
+          "react-native"
+        ],
+        "skills/finance-billing-ops/SKILL.md": [
           "market-research"
         ],
         "mcp-configs/mcp-servers.json": [
           "ito-compute",
           "laravel-plugin-discovery"
         ],
+        "skills/connections-optimizer/SKILL.md": [
+          "brand-voice",
+          "content-engine",
+          "lead-intelligence",
+          "social-graph-ranker",
+          "x-api"
+        ],
+        "skills/messages-ops/SKILL.md": [
+          "lead-intelligence"
+        ],
+        "skills/benchmark-methodology/SKILL.md": [
+          "competitive-platform-analysis",
+          "competitive-report-structure"
+        ],
+        "skills/config-gc/SKILL.md": [
+          "configure-ecc"
+        ],
         "AGENTS.md": [
           "kotlin-build-resolver",
           "kotlin-reviewer"
+        ],
+        "skills/mle-workflow/SKILL.md": [
+          "product-capability"
+        ],
+        "skills/email-ops/SKILL.md": [
+          "brand-voice",
+          "investor-outreach"
+        ],
+        "skills/inherit-legacy-style/SKILL.md": [
+          "php",
+          "swift"
+        ],
+        "skills/team-builder/SKILL.md": [
+          "seo",
+          "seo-specialist"
         ]
       },
       "opencode_added_skills": [
