@@ -13,6 +13,17 @@ Both are MIT-licensed; their licenses ship in `vendor/addy/LICENSE` and `vendor/
 
 ## Install
 
+**From the zip:** download [`agent-kit.zip`](../agent-kit.zip) from the repository root. It holds this
+script and the `vendor/` content folder inside a single `agent-kit/` folder.
+
+```bash
+unzip agent-kit.zip
+cd agent-kit
+python3 install.py
+```
+
+**From a clone of this repository:**
+
 ```bash
 cd agent-kit
 python3 install.py --dry-run    # preview: shows what would change, writes nothing
@@ -147,12 +158,16 @@ Each of these was found by running the tools, and each is recorded in `vendor/MA
 
 ## Maintaining
 
+The maintainer tools live in the repository only; they are not in the zip.
+
 ```bash
-python3 tools/test_install.py     # 21 end-to-end tests in throwaway home directories
+python3 tools/test_install.py     # end-to-end tests in throwaway home directories
 python3 tools/build_vendor.py     # rebuild vendor/ from the pinned upstream commits
+python3 tools/build_zip.py        # regenerate ../agent-kit.zip (deterministic)
 ```
 
 To update upstream content, bump `ADDY_REF` / `ECC_REF` in `tools/build_vendor.py`, run it (needs git,
-node and npm), run the tests, and commit `vendor/`. The build refuses to finish if upstream changes
+node and npm), then run `build_zip.py` and the tests, and commit `vendor/` together with the zip.
+A test fails if the zip is out of date. The build refuses to finish if upstream changes
 break one of its assumptions, for example an excluded name that no longer exists, or a language
 skill that is not in the router's table.

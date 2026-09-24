@@ -179,5 +179,8 @@ The skill is extracted verbatim from `archify.zip` at tag `v2.16.0` of
 cd agent-kit && python3 install.py
 ```
 
+Or download [`agent-kit.zip`](agent-kit.zip) (4.4 MB). It holds the same script and its `vendor/`
+content folder: `unzip agent-kit.zip && cd agent-kit && python3 install.py`.
+
 See [`agent-kit/README.md`](agent-kit/README.md) for what it installs, the options, and how it
 merges with an existing setup.

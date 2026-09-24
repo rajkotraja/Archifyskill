@@ -142,6 +142,17 @@ class InstallTest(unittest.TestCase):
         self.run_install("--uninstall")
         self.assertEqual(snapshot(self.home), {})
 
+    def test_zip_is_current(self):
+        sys.path.insert(0, str(KIT / "tools"))
+        import build_zip
+        committed = KIT.parent / "agent-kit.zip"
+        self.assertTrue(committed.exists(), "agent-kit.zip missing; run tools/build_zip.py")
+        fresh = self.home / "fresh.zip"
+        build_zip.build(fresh)
+        digest = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
+        self.assertEqual(digest(committed), digest(fresh),
+                         "agent-kit.zip is stale; run tools/build_zip.py and commit it")
+
     def test_second_run_changes_nothing(self):
         self.run_install()
         before = snapshot(self.home)
