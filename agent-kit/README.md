@@ -157,6 +157,17 @@ Two features lose something they relied on:
 | `-v` | List every file operation |
 
 Hook choices are remembered, so a plain `python3 install.py` later keeps whatever you chose last time.
+
+**Leaving a bundle out.** Besides `--source`, you can simply delete a bundle's folder from `vendor/`
+(for example `vendor/all_in_one_generic_agents/`), and the installer skips it with a note:
+
+- the other bundles install normally
+- the router lists only what is actually installed
+- anything the missing bundle installed earlier is left untouched
+- `--uninstall` still removes it, working from the install record rather than the folder
+
+The same applies per tool: if only `vendor/<bundle>/opencode/` is missing, that bundle still installs
+into Claude Code and is skipped for opencode.
 Installs made by earlier versions of this kit are migrated automatically: files from renamed items
 are cleaned up on the next run.
 

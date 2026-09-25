@@ -52,11 +52,11 @@ class InstallTest(unittest.TestCase):
     def tearDown(self):
         shutil.rmtree(self.home, ignore_errors=True)
 
-    def run_install(self, *args, expect=0, env_extra=None):
+    def run_install(self, *args, expect=0, env_extra=None, installer=None):
         env = {k: v for k, v in os.environ.items()
                if k not in ("CLAUDE_CONFIG_DIR", "XDG_CONFIG_HOME", "OPENCODE_CONFIG_DIR")}
         env.update(HOME=str(self.home), USERPROFILE=str(self.home), **(env_extra or {}))
-        r = subprocess.run([sys.executable, str(INSTALL), *args], capture_output=True, text=True, env=env)
+        r = subprocess.run([sys.executable, str(installer or INSTALL), *args], capture_output=True, text=True, env=env)
         self.assertEqual(r.returncode, expect, f"exit {r.returncode}\n{r.stdout}\n{r.stderr}")
         return r.stdout + r.stderr
 
@@ -302,6 +302,56 @@ class InstallTest(unittest.TestCase):
             invoked |= set(re.findall(r"[Ii]nvoke (?:the )?`?([a-z][a-z0-9-]+)`? skill", cmd.read_text()))
         self.assertTrue(invoked, "expected commands to invoke skills")
         self.assertEqual(sorted(invoked - skills), [])
+
+    def partial_kit(self, *drop):
+        """A copy of the kit with vendor/<drop> paths removed; lives outside HOME."""
+        kit = Path(tempfile.mkdtemp(prefix="agent-kit-partial-"))
+        self.addCleanup(shutil.rmtree, kit, True)
+        shutil.copy2(INSTALL, kit / "install.py")
+        shutil.copytree(KIT / "vendor", kit / "vendor")
+        for rel in drop:
+            shutil.rmtree(kit / "vendor" / rel)
+        return kit / "install.py"
+
+    def test_missing_bundle_folder_is_skipped(self):
+        installer = self.partial_kit(GENERIC)
+        out = self.run_install(installer=installer)
+        self.assertIn(f"{GENERIC}: skipped (vendor/{GENERIC}/ not found)", out)
+        self.assertTrue((self.claude / "skills" / "spec-driven-development" / "SKILL.md").exists())
+        self.assertTrue((self.claude / "skills" / "archify" / "SKILL.md").exists())
+        self.assertTrue((self.oc / "skills" / "archify" / "SKILL.md").exists())
+        self.assertFalse((self.claude / "agents" / "architect.md").exists())
+        self.assertFalse((self.claude / "settings.json").exists(), "nothing from the missing bundle is merged")
+        self.assertFalse((self.oc / "opencode.json").exists())
+        for root in (self.claude, self.oc):
+            router = (root / "skills" / "using-agent-skills" / "SKILL.md").read_text()
+            self.assertIn(f"Full kit: {SDLC} + {ARCHIFY}", router)
+            self.assertNotIn(GENERIC, router)
+        before = snapshot(self.home)
+        out = self.run_install("--source", GENERIC, installer=installer)
+        self.assertIn("Nothing to install", out)
+        self.assertEqual(snapshot(self.home), before)
+        self.run_install("--uninstall", installer=installer)
+        self.assertEqual(snapshot(self.home), {})
+
+    def test_missing_bundle_leaves_earlier_install_alone(self):
+        self.run_install()
+        before = snapshot(self.home)
+        installer = self.partial_kit(GENERIC)
+        self.run_install(installer=installer)
+        self.assertEqual(snapshot(self.home), before, "files from the missing bundle must not be removed or changed")
+        self.run_install("--uninstall", installer=installer)
+        self.assertEqual(snapshot(self.home), {}, "uninstall works from the install record, without the folder")
+
+    def test_missing_folder_for_one_tool_only(self):
+        installer = self.partial_kit(f"{GENERIC}/opencode")
+        out = self.run_install(installer=installer)
+        self.assertIn(f"skipped {GENERIC}: vendor/{GENERIC}/opencode/ not found", out)
+        self.assertTrue((self.claude / "agents" / "architect.md").exists())
+        self.assertEqual(hook_groups(self.settings(), GEN_MARKER), GEN["counts"]["claude_hook_commands"])
+        self.assertFalse((self.oc / "opencode.json").exists())
+        self.assertIn(f"Full kit: {SDLC} + {GENERIC} + {ARCHIFY}", (self.claude / "skills" / "using-agent-skills" / "SKILL.md").read_text())
+        self.assertIn(f"Full kit: {SDLC} + {ARCHIFY}", (self.oc / "skills" / "using-agent-skills" / "SKILL.md").read_text())
 
     def test_second_run_changes_nothing(self):
         self.run_install()

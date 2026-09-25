@@ -97,6 +97,28 @@ def source_tree(source: str, target: str) -> Path:
     return tree if tree.is_dir() else VENDOR / source / "common"
 
 
+def missing_parts(source: str, target: str, manifest: dict) -> list:
+    """What is missing for installing `source` into `target` (empty list = ready).
+
+    A bundle whose folder is absent (for example deleted from vendor/ to leave
+    it out) is skipped: nothing of it is installed, and nothing it installed
+    earlier is touched.
+    """
+    if source not in manifest.get("sources", {}):
+        return ["its entry in vendor/MANIFEST.json"]
+    if not (VENDOR / source).is_dir():
+        return [f"vendor/{source}/"]
+    missing = []
+    tree = source_tree(source, target)
+    if not tree.is_dir():
+        missing.append(f"vendor/{source}/{target}/")
+    if source == GENERIC:
+        config = VENDOR / GENERIC / "config" / ("claude-settings.json" if target == "claude" else "opencode.json")
+        if not config.is_file():
+            missing.append(config.relative_to(KIT).as_posix())
+    return missing
+
+
 def meta_variant(present) -> str:
     generic, archify = GENERIC in present, ARCHIFY in present
     return "full" if generic and archify else "generic" if generic else "archify" if archify else "stock"
@@ -420,12 +442,15 @@ class Target:
             tree = VENDOR / SDLC / self.name
             return {rel: tree / rel for rel in META_FILES}
         folder = VENDOR / SDLC / "meta" / variant / self.name
+        if not (folder / "SKILL.md").is_file():                 # variant folder removed: use the full router
+            tree = VENDOR / SDLC / self.name
+            return {rel: tree / rel for rel in META_FILES if (tree / rel).is_file()}
         return {rel: folder / Path(rel).name for rel in META_FILES if (folder / Path(rel).name).is_file()}
 
     def resync_sdlc_meta(self, present):
         """Keep the router in step when other bundles were (un)installed without SDLC_agents."""
         entry = self.state["sources"].get(SDLC)
-        if not entry:
+        if not entry or missing_parts(SDLC, self.name, self.manifest):
             return
         files = entry.setdefault("files", {})
         want = self.sdlc_meta_plan(present)
@@ -514,7 +539,7 @@ class Target:
             settings = read_json(path, TARGET_LABEL["claude"])
             changes = []
             for s in sources:
-                marker = self.manifest["sources"][s].get("hook_marker")   # bundles without hooks have none
+                marker = self.manifest["sources"].get(s, {}).get("hook_marker")   # bundles without hooks have none
                 n = strip_hooks(settings, marker) if marker else 0
                 if n:
                     changes.append(("note", None, f"removed {n} {SOURCE_LABEL[s]} hook groups", MISSING))
@@ -534,6 +559,14 @@ class Target:
 
     # -- entry points ----------------------------------------------------------
     def install(self, sources, cli_opts):
+        ready = []
+        for s in sources:
+            missing = missing_parts(s, self.name, self.manifest)
+            if missing:
+                self.notes.append(f"skipped {s}: {', '.join(missing)} not found (anything it installed earlier is left as is)")
+            else:
+                ready.append(s)
+        sources = self.installed_sources = tuple(ready)
         remembered = self.state.get("options", {})
         opts = {k: (cli_opts[k] if cli_opts[k] is not None else remembered.get(k, default))
                 for k, default in (("hooks", True), ("sdlc_hooks", False))}
@@ -622,11 +655,11 @@ class Target:
 
 def check_prereqs(targets, sources, opts_by_target):
     warn = []
-    if GENERIC in sources and any(o["hooks"] for t, o in opts_by_target.items() if t == "claude"):
+    if any(o["hooks"] and GENERIC in o["installed"] for t, o in opts_by_target.items() if t == "claude"):
         if not shutil.which("node"):
             warn.append(f"{GENERIC} Claude Code hooks run with `node`, which is not on PATH. "
                         "Install Node.js 18+ or re-run with --no-hooks.")
-    if ARCHIFY in sources and not shutil.which("node"):
+    if any(ARCHIFY in o["installed"] for o in opts_by_target.values()) and not shutil.which("node"):
         warn.append("the archify skill renders diagrams with `node`, which is not on PATH. Install Node.js 18+.")
     if any(o.get("sdlc_hooks") for o in opts_by_target.values()):
         missing = [t for t in ("bash", "jq", "curl", "perl") if not shutil.which(t)]
@@ -680,10 +713,19 @@ def main():
     cli_opts = {"hooks": args.hooks, "sdlc_hooks": args.sdlc_hooks}
 
     verb = "Uninstalling" if args.uninstall else "Installing"
+    absent = [] if args.uninstall else [s for s in sources if s not in manifest["sources"] or not (VENDOR / s).is_dir()]
+    sources = tuple(s for s in sources if s not in absent)
+    if not sources:
+        print(f"Nothing to install: {', '.join(f'vendor/{s}/' for s in absent)} not found.")
+        return
     print(f"{verb} {', '.join(SOURCE_LABEL[s] for s in sources)}" + ("  [dry run: nothing will be written]" if args.dry_run else ""))
+    for s in absent:
+        print(f"  {SOURCE_LABEL[s]}: skipped (vendor/{s}/ not found)")
     for s in sources:
-        m = manifest["sources"][s]
+        m = manifest["sources"].get(s, {})
         pin = f"{m['commit'][:12]} ({m['commit_date']})" if "commit" in m else m.get("source_zip", "")
+        if not m:
+            continue
         print(f"  {SOURCE_LABEL[s]}: v{m.get('version')} {pin}")
 
     opts_by_target = {}
@@ -694,11 +736,14 @@ def main():
             target.uninstall(sources)
         else:
             opts = target.install(sources, cli_opts)
-            opts_by_target[t] = opts
-            flags = [f"{GENERIC} hooks {'on' if opts['hooks'] else 'off'}"]
-            if t == "claude":
+            opts_by_target[t] = {**opts, "installed": target.installed_sources}
+            flags = []
+            if GENERIC in target.installed_sources:
+                flags.append(f"{GENERIC} hooks {'on' if opts['hooks'] else 'off'}")
+            if t == "claude" and SDLC in target.installed_sources:
                 flags.append(f"{SDLC} hooks {'on' if opts['sdlc_hooks'] else 'off'}")
-            print(f"    options: {', '.join(flags)}")
+            if flags:
+                print(f"    options: {', '.join(flags)}")
         target.summary()
 
     if not args.uninstall:
