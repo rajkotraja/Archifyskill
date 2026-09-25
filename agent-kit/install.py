@@ -561,11 +561,8 @@ class Target:
     def install(self, sources, cli_opts):
         ready = []
         for s in sources:
-            missing = missing_parts(s, self.name, self.manifest)
-            if missing:
-                self.notes.append(f"skipped {s}: {', '.join(missing)} not found (anything it installed earlier is left as is)")
-            else:
-                ready.append(s)
+            if not missing_parts(s, self.name, self.manifest):   # absent bundles are left out silently;
+                ready.append(s)                                  # anything they installed earlier is untouched
         sources = self.installed_sources = tuple(ready)
         remembered = self.state.get("options", {})
         opts = {k: (cli_opts[k] if cli_opts[k] is not None else remembered.get(k, default))
@@ -712,21 +709,16 @@ def main():
             "opencode": (args.opencode_dir.expanduser() if args.opencode_dir else default_opencode_dir())}
     cli_opts = {"hooks": args.hooks, "sdlc_hooks": args.sdlc_hooks}
 
-    verb = "Uninstalling" if args.uninstall else "Installing"
-    absent = [] if args.uninstall else [s for s in sources if s not in manifest["sources"] or not (VENDOR / s).is_dir()]
-    sources = tuple(s for s in sources if s not in absent)
-    if not sources:
-        print(f"Nothing to install: {', '.join(f'vendor/{s}/' for s in absent)} not found.")
-        return
-    print(f"{verb} {', '.join(SOURCE_LABEL[s] for s in sources)}" + ("  [dry run: nothing will be written]" if args.dry_run else ""))
-    for s in absent:
-        print(f"  {SOURCE_LABEL[s]}: skipped (vendor/{s}/ not found)")
-    for s in sources:
-        m = manifest["sources"].get(s, {})
-        pin = f"{m['commit'][:12]} ({m['commit_date']})" if "commit" in m else m.get("source_zip", "")
-        if not m:
-            continue
-        print(f"  {SOURCE_LABEL[s]}: v{m.get('version')} {pin}")
+    dry = "  [dry run: nothing will be written]" if args.dry_run else ""
+    if args.uninstall:
+        print(f"Uninstalling {', '.join(SOURCE_LABEL[s] for s in sources)}{dry}")
+    else:
+        # Bundles whose folder is missing from vendor/ are left out silently.
+        sources = tuple(s for s in sources if s in manifest["sources"] and (VENDOR / s).is_dir())
+        if not sources:
+            print("Nothing to install.")
+            return
+        print(f"Installing into {' and '.join(TARGET_LABEL[t] for t in targets)}{dry}")
 
     opts_by_target = {}
     for t in targets:
@@ -747,6 +739,17 @@ def main():
         target.summary()
 
     if not args.uninstall:
+        installed = {}
+        for t, o in opts_by_target.items():
+            for s in o["installed"]:
+                installed.setdefault(s, []).append(TARGET_LABEL[t])
+        print("\nWould install:" if args.dry_run else "\nInstalled:")
+        for s in SOURCES:
+            if s in installed:
+                version = manifest["sources"][s].get("version")
+                print(f"  {SOURCE_LABEL[s]} v{version} ({', '.join(installed[s])})")
+        if not installed:
+            print("  nothing")
         print()
         check_prereqs(targets, sources, opts_by_target)
         if not args.dry_run:

@@ -159,9 +159,10 @@ Two features lose something they relied on:
 Hook choices are remembered, so a plain `python3 install.py` later keeps whatever you chose last time.
 
 **Leaving a bundle out.** Besides `--source`, you can simply delete a bundle's folder from `vendor/`
-(for example `vendor/all_in_one_generic_agents/`), and the installer skips it with a note:
+(for example `vendor/all_in_one_generic_agents/`), and the installer leaves it out without comment:
 
-- the other bundles install normally
+- the other bundles install normally, and the summary at the end lists only the bundles that were
+  installed (with their versions and the tools they went into)
 - the router lists only what is actually installed
 - anything the missing bundle installed earlier is left untouched
 - `--uninstall` still removes it, working from the install record rather than the folder

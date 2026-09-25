@@ -316,7 +316,10 @@ class InstallTest(unittest.TestCase):
     def test_missing_bundle_folder_is_skipped(self):
         installer = self.partial_kit(GENERIC)
         out = self.run_install(installer=installer)
-        self.assertIn(f"{GENERIC}: skipped (vendor/{GENERIC}/ not found)", out)
+        self.assertNotIn(GENERIC, out, "a missing bundle is not mentioned at all")
+        listed = out.split("Installed:", 1)[1]
+        for bundle in (SDLC, ARCHIFY):
+            self.assertIn(f"  {bundle} v{MANIFEST['sources'][bundle]['version']} (Claude Code, opencode)", listed)
         self.assertTrue((self.claude / "skills" / "spec-driven-development" / "SKILL.md").exists())
         self.assertTrue((self.claude / "skills" / "archify" / "SKILL.md").exists())
         self.assertTrue((self.oc / "skills" / "archify" / "SKILL.md").exists())
@@ -346,7 +349,8 @@ class InstallTest(unittest.TestCase):
     def test_missing_folder_for_one_tool_only(self):
         installer = self.partial_kit(f"{GENERIC}/opencode")
         out = self.run_install(installer=installer)
-        self.assertIn(f"skipped {GENERIC}: vendor/{GENERIC}/opencode/ not found", out)
+        self.assertNotIn("skipped", out)
+        self.assertIn(f"  {GENERIC} v{GEN['version']} (Claude Code)\n", out.split("Installed:", 1)[1])
         self.assertTrue((self.claude / "agents" / "architect.md").exists())
         self.assertEqual(hook_groups(self.settings(), GEN_MARKER), GEN["counts"]["claude_hook_commands"])
         self.assertFalse((self.oc / "opencode.json").exists())
